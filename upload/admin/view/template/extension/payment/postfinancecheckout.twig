@@ -1,0 +1,341 @@
+{{ header }}
+{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+
+			<div class="pull-right">
+				<button type="submit" data-toggle="tooltip" form="form-postfinancecheckout"
+					title="{{ button_save }}" class="btn btn-primary">
+					<i class="fa fa-save"></i>
+				</button>
+				<a href="{{ cancel }}" data-toggle="tooltip"
+					title="{{ button_cancel }}" class="btn btn-default"><i
+					class="fa fa-reply"></i></a>
+			</div>
+			<h1>
+				{{ heading_title }}
+			</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+				<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+				{% endfor %}
+			</ul>
+
+		</div>
+	</div>
+	<div class="container-fluid">
+
+		<form action="{{ action }}" method="post" enctype="multipart/form-data"
+			id="form-postfinancecheckout" class="form-horizontal">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<i class="fa fa-pencil"></i>
+						{{ text_edit }}
+					</h3>
+				</div>
+				<div class="panel-body">
+					<fieldset>
+						<legend>
+							{{ title_global_settings }}
+						</legend>
+						<div class="form-group required">
+							<label class="col-sm-2 control-label" for="postfinancecheckout_user_id"><span
+								data-toggle="tooltip" title="{{ help_user_id }}">{{ entry_user_id }}</span></label>
+
+							<div class="col-sm-10">
+								<input type="text" name="postfinancecheckout_user_id"
+									value="{{ postfinancecheckout_user_id }}" id="postfinancecheckout_user_id"
+									class="form-control" />
+							</div>
+						</div>
+
+						<div class="form-group required">
+							<label class="col-sm-2 control-label"
+								for="postfinancecheckout_application_key"><span data-toggle="tooltip"
+								title="{{ help_application_key }}">{{ entry_application_key }}</span></label>
+
+							<div class="col-sm-10">
+								<input type="password" name="postfinancecheckout_application_key"
+									value="{{ postfinancecheckout_application_key }}" id="postfinancecheckout_application_key"
+									class="form-control" />
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+
+			<ul class="nav nav-tabs">
+				{% for store in shops %}
+				<li
+					class="{% if store.id  == 0 %} {{ "active" }} {% endif %}"><a
+					data-toggle="tab" href="#store{{ store.id }}">{{ store.name }}</a>
+				</li>
+                {% endfor %}
+			</ul>
+
+			<div class="tab-content">
+
+				{% for store in shops %}
+				<div id="store{{ store.id }}"
+					class="tab-pane fade in {% if store.id == 0 %} {{ "active" }} {% endif %}">
+
+					{% if error_warning %}
+					<div class="alert alert-danger">
+						<i class="fa fa-exclamation-circle"></i>
+						{{ error_warning }}
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+					</div>
+					{% endif %}
+					{% if success %}
+					<div class="alert alert-success">
+						<i class="fa fa-exclamation-circle"></i>
+						{{ success }}
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+					</div>
+					{% endif %}
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<i class="fa fa-pencil"></i>
+								{{ text_edit }}
+							</h3>
+						</div>
+						<div class="panel-body">
+							<fieldset>
+								<legend>
+									{{ title_store_settings }}
+								</legend>
+
+								<div class="form-group required">
+									<label class="col-sm-2 control-label"
+										for="stores[{{ store.id }}][postfinancecheckout_status]">{{ entry_status }}</label>
+
+									<div class="col-sm-10">
+										<select	name="stores[{{ store.id }}][postfinancecheckout_status]"
+											id="stores[{{ store.id }}][postfinancecheckout_status]"
+											class="form-control">
+											<option value="0" {% if not stores[store.id]['postfinancecheckout_status'] %}selected="selected"{% endif %}>{{ text_disabled }}</option>
+											<option value="1" {% if stores[store.id]['postfinancecheckout_status'] %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+										</select>
+									</div>
+								</div>
+								
+								<div class="form-group required">
+									<label class="col-sm-2 control-label"
+										for="stores[{{ store.id }}][postfinancecheckout_space_id]"><span
+										data-toggle="tooltip" title="{{ help_space_id }}">{{ entry_space_id }}</span></label>
+
+									<div class="col-sm-10">
+										<input type="text"
+											name="stores[{{ store.id }}][postfinancecheckout_space_id]"
+											value="{{ stores[store.id]['postfinancecheckout_space_id'] }}"
+											id="stores[{{ store.id }}][postfinancecheckout_space_id]"
+											class="form-control" />
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label"
+										for="stores[{{ store.id }}][postfinancecheckout_space_view_id]"><span
+										data-toggle="tooltip" title="{{ help_space_view_id}}">{{ entry_space_view_id}}</span></label>
+
+									<div class="col-sm-10">
+										<input type="text"
+											name="stores[{{ store.id }}][postfinancecheckout_space_view_id]"
+											value="{{ stores[store.id]['postfinancecheckout_space_view_id'] }}"
+											id="stores[{{ store.id }}][postfinancecheckout_space_view_id]"
+											class="form-control" />
+									</div>
+								</div>
+							</fieldset>
+
+							<fieldset>
+								<legend>
+									{{ title_downloads }}
+								</legend>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">{{ entry_download_invoice }}</label>
+
+									<div class="col-sm-10">
+										<input type="checkbox"
+											name="stores[{{ store.id }}][postfinancecheckout_download_invoice]"
+											{% if stores[store.id]['postfinancecheckout_download_invoice'] %} checked
+											{% endif %} value="1" />
+										<p class="form-control-static">
+											{{ description_download_invoice }}
+										</p>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label">{{ entry_download_packaging }}</label>
+
+									<div class="col-sm-10">
+										<input type="checkbox"
+											name="stores[{{ store.id }}][postfinancecheckout_download_packaging]"
+											{% if stores[store.id]['postfinancecheckout_download_packaging'] %} checked
+											{% endif %} value="1" />
+										<p class="form-control-static">
+											{{ description_download_packaging }}
+										</p>
+									</div>
+								</div>
+							</fieldset>
+
+							<fieldset>
+								<legend>
+									{{ title_payment_status }}
+								</legend>
+
+								{% for status in postfinancecheckout_statuses %}
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label"
+										for="stores[{{ store.id }}][{{ status.key }}]"> <span
+										data-toggle="tooltip" title="{{ status.description }}">
+											{{ status.entry }}
+									</span></label>
+
+									<div class="col-sm-10">
+										<select name="stores[{{ store.id }}][{{ status.key }}]"
+											id="stores[{{ store.id }}][]{{ status.key }}]"
+											class="form-control">
+											{% for order_status in order_statuses %}
+											{% if order_status.order_status_id  ==  stores[store.id][status.key] %}
+											<option value="{{ order_status.order_status_id }}"
+												selected="selected">{{ order_status.name }}</option>
+											{% else %}
+											<option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+											{% endif %}
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+
+								{% endfor %}
+							</fieldset>
+
+							<fieldset>
+								<legend>
+									{{ title_debug}}
+								</legend>
+
+								<div class="form-group">
+									<label class="col-sm-2 control-label"
+										for="stores[{{ store.id }}][postfinancecheckout_log_level]"><span
+										data-toggle="tooltip" title="{{ help_log_level}}">{{ entry_log_level}}</span></label>
+
+									<div class="col-sm-10">
+										<select class="form-control"
+											name="stores[{{ store.id }}][postfinancecheckout_log_level]"
+											id="stores[{{ store.id }}][postfinancecheckout_log_level]">
+											{% for level, name in log_levels %}
+											<option value="{{ level }}"
+												{% if level  ==  stores[store.id]['postfinancecheckout_log_level'] %}
+												selected="select" {% endif %}>{{ name }}</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</fieldset>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<i class="fa fa-pencil"></i>
+						{{ text_information }}
+					</h3>
+				</div>
+				<div class="panel-body">
+					<fieldset>
+						<legend>
+							{{ title_modifications }}
+						</legend>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_core }}</label>
+	
+							<div class="col-sm-10">
+								<p class="form-control-static">{{ description_core }}</p>
+							</div>
+						</div>
+	
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_administration }}</label>
+	
+							<div class="col-sm-10">
+								<p class="form-control-static">{{ description_administration }}</p>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_email }}</label>
+	
+							<div class="col-sm-10">
+								<p class="form-control-static">{{ description_email }}</p>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_alerts }}</label>
+	
+							<div class="col-sm-10">
+								<p class="form-control-static">{{ description_alerts }}</p>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_pdf }}</label>
+	
+							<div class="col-sm-10">
+								<p class="form-control-static">{{ description_pdf }}</p>
+							</div>
+						</div>
+	
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_checkout }}</label>
+	
+							<div class="col-sm-10">
+								<p class="form-control-static">{{ description_checkout }}</p>
+							</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend>
+							{{ title_migration }}
+						</legend>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_migration_name }}</label>
+							<div class="col-sm-10">
+								<p class="form-control-static">
+									{{ postfinancecheckout_migration_name }}
+								</p>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-sm-2 control-label">{{ entry_migration_version }}</label>
+							<div class="col-sm-10">
+								<p class="form-control-static">
+									{{ postfinancecheckout_migration_version }}
+								</p>
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+{{ footer }}

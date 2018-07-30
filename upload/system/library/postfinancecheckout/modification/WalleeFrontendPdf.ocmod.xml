@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>PostFinanceCheckoutFrontendPdf</code>
+	<name>postfinancecheckout customer pdf: Allow customers to download invoices and packing slips.
+	</name>
+	<version>1.0.0</version>
+	<author>Customweb GmbH</author>
+	<link>http://github.com/postfinancecheckout-payment/opencart</link>
+	<file path="catalog/controller/account/order.php">
+		<operation>
+			<search><![CDATA[
+			$this->response->setOutput($this->load->view('account/order_info', $data));
+            ]]></search>
+			<add position="before"><![CDATA[
+			$this->load->model('extension/postfinancecheckout/order');
+			$data['postfinancecheckout_buttons'] = $this->model_extension_postfinancecheckout_order->getButtons($order_info['order_id']);
+            ]]></add>
+		</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/account/order_info.twig">
+		<operation>
+			<search><![CDATA[
+      <div class="buttons clearfix">
+            ]]></search>
+			<add position="after"><![CDATA[
+		{% if postfinancecheckout_buttons is not empty %}
+			<div class="pull-left">
+				{% for button in postfinancecheckout_buttons %}
+					 <a href="{{ button.url }}" class="btn btn-secondary"><i class="fa fa-{{ button.icon }}"></i> {{ button.text }}</a> 
+				{% endfor %}
+			</div>
+		{% endif %}
+			]]></add>
+		</operation>
+	</file>
+</modification>

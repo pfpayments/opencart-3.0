@@ -1,0 +1,10 @@
+<?php
+require_once(modification(DIR_SYSTEM . 'library/postfinancecheckout/dynamic/catalog/controller.php'));
+
+class #classname# extends ControllerExtensionPaymentPostFinanceCheckoutBase {
+	private $code = "#code#";
+
+	protected function getCode(){
+		return $this->code;
+	}
+}

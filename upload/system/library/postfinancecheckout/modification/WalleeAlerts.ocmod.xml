@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>PostFinanceCheckoutAlerts</code>
+	<name>postfinancecheckout alerts: show open manual tasks and failed jobs.</name>
+	<version>1.0.0</version>
+	<author>Customweb GmbH</author>
+	<link>http://github.com/postfinancecheckout-payment/opencart</link>
+	<file path="admin/controller/common/header.php">
+		<operation>
+			<search><![CDATA[
+			$data['logged'] = true;
+			]]></search>
+			<add position="after"><![CDATA[
+			$this->load->model("extension/postfinancecheckout/alert");
+			$data['postfinancecheckout_alerts_title'] = $this->model_extension_postfinancecheckout_alert->getAlertsTitle();
+			$data['postfinancecheckout_alerts'] = $this->model_extension_postfinancecheckout_alert->getAlerts();
+			$data['postfinancecheckout_alert_count'] = $this->model_extension_postfinancecheckout_alert->getAlertCount();
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/view/template/common/header.twig">
+		<operation>
+			<search><![CDATA[
+	<ul class="nav navbar-nav navbar-right">
+            ]]></search>
+			<add position="after"><![CDATA[
+	<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="label label-danger" >{{ postfinancecheckout_alert_count }}</span> {{ postfinancecheckout_alerts_title }} <i class="fa fa-caret-down fa-fw"></i></a>
+     <ul class="dropdown-menu dropdown-menu-right">
+		{% for alert in postfinancecheckout_alerts %}
+		<li><a href="{{ alert.url }}" style="padding-right:1em;"><span class="label label-{{ alert.level }} pull-right">{{ alert.count }}</span>{{ alert.text }}</a></li>
+       	<li role="separator" class="divider"></li>
+		{% endfor %}
+     </ul>
+	</li>
+            ]]></add>
+		</operation>
+	</file>
+</modification>

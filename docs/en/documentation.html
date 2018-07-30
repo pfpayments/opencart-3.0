@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<meta name="keywords" value="PostFinance Checkout, Opencart 3.0, Opencart Module, Opencart Payment, Opencart Extension, Payment, Payment Integration, Documentation"><meta name="description" value="The documentation for the Opencart extension that enables processing payments with PostFinance Checkout.">		<link rel="canonical" href="https://plugin-documentation.wallee.com/wallee-payment/opencart-3.0/master/docs/en/documentation.html" />
+		<title>PostFinance Checkout Opencart 3.0</title>
+		<link href="assets/base.css" rel="stylesheet" />
+	</head>
+	<body class="documentation">
+		<div class="layout-wrapper">
+							<div class="layout-title">
+					<h1>PostFinance Checkout Opencart 3.0</h1>
+<h2>Documentation</h2>				</div>
+										<div class="layout-navigation">
+					<ul class="nav">
+	<li>
+		<a href="https://www.postfinance-checkout.ch/user/signup">
+			Sign Up
+		</a>
+	</li>
+	<li>
+		<a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.4/">
+			Source
+		</a>
+	</li>
+</ul>				</div>
+										<div class="layout-content">
+												<div class="col-body">
+							<div class="col-body-wrapper">
+																	<div class="body-container">
+																						<div class="chapter" id="_prerequisites">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">1</span>Prerequisites					</h1>
+	</div>
+	<div class="chapter-body">
+					<div class="paragraph">
+<p>If you don&#8217;t already have one, create a <a href="https://www.postfinance.ch/">PostFinance Checkout</a> account.</p>
+</div>					</div>
+</div>	<div class="chapter" id="_installation">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">2</span>Installation					</h1>
+	</div>
+	<div class="chapter-body">
+							<div class="section" id="_normal_install">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">2.1</span>Normal install					</h2>
+	</div>
+	<div class="section-body">
+					<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.4/">Download</a> the extension (wallee.zip).</p>
+</li>
+<li>
+<p>Extract the files and upload the content of the 'upload' directory to your store&#8217;s root directory using FTP/SSH.</p>
+</li>
+<li>
+<p>Navigate to Extensions &#8594; Payment to activate the plugin.</p>
+</li>
+</ol>
+</div>					</div>
+</div>					<div class="section" id="_extension_installer">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">2.2</span>Extension installer					</h2>
+	</div>
+	<div class="section-body">
+					<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.4/">Download</a> the extension (wallee.ocmod.zip). TODO</p>
+</li>
+<li>
+<p>Navigate to Extensions &#8594; Extension Installer, and upload the previously downloaded zip file.</p>
+</li>
+<li>
+<p>Navigate to Extensions &#8594; Payment to activate the plugin.</p>
+</li>
+</ol>
+</div>					</div>
+</div>			</div>
+</div>	<div class="chapter" id="_configuration">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">3</span>Configuration					</h1>
+	</div>
+	<div class="chapter-body">
+					<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Navigate to Extensions &#8594; Payment &#8594; PostFinance Checkout in your Opencart store&#8217;s backend and enter the PostFinance Checkout application user&#8217;s access information that you created before.</p>
+<div class="imageblock">
+<div class="content">
+<img src="resource/settings.png" alt="settings"/>
+</div>
+</div>
+</li>
+<li>
+<p>On a per-store basis you must then add a Space ID, and a Space View ID if required.</p>
+</li>
+<li>
+<p>You can configure if transaction documents should be available to download in the users frontend.</p>
+</li>
+<li>
+<p>You can configure which Opencart status should be set depending on the PostFinance Checkout state. For more information check out the <a href="https://www.postfinance-checkout.ch/doc/payment/processor-concept">Processor Concept</a>.</p>
+</li>
+<li>
+<p>After saving the configuration, the payment methods are created in the Opencart store and the necessary webhooks are set up.</p>
+</li>
+<li>
+<p>Refresh modifications so all files which are necessary to process payments are created.</p>
+</li>
+</ol>
+</div>					</div>
+</div>	<div class="chapter" id="_payment_method_configuration">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">4</span>Payment Method Configuration					</h1>
+	</div>
+	<div class="chapter-body">
+					<div class="paragraph">
+<p>Payment method configuration is done in PostFinance Checkout. After following the steps of the previous steps, the PostFinance Checkout payment method configurations will be synchronized automatically into the store.</p>
+</div>					</div>
+</div>	<div class="chapter" id="_features">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">5</span>Features					</h1>
+	</div>
+	<div class="chapter-body">
+							<div class="section" id="_payment_methods_webhooks">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">5.1</span>Payment methods &amp; webhooks					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>The extension will pull any configured payment methods and webhooks from your wallee account. Note: The payment methods will not appear in the payment overview of your OpenCart backend.</p>
+</div>					</div>
+</div>					<div class="section" id="_packing_slips_invoices">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">5.2</span>Packing slips &amp; invoices					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>You may allow customers to download their own packing slips and / or invoices. This can be configured in the extension settings page. The download buttons are available in the customers order view. The documents are made available in the PDF format.</p>
+</div>					</div>
+</div>					<div class="section" id="_refunds">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">5.3</span>Refunds					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>The extension allows transactions made with it to also be refunded directly from the opencart backend if the transaction is in the correct state.</p>
+</div><div class="imageblock">
+<div class="content">
+<img src="resource/refund.png" alt="refund"/>
+</div>
+</div>					</div>
+</div>					<div class="section" id="_completion">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">5.4</span>Completion					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>Orders can be processed in two steps depending on your wallee configurations. In the case of manual completions the order stays in a reserved state until the merchant confirms that the funds should be transferred. A completion can be initiated from the order view in your OpenCart backend if the transaction is in the correct state.</p>
+</div>					</div>
+</div>					<div class="section" id="_void">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">5.5</span>Void					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>Orders which are processed in two steps can be voided instead of completed. A void can be initiated from the order view in your OpenCart backend if the transaction is in the correct state.</p>
+</div>					</div>
+</div>					<div class="section" id="_alerts">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">5.6</span>Alerts					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>If there are open manual tasks in your wallee account, or if a non-synchronous task such as a void, completion or refund fails, this information is displayed in your OpenCart backend.</p>
+</div><div class="imageblock">
+<div class="content">
+<img src="resource/alert.png" alt="alert"/>
+</div>
+</div>					</div>
+</div>					<div class="section" id="_order_confirmation">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">5.7</span>Order confirmation					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>PostFinance Checkout can be configured to send transaction confirmations. In this case you may wish to suppress the order confirmation sent by Opencart. For this case we offer an additional modification which can be activated.</p>
+</div>					</div>
+</div>			</div>
+</div>	<div class="chapter" id="_third_party_support">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">6</span>Third party support					</h1>
+	</div>
+	<div class="chapter-body">
+					<div class="paragraph">
+<p>These third party extensions are supported by the PostFinance Checkout Opencart extension:</p>
+</div><div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.opencart.com/index.php?route=marketplace/extension/info&amp;extension_id=13535">X-fee</a></p>
+</li>
+<li>
+<p><a href="https://www.opencart.com/index.php?route=marketplace/extension/info&amp;extension_id=15580">AJAX Quick Checkout FREE</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>We offer an additional modification for compatibility, which is not active by default.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>					</div>
+</div>	<div class="chapter" id="_faq">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">7</span>FAQ					</h1>
+	</div>
+	<div class="chapter-body">
+							<div class="section" id="_how_can_i_make_the_payment_methods_appear_in_the_checkout">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">7.1</span>How can I make the payment methods appear in the checkout?					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>Make sure that you followed the <a href="#_configuration">Configuration</a> section, including refreshing the modifications.</p>
+</div>					</div>
+</div>					<div class="section" id="_the_order_totals_in_opencart_and_whitelabelname_don_t_match">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">7.2</span>The order totals in Opencart and PostFinance Checkout don&#8217;t match?					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>If you have configured a separate currency to have a non-1.00 value please be aware that there may be rounding errors due to the way OpenCart handles currency totals and taxes. The discrepancies should in all cases be kept to an absolute minimum.</p>
+</div>					</div>
+</div>					<div class="section" id="_how_can_i_change_the_look_and_feel_payment_method_name_emails_etc">
+	<div class="section-title">
+		<h2>
+			<span class="title-number">7.3</span>How can I change the look and feel, payment method name, emails etc.?					</h2>
+	</div>
+	<div class="section-body">
+					<div class="paragraph">
+<p>All those configurations are done directly in PostFinance Checkout. For more information have a look at the <a href="https://www.postfinance.ch/">PostFinance Checkout documentation</a>.</p>
+</div>					</div>
+</div>			</div>
+</div>	<div class="chapter" id="_support">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">8</span>Support					</h1>
+	</div>
+	<div class="chapter-body">
+					<div class="paragraph">
+<p>If you need help, feel free to contact our <a href="https://www.postfinance.ch/en/business/support/written-contact/contact-form.html">support</a>.</p>
+</div>					</div>
+</div>																			</div>
+															</div>
+						</div>
+						<div class="col-right">
+		<div class="col-right-wrapper">
+							<div class="table-of-contents">
+	<ul class="nav">
+					<li class="nav-level-1">
+	<a href="#_prerequisites">
+		<span class="item-number">1</span>
+		<span class="item-title">Prerequisites</span>
+			</a>
+    </li>					<li class="nav-level-1">
+	<a href="#_installation">
+		<span class="item-number">2</span>
+		<span class="item-title">Installation</span>
+			</a>
+        	<ul  class="nav">
+    		    			<li class="nav-level-2">
+	<a href="#_normal_install">
+		<span class="item-number">2.1</span>
+		<span class="item-title">Normal install</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_extension_installer">
+		<span class="item-number">2.2</span>
+		<span class="item-title">Extension installer</span>
+			</a>
+    </li>    		    	</ul>
+    </li>					<li class="nav-level-1">
+	<a href="#_configuration">
+		<span class="item-number">3</span>
+		<span class="item-title">Configuration</span>
+			</a>
+    </li>					<li class="nav-level-1">
+	<a href="#_payment_method_configuration">
+		<span class="item-number">4</span>
+		<span class="item-title">Payment Method Configuration</span>
+			</a>
+    </li>					<li class="nav-level-1">
+	<a href="#_features">
+		<span class="item-number">5</span>
+		<span class="item-title">Features</span>
+			</a>
+        	<ul  class="nav">
+    		    			<li class="nav-level-2">
+	<a href="#_payment_methods_webhooks">
+		<span class="item-number">5.1</span>
+		<span class="item-title">Payment methods &amp;amp; webhooks</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_packing_slips_invoices">
+		<span class="item-number">5.2</span>
+		<span class="item-title">Packing slips &amp;amp; invoices</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_refunds">
+		<span class="item-number">5.3</span>
+		<span class="item-title">Refunds</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_completion">
+		<span class="item-number">5.4</span>
+		<span class="item-title">Completion</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_void">
+		<span class="item-number">5.5</span>
+		<span class="item-title">Void</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_alerts">
+		<span class="item-number">5.6</span>
+		<span class="item-title">Alerts</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_order_confirmation">
+		<span class="item-number">5.7</span>
+		<span class="item-title">Order confirmation</span>
+			</a>
+    </li>    		    	</ul>
+    </li>					<li class="nav-level-1">
+	<a href="#_third_party_support">
+		<span class="item-number">6</span>
+		<span class="item-title">Third party support</span>
+			</a>
+    </li>					<li class="nav-level-1">
+	<a href="#_faq">
+		<span class="item-number">7</span>
+		<span class="item-title">FAQ</span>
+			</a>
+        	<ul  class="nav">
+    		    			<li class="nav-level-2">
+	<a href="#_how_can_i_make_the_payment_methods_appear_in_the_checkout">
+		<span class="item-number">7.1</span>
+		<span class="item-title">How can I make the payment methods appear in the checkout?</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_the_order_totals_in_opencart_and_whitelabelname_don_t_match">
+		<span class="item-number">7.2</span>
+		<span class="item-title">The order totals in Opencart and PostFinance Checkout don&amp;#8217;t match?</span>
+			</a>
+    </li>    		    			<li class="nav-level-2">
+	<a href="#_how_can_i_change_the_look_and_feel_payment_method_name_emails_etc">
+		<span class="item-number">7.3</span>
+		<span class="item-title">How can I change the look and feel, payment method name, emails etc.?</span>
+			</a>
+    </li>    		    	</ul>
+    </li>					<li class="nav-level-1">
+	<a href="#_support">
+		<span class="item-number">8</span>
+		<span class="item-title">Support</span>
+			</a>
+    </li>			</ul>
+</div>					</div>
+	</div>
+				</div>
+					</div>
+
+		<script type="text/javascript" src="assets/jquery.js"></script>
+		<script type="text/javascript" src="assets/scrollspy.js"></script>
+		<script type="text/javascript" src="assets/sticky-kit.js"></script>
+		<script type="text/javascript" src="assets/base.js"></script>
+	</body>
+</html>

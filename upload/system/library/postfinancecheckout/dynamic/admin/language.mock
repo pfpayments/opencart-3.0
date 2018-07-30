@@ -1,0 +1,3 @@
+<?php
+// Payment method title, other plugins may access this
+$_['heading_title']       = 'postfinancecheckout - #Title#';

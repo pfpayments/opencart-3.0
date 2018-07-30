@@ -1,0 +1,100 @@
+:meta-description:	The documentation for the Opencart extension that enables processing payments with PostFinance Checkout.
+:meta-keywords:		PostFinance Checkout, Opencart 3.0, Opencart Module, Opencart Payment, Opencart Extension, Payment, Payment Integration, Documentation
+
+= PostFinance Checkout Opencart 3.0
+
+:imagesdir: resource
+
+== Prerequisites
+
+@include(prerequisites.adoc)
+
+== Installation
+
+=== Normal install
+
+1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.4/[Download] the extension (wallee.zip).
+2. Extract the files and upload the content of the 'upload' directory to your store's root directory using FTP/SSH.
+3. Navigate to Extensions -> Payment to activate the plugin.
+
+=== Extension installer
+
+1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.4/[Download] the extension (wallee.ocmod.zip). TODO
+2. Navigate to Extensions -> Extension Installer, and upload the previously downloaded zip file.
+3. Navigate to Extensions -> Payment to activate the plugin.
+
+== Configuration
+
+1. Navigate to Extensions -> Payment -> PostFinance Checkout in your Opencart store's backend and enter the PostFinance Checkout application user's access information that you created before.
++
+image::settings.png[]
+2. On a per-store basis you must then add a Space ID, and a Space View ID if required.
+3. You can configure if transaction documents should be available to download in the users frontend.
+4. You can configure which Opencart status should be set depending on the PostFinance Checkout state. For more information check out the https://www.postfinance-checkout.ch/doc/payment/processor-concept[Processor Concept].
+5. After saving the configuration, the payment methods are created in the Opencart store and the necessary webhooks are set up.
+6. Refresh modifications so all files which are necessary to process payments are created.
+
+== Payment Method Configuration
+
+Payment method configuration is done in PostFinance Checkout. After following the steps of the previous steps, the PostFinance Checkout payment method configurations will be synchronized automatically into the store.
+
+== Features
+
+=== Payment methods & webhooks
+
+The extension will pull any configured payment methods and webhooks from your wallee account. Note: The payment methods will not appear in the payment overview of your OpenCart backend.
+
+=== Packing slips & invoices
+
+You may allow customers to download their own packing slips and / or invoices. This can be configured in the extension settings page. The download buttons are available in the customers order view. The documents are made available in the PDF format.
+
+
+=== Refunds
+
+The extension allows transactions made with it to also be refunded directly from the opencart backend if the transaction is in the correct state.
+
+image::refund.png[]
+
+=== Completion
+
+Orders can be processed in two steps depending on your wallee configurations. In the case of manual completions the order stays in a reserved state until the merchant confirms that the funds should be transferred. A completion can be initiated from the order view in your OpenCart backend if the transaction is in the correct state.
+
+=== Void
+
+Orders which are processed in two steps can be voided instead of completed. A void can be initiated from the order view in your OpenCart backend if the transaction is in the correct state.
+
+=== Alerts
+
+If there are open manual tasks in your wallee account, or if a non-synchronous task such as a void, completion or refund fails, this information is displayed in your OpenCart backend.
+
+image::alert.png[]
+
+=== Order confirmation
+
+PostFinance Checkout can be configured to send transaction confirmations. In this case you may wish to suppress the order confirmation sent by Opencart. For this case we offer an additional modification which can be activated.
+
+== Third party support
+
+These third party extensions are supported by the PostFinance Checkout Opencart extension:
+
+* https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=13535[X-fee]
+* https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=15580[AJAX Quick Checkout FREE]
+- We offer an additional modification for compatibility, which is not active by default.
+
+== FAQ
+
+=== How can I make the payment methods appear in the checkout?
+
+Make sure that you followed the <<_configuration>> section, including refreshing the modifications.
+
+=== The order totals in Opencart and PostFinance Checkout don't match?
+
+If you have configured a separate currency to have a non-1.00 value please be aware that there may be rounding errors due to the way OpenCart handles currency totals and taxes. The discrepancies should in all cases be kept to an absolute minimum.
+
+=== How can I change the look and feel, payment method name, emails etc.?
+
+All those configurations are done directly in PostFinance Checkout. For more information have a look at the https://www.postfinance.ch/[PostFinance Checkout documentation].
+
+== Support
+
+@include(support.adoc)

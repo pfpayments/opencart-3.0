@@ -1,0 +1,1 @@
+jQuery.ajax('index.php?route=extension/wallee/cron');

@@ -1,0 +1,25 @@
+<?php
+require_once(modification(DIR_SYSTEM . 'library/postfinancecheckout/dynamic/catalog/model.php'));
+
+class #PaymentMethod# extends ModelExtensionPaymentPostFinanceCheckoutBase {
+	private $title = "#title#";
+	private $code = "#code#";
+	private $sort_order = "#sort_order#";
+	private $terms = "#terms#";
+	
+	public function getTitle() {
+		return \PostFinanceCheckoutHelper::instance($this->registry)->translate(unserialize(base64_decode($this->title)));
+	}
+	
+	protected function getCode() {
+		return $this->code;
+	}
+	
+	protected function getSortOrder() {
+		return $this->sort_order;
+	}
+	
+	protected function getTerms() {
+		return $this->terms;
+	}
+}

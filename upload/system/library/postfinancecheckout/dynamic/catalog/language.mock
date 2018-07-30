@@ -1,0 +1,4 @@
+<?php
+// Payment method title, other plugins or opencart itself accesses this
+// Text
+$_['heading_title']       = '#Title#';
