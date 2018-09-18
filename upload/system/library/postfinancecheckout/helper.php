@@ -379,18 +379,20 @@ class PostFinanceCheckoutHelper {
 	}
 
 	public function getSuccessUrl(){
-		return PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'checkout/success', '', $this->registry->get('config')->get('config_secure'));
+		return PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'checkout/success', '',
+				$this->registry->get('config')->get('config_secure'));
 	}
 
 	public function getFailedUrl($order_id){
 		return str_replace('&amp;', '&',
 				PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'checkout/checkout', array(
-					'order_id' => $order_id 
+					'order_id' => $order_id
 				), $this->registry->get('config')->get('config_secure')));
 	}
 
 	public function getWebhookUrl(){
-		return PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'extension/postfinancecheckout/webhook', '', $this->registry->get('config')->get('config_secure'));
+		return PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'extension/postfinancecheckout/webhook', '',
+				$this->registry->get('config')->get('config_secure'));
 	}
 
 	/**
@@ -427,7 +429,8 @@ class PostFinanceCheckoutHelper {
 	 * "postfinancecheckout_refund_status_id"
 	 *
 	 * @param string $order_id
-	 * @param string|int $status Key for postfinancecheckout status mapping, e.g. postfinancecheckout_completed_status_id, or the order status id which should be applied.
+	 * @param string|int $status Key for postfinancecheckout status mapping, e.g. postfinancecheckout_completed_status_id, or the order status id
+	 * which should be applied.
 	 * @param string $message
 	 * @param boolean $notify
 	 * @throws Exception

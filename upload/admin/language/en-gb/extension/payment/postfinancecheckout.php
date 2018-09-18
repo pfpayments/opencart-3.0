@@ -17,8 +17,10 @@ $_['entry_application_key']							= "Application key";
 $_['help_application_key']							= "Your application key is displayed once when setting up PostFinance Checkout. This setting is shared across all stores.";
 $_['entry_space_id']								= "Space Id";
 $_['help_space_id']									= "You can find your Space Id in your PostFinance Checkout account.";
-$_['entry_space_view_id']							= "Space View Id";
-$_['help_space_view_id']							= "You can find your Space View Id in your PostFinance Checkout account.";
+
+$_['title_space_view_id']							= "Space View Options";
+$_['entry_space_view_id']							= "Space View Id";;
+$_['help_space_view_id']							= "The space view ID allows to control the styling of the payment form and the payment page within the space. In multi-store setups it allows to adapt the payment form to different styling per sub store without requiring a dedicated space.";
 
 // downloads
 $_['title_downloads']								= "Documents";

@@ -4,6 +4,7 @@ namespace PostFinanceCheckout\Service;
 
 use Wallee\Sdk\Service\ChargeAttemptService;
 use Wallee\Sdk\Service\TransactionService;
+use Wallee\Sdk\Model\TransactionPending;
 
 /**
  * This service provides functions to deal with PostFinanceCheckout transactions.
@@ -35,6 +36,12 @@ class Transaction extends AbstractService {
 			\Wallee\Sdk\Model\TransactionState::PENDING 
 		));
 		return $this->getTransactionService()->buildJavaScriptUrl($transaction->getLinkedSpaceId(), $transaction->getId());
+	}
+
+	public function getPaymentPageUrl(\Wallee\Sdk\Model\Transaction $transaction, $paymentCode){
+		$paymentMethodId = substr($paymentCode, strlen('postfinancecheckout_'));
+		return $this->getTransactionService()->buildPaymentPageUrl($transaction->getLinkedSpaceId(), $transaction->getId()) .
+				 '&paymentMethodConfigurationId=' . $paymentMethodId;
 	}
 
 	public function update(array $order_info, $confirm = false){
@@ -140,7 +147,8 @@ class Transaction extends AbstractService {
 		
 		$create_transaction->setAutoConfirmationEnabled(false);
 		$this->assembleTransaction($create_transaction, $order_info);
-		$transaction = $this->getTransactionService()->create($this->registry->get('config')->get('postfinancecheckout_space_id'), $create_transaction);
+		$transaction = $this->getTransactionService()->create($this->registry->get('config')->get('postfinancecheckout_space_id'),
+				$create_transaction);
 		
 		$this->persist($transaction, $order_info);
 		
@@ -158,8 +166,10 @@ class Transaction extends AbstractService {
 			throw new \Exception('Session currency not set.');
 		}
 		
-		$transaction->setBillingAddress($this->assembleAddress(\PostFinanceCheckoutHelper::instance($this->registry)->getAddress('payment', $order_info)));
-		$transaction->setShippingAddress($this->assembleAddress(\PostFinanceCheckoutHelper::instance($this->registry)->getAddress('shipping', $order_info)));
+		$transaction->setBillingAddress(
+				$this->assembleAddress(\PostFinanceCheckoutHelper::instance($this->registry)->getAddress('payment', $order_info)));
+		$transaction->setShippingAddress(
+				$this->assembleAddress(\PostFinanceCheckoutHelper::instance($this->registry)->getAddress('shipping', $order_info)));
 		
 		$customer = \PostFinanceCheckoutHelper::instance($this->registry)->getCustomer();
 		if (isset($customer['customer_id'])) {
@@ -173,7 +183,7 @@ class Transaction extends AbstractService {
 		if (isset($data['shipping_method'])) {
 			$transaction->setShippingMethod($this->fixLength($data['shipping_method']['title'], 200));
 		}
-
+		
 		$transaction->setLineItems(LineItem::instance($this->registry)->getItemsFromSession());
 		$transaction->setSuccessUrl(\PostFinanceCheckoutHelper::instance($this->registry)->getSuccessUrl());
 		
@@ -245,8 +255,8 @@ class Transaction extends AbstractService {
 		$order_info = \PostFinanceCheckoutHelper::instance($this->registry)->getOrder($order_id);
 		$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_id);
 		
-		$line_items = \PostFinanceCheckout\Service\LineItem::instance($this->registry)->getItemsFromOrder($order_info, $transaction_info->getTransactionId(),
-				$transaction_info->getSpaceId());
+		$line_items = \PostFinanceCheckout\Service\LineItem::instance($this->registry)->getItemsFromOrder($order_info,
+				$transaction_info->getTransactionId(), $transaction_info->getSpaceId());
 		
 		$update_request = new \Wallee\Sdk\Model\TransactionLineItemUpdateRequest();
 		$update_request->setTransactionId($transaction_info->getTransactionId());
@@ -262,7 +272,8 @@ class Transaction extends AbstractService {
 	 * @return \PostFinanceCheckout\Entity\TransactionInfo
 	 */
 	public function updateTransactionInfo(\Wallee\Sdk\Model\Transaction $transaction, $order_id){
-		$info = \PostFinanceCheckout\Entity\TransactionInfo::loadByTransaction($this->registry, $transaction->getLinkedSpaceId(), $transaction->getId());
+		$info = \PostFinanceCheckout\Entity\TransactionInfo::loadByTransaction($this->registry, $transaction->getLinkedSpaceId(),
+				$transaction->getId());
 		$info->setTransactionId($transaction->getId());
 		$info->setAuthorizationAmount($transaction->getAuthorizationAmount());
 		$info->setOrderId($order_id);
@@ -281,8 +292,11 @@ class Transaction extends AbstractService {
 		if ($transaction->getState() == \Wallee\Sdk\Model\TransactionState::FAILED ||
 				 $transaction->getState() == \Wallee\Sdk\Model\TransactionState::DECLINE) {
 			$failed_charge_attempt = $this->getFailedChargeAttempt($transaction->getLinkedSpaceId(), $transaction->getId());
-			if ($failed_charge_attempt != null && $failed_charge_attempt->getFailureReason() != null) {
+			if ($failed_charge_attempt && $failed_charge_attempt->getFailureReason() != null) {
 				$info->setFailureReason($failed_charge_attempt->getFailureReason()->getDescription());
+			}
+			else if ($transaction->getFailureReason()) {
+				$info->setFailureReason($transaction->getFailureReason()->getDescription());
 			}
 		}
 		$info->save();
@@ -384,13 +398,27 @@ class Transaction extends AbstractService {
 	private function assembleAddress($source, $prefix = ''){
 		$address = new \Wallee\Sdk\Model\AddressCreate();
 		
-		$address->setCity($this->getFixedSource($source, $prefix . 'city', 100));
-		$address->setCountry($source[$prefix . 'iso_code_2']);
-		$address->setFamilyName($this->getFixedSource($source, $prefix . 'lastname', 100));
-		$address->setGivenName($this->getFixedSource($source, $prefix . 'firstname', 100));
-		$address->setOrganizationName($this->getFixedSource($source, $prefix . 'company', 100));
-		$address->setPostCode($this->getFixedSource($source, $prefix . 'postcode', 40));
-		$address->setStreet($this->fixLength(trim($source[$prefix . 'address_1'] . "\n" . $source[$prefix . 'address_2']), 300));
+		if (isset($source[$prefix . 'city'])) {
+			$address->setCity($this->getFixedSource($source, $prefix . 'city', 100));
+		}
+		if (isset($source[$prefix . 'iso_code_2'])) {
+			$address->setCountry($source[$prefix . 'iso_code_2']);
+		}
+		if (isset($source[$prefix . 'lastname'])) {
+			$address->setFamilyName($this->getFixedSource($source, $prefix . 'lastname', 100));
+		}
+		if (isset($source[$prefix . 'firstname'])) {
+			$address->setGivenName($this->getFixedSource($source, $prefix . 'firstname', 100));
+		}
+		if (isset($source[$prefix . 'company'])) {
+			$address->setOrganizationName($this->getFixedSource($source, $prefix . 'company', 100));
+		}
+		if (isset($source[$prefix . 'postcode'])) {
+			$address->setPostCode($this->getFixedSource($source, $prefix . 'postcode', 40));
+		}
+		if (isset($source[$prefix . 'address_1'])) {
+			$address->setStreet($this->fixLength(trim($source[$prefix . 'address_1'] . "\n" . $source[$prefix . 'address_2']), 300));
+		}
 		
 		// state is 2-part
 		if (isset($source[$prefix . 'zone_code']) && isset($source[$prefix . 'iso_code_2'])) {
@@ -419,8 +447,11 @@ class Transaction extends AbstractService {
 
 	private function hasTransactionInSession(){
 		$data = $this->registry->get('session')->data;
-		return isset($data['postfinancecheckout_transaction_id']) && isset($data['postfinancecheckout_space_id']) && $data['postfinancecheckout_space_id'] == $this->registry->get('config')->get('postfinancecheckout_space_id') && array_key_exists('postfinancecheckout_customer', $data) &&
-				 $data['postfinancecheckout_customer'] === \PostFinanceCheckoutHelper::instance($this->registry)->getCustomerSessionIdentifier() && $data['postfinancecheckout_customer'];
+		return isset($data['postfinancecheckout_transaction_id']) && isset($data['postfinancecheckout_space_id']) &&
+				 $data['postfinancecheckout_space_id'] == $this->registry->get('config')->get('postfinancecheckout_space_id') &&
+				 array_key_exists('postfinancecheckout_customer', $data) &&
+				 $data['postfinancecheckout_customer'] === \PostFinanceCheckoutHelper::instance($this->registry)->getCustomerSessionIdentifier() &&
+				 $data['postfinancecheckout_customer'];
 	}
 
 	private function clearTransactionInSession(){
@@ -447,7 +478,8 @@ class Transaction extends AbstractService {
 
 	private function storeShipping(\Wallee\Sdk\Model\Transaction $transaction){
 		if (isset($this->registry->get('session')->data['shipping_method'])) {
-			$shipping_info = \PostFinanceCheckout\Entity\ShippingInfo::loadByTransaction($this->registry, $transaction->getLinkedSpaceId(), $transaction->getId());
+			$shipping_info = \PostFinanceCheckout\Entity\ShippingInfo::loadByTransaction($this->registry, $transaction->getLinkedSpaceId(),
+					$transaction->getId());
 			$shipping_info->setTransactionId($transaction->getId());
 			$shipping_info->setSpaceId($transaction->getLinkedSpaceId());
 			$shipping_info->setCost($this->registry->get('session')->data['shipping_method']['cost']);
@@ -458,7 +490,8 @@ class Transaction extends AbstractService {
 
 	private function storeCoupon(\Wallee\Sdk\Model\Transaction $transaction){
 		if (isset($this->registry->get('session')->data['coupon']) && isset($this->registry->get('session')->data['order_id'])) {
-			$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByTransaction($this->registry, $this->registry->get('session')->data['order_id']);
+			$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByTransaction($this->registry,
+					$this->registry->get('session')->data['order_id']);
 			$transaction_info->setTransactionId($transaction->getId());
 			$transaction_info->setSpaceId($transaction->getLinkedSpaceId());
 			$transaction_info->setOrderId($this->registry->get('session')->data['order_id']);

@@ -33,21 +33,9 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 			'status' => false 
 		);
 		try {
-			$service = \PostFinanceCheckout\Service\Transaction::instance($this->registry);
-			
-			$transaction = $service->getTransaction(array(), false, array(
-				\Wallee\Sdk\Model\TransactionState::PENDING 
-			));
-			if ($transaction->getState() === \Wallee\Sdk\Model\TransactionState::PENDING) {
-				\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionStart();
-				\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionLock($transaction->getLinkedSpaceId(), $transaction->getId());
-				$service->update($this->session->data, true);
-				\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionCommit();
-				$result['status'] = true;
-			}
-			else {
-				throw new Exception('Transaction is not pending.');
-			}
+			$transaction = $this->confirmTransaction();
+			$result['status'] = true;
+			$result['redirect'] = PostFinanceCheckout\Service\Transaction::instance($this->registry)->getPaymentPageUrl($transaction, $this->getCode());
 		}
 		catch (Exception $e) {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionRollback();
@@ -56,6 +44,21 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 		
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($result));
+	}
+
+	private function confirmTransaction(){
+		$transaction = PostFinanceCheckout\Service\Transaction::instance($this->registry)->getTransaction(array(), false,
+				array(
+					\Wallee\Sdk\Model\TransactionState::PENDING 
+				));
+		if ($transaction->getState() == \Wallee\Sdk\Model\TransactionState::PENDING) {
+			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionStart();
+			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionLock($transaction->getLinkedSpaceId(), $transaction->getId());
+			PostFinanceCheckout\Service\Transaction::instance($this->registry)->update($this->session->data, true);
+			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionCommit();
+			return $transaction;
+		}
+		throw new Exception('Transaction is not pending.');
 	}
 
 	protected function getRequiredPermission(){

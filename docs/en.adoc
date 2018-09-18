@@ -11,89 +11,159 @@
 
 == Installation
 
-=== Normal install
-
-1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.4/[Download] the extension (wallee.zip).
-2. Extract the files and upload the content of the 'upload' directory to your store's root directory using FTP/SSH.
-3. Navigate to Extensions -> Payment to activate the plugin.
-
-=== Extension installer
-
-1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.4/[Download] the extension (wallee.ocmod.zip). TODO
-2. Navigate to Extensions -> Extension Installer, and upload the previously downloaded zip file.
-3. Navigate to Extensions -> Payment to activate the plugin.
+1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.5/[Download] the extension.
+2. Extract the files and upload the content of the `Upload` directory into the root directory of your store using FTP/SSH.
+3. Login to the backend of your OpenCart store.
+4. Navigate to Extensions -> Payment to install the plugin.
 
 == Configuration
 
-1. Navigate to Extensions -> Payment -> PostFinance Checkout in your Opencart store's backend and enter the PostFinance Checkout application user's access information that you created before.
+1. Navigate to Extensions -> Payment -> PostFinance Checkout in your OpenCart backend and enter the PostFinance Checkout Space ID, User ID and Authentification Key that you can create in the link:https://www.postfinance-checkout.ch/space/select?target=/space/assistant[setup assistant^]. Alternatively, you can manually create an link:https://www.postfinance-checkout.ch/en-us/doc/permission-concept#_create_application_users[application user^].
 +
 image::settings.png[]
-2. On a per-store basis you must then add a Space ID, and a Space View ID if required.
-3. You can configure if transaction documents should be available to download in the users frontend.
-4. You can configure which Opencart status should be set depending on the PostFinance Checkout state. For more information check out the https://www.postfinance-checkout.ch/doc/payment/processor-concept[Processor Concept].
-5. After saving the configuration, the payment methods are created in the Opencart store and the necessary webhooks are set up.
-6. Refresh modifications so all files which are necessary to process payments are created.
++
+If your store is configured for multistore, you may use different spaces for each store to configure different behaviours.
++
+2. Optionally configure which OpenCart status should be set depending on the PostFinance Checkout state. For more information check out the https://www.postfinance-checkout.ch/doc/payment/processor-concept[Processor Concept].
+3. Optionally disable downloading invoice and packing slip. These settings allow customers to download the documents from their order overview in the OpenCart frontend.
+4. Optionally change the debug level which increases what information is logged in your system/storage/logs/ folder, see xref:Error logging[].
+5. After saving the configuration, the payment methods are created in the OpenCart store and the necessary webhooks are set up.
+6. Navigate to Extensions > Modifications and refresh modifications so all files which are necessary to process payments are created.
 
-== Payment Method Configuration
-
-Payment method configuration is done in PostFinance Checkout. After following the steps of the previous steps, the PostFinance Checkout payment method configurations will be synchronized automatically into the store.
-
-== Features
-
-=== Payment methods & webhooks
-
-The extension will pull any configured payment methods and webhooks from your wallee account. Note: The payment methods will not appear in the payment overview of your OpenCart backend.
-
-=== Packing slips & invoices
-
-You may allow customers to download their own packing slips and / or invoices. This can be configured in the extension settings page. The download buttons are available in the customers order view. The documents are made available in the PDF format.
+The main configuration is now finished. You should see the payment methods in your checkout. To view the payment method configuration in the backend of OpenCart go to Shop Settings > Payment Methods. 
 
 
-=== Refunds
+== Payment method configuration
 
-The extension allows transactions made with it to also be refunded directly from the opencart backend if the transaction is in the correct state.
+Payment method configuration is done in PostFinance Checkout. The PostFinance Checkout payment method configurations are synchronized automatically into the OpenCart store. 
 
-image::refund.png[]
+The payment methods will not appear in the payment overview of your OpenCart backend.
 
-=== Completion
+NOTE: Additional payment methods are directly added in PostFinance Checkout. This can be done in the link:https://www.postfinance-checkout.ch/space/select?target=/space/assistant/payment[setup assistant^]. Changes are synchronized automatically.
 
-Orders can be processed in two steps depending on your wallee configurations. In the case of manual completions the order stays in a reserved state until the merchant confirms that the funds should be transferred. A completion can be initiated from the order view in your OpenCart backend if the transaction is in the correct state.
+=== Customization
 
-=== Void
+If you want to change the payment method description, title, logo, etc you need to do this in the link:https://www.postfinance-checkout.ch/space/select?target=/payment/method-configuration/list[payment method configuration^]. Changes will be synchronized automatically. 
 
-Orders which are processed in two steps can be voided instead of completed. A void can be initiated from the order view in your OpenCart backend if the transaction is in the correct state.
+== State graph
+
+The Payment Process of PostFinance Checkout is *completely standardized for every payment method* you can process. This gives you the ability to simply add 
+a payment method or processor without changes inside of your OpenCart configuration. An overview about the states and the payment processes of PostFinance Checkout
+can be found in the link:https://www.postfinance-checkout.ch/en-us/doc/payment/transaction-process[Payment Documentation^].
+
+In the following section we provide you an overview about how the PostFinance Checkout states are mapped into the OpenCart State graph for orders. 
+
+=== State mapping of OpenCart orders
+
+Below you find a diagram that shows the state machine of OpenCart for orders including additional information for the state transitions.
+
+image::state_graph.svg[]
+
+== Transaction management
+
+You can capture, cancel and refund transactions directly from within the OpenCart backend. Please note 
+if you refund, void or capture transaction inside PostFinance Checkout the events will not be synchronized into 
+OpenCart.
+
+=== Complete (capture) an order
+
+You have the possibility for your transactions to have the payment only authorized after the order is placed. Inside the link:https://www.postfinance-checkout.ch/space/select?target=/payment/connector-configuration/list[connector configuration^] you have the option, if the payment method supports it, to define whether the payment should be completed immediately or deferred.
+
+In order to capture a transaction, navigate to Administer Orders -> PostFinance Checkout Transactions, open the transaction and click on the `Complete` button.
+
+NOTE: When the completion is pending in PostFinance Checkout the order will stay in pending state.
+
+image::capture-transaction.png[]
+
+=== Void a transaction
+
+In order to void a transaction, open the transaction and click on the `Void` button. 
+
+NOTE: You can only void transactions that are not yet completed. 
+
+image::void-transaction.png[]
+
+=== Refund of a transaction
+
+You have the possibility to refund already completed transactions. In order to do so, open the transaction and click on the `Refund` button. In case the payment method does not support refund, you will not see the possibility to issue online refunds.
+
+image::refund-transaction.png[]
+
+You can make refunds based on product quantity. In order to do so enter the amount of products you wish to refund to your customer. 
+
+image::refund-transaction2.png[]
+
+You can carry out as many individual refunds as you wish until you have reached the quantity of the original order. 
+The status of the order then automatically switches to complete.
+
+NOTE: It can take some time until you see the refund in OpenCart. Refunds will only be visible once they have been processed successfully.
 
 === Alerts
 
-If there are open manual tasks in your wallee account, or if a non-synchronous task such as a void, completion or refund fails, this information is displayed in your OpenCart backend.
+If there are open manual tasks in your PostFinance Checkout account or if a non-synchronous task such as a void, completion or refund fails, this information is displayed in your OpenCart backend.
 
 image::alert.png[]
 
-=== Order confirmation
+=== On hold orders
 
-PostFinance Checkout can be configured to send transaction confirmations. In this case you may wish to suppress the order confirmation sent by Opencart. For this case we offer an additional modification which can be activated.
+As long as the delivery should not be done the state of the order will be in `Processing` by default. This happens when the transaction in PostFinance Checkout
+has not reached the fulfill state. 
+
+NOTE: You can configure which OpenCart status should be set in that case. This can be done in the extension settings. Simply choose which OpenCart status should be set for the `Completed` PostFinance Checkout state.
+
+There are essentially two reasons why this can happen:
+
+* The transaction is not completed. In this case you have to complete the transaction as written above. 
+* As long as we are not able to tell you if you should fulfill the order. The delivery decision is done automatically. If this does not happen
+within the defined time frame, PostFinance Checkout will generate a manual task which you should observe and follow the instructions.
+When there is a manual task we will also display it in the OpenCart Backend. 
+
+You can find more information about manual tasks in our link:https://www.postfinance-checkout.ch/en-us/doc/manual-tasks[Manual Task Documentation^].
+
+
+=== Limitations of the synchronization between PostFinance Checkout and OpenCart
+
+Please note that captures, voids and refunds done in PostFinance Checkout are not synchronized into OpenCart.
+You should therefore always perform captures, voids and refunds inside the OpenCart backend and not inside PostFinance Checkout.
+
+
+=== Tokenization
+
+In case the payment method supports tokenization you can store the payment details of your customer for future purchases. 
+In order to use this feature make sure that the *One-Click-Payment Mode* in your link:https://www.postfinance-checkout.ch/space/select?target=/payment/method-configuration/list[payment method configuration] is set to `allow` or `force` storage.  
+
+NOTE: Tokenization is not available for guest checkouts.
 
 == Third party support
 
-These third party extensions are supported by the PostFinance Checkout Opencart extension:
+These third party extensions are supported by the PostFinance Checkout OpenCart extension:
 
 * https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=13535[X-fee]
 * https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=15580[AJAX Quick Checkout FREE]
 - We offer an additional modification for compatibility, which is not active by default.
 
+
+== Error logging
+
+The extension will log various unexpected errors or information which can help identify the cause of the error. You can find the logs on the server of your store in the system/storage/logs/ folder.
+You have the option to change the debug level which increases what information is logged:
+
+* Error (Default): Logs unexpected errors only. 
+* Debug: Logs more information helpful for debugging.
+
+
 == FAQ
 
 === How can I make the payment methods appear in the checkout?
 
-Make sure that you followed the <<_configuration>> section, including refreshing the modifications.
+Make sure that you followed the <<_configuration>> section by stating your PostFinance Checkout Space ID, User ID and Authentification Key in the OpenCart backend. By saving the configuration form the synchronization of the payment methods and the set up of the webhooks are initiated.
 
-=== The order totals in Opencart and PostFinance Checkout don't match?
+If this does not solve the problem, it could be that you use a special fee or coupon module that we do not support. Try to disable this plugin and see if it helps. 
+The payment methods are only displayed if the plugin's total calculation matches the actual order total.
+
+=== Why do the order totals in OpenCart and PostFinance Checkout not match?
 
 If you have configured a separate currency to have a non-1.00 value please be aware that there may be rounding errors due to the way OpenCart handles currency totals and taxes. The discrepancies should in all cases be kept to an absolute minimum.
-
-=== How can I change the look and feel, payment method name, emails etc.?
-
-All those configurations are done directly in PostFinance Checkout. For more information have a look at the https://www.postfinance.ch/[PostFinance Checkout documentation].
 
 == Support
 

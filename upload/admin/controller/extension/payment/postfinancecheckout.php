@@ -217,6 +217,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		
 		$data['title_global_settings'] = $this->language->get("title_global_settings");
 		$data['title_store_settings'] = $this->language->get("title_store_settings");
+		$data['title_space_view_id'] = $this->language->get("title_space_view_id");
 		$data['entry_user_id'] = $this->language->get("entry_user_id");
 		$data['help_user_id'] = $this->language->get("help_user_id");
 		$data['entry_application_key'] = $this->language->get("entry_application_key");
