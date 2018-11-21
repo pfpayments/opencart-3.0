@@ -18,15 +18,19 @@ class Transaction extends AbstractService {
 
 	public function getPaymentMethods(array $order_info){
 		$cart_id = \PostFinanceCheckoutVersionHelper::getCurrentCartId($this->registry);
-		if (!$cart_id || !isset(self::$possible_payment_method_cache[$cart_id])) {
+		if (!$cart_id || !array_key_exists($cart_id, self::$possible_payment_method_cache)) {
 			$transaction = $this->update($order_info, false);
-			$payment_methods = $this->getTransactionService()->fetchPossiblePaymentMethods($transaction->getLinkedSpaceId(), $transaction->getId());
-			
-			foreach ($payment_methods as $payment_method) {
-				MethodConfiguration::instance($this->registry)->updateData($payment_method);
+			try{
+				$payment_methods = $this->getTransactionService()->fetchPossiblePaymentMethods($transaction->getLinkedSpaceId(), $transaction->getId());
+				foreach ($payment_methods as $payment_method) {
+					MethodConfiguration::instance($this->registry)->updateData($payment_method);
+				}
+				self::$possible_payment_method_cache[$cart_id] = $payment_methods;
 			}
-			
-			self::$possible_payment_method_cache[$cart_id] = $payment_methods;
+			catch(\Exception $e) {
+				self::$possible_payment_method_cache[$cart_id] = array();
+				throw $e;
+			}
 		}
 		return self::$possible_payment_method_cache[$cart_id];
 	}
