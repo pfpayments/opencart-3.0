@@ -33,7 +33,7 @@ class Completion extends AbstractJob {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionStart();
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionLock($job->getSpaceId(), $job->getTransactionId());
 			
-			$service = new \Wallee\Sdk\Service\TransactionCompletionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+			$service = new \PostFinanceCheckout\Sdk\Service\TransactionCompletionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 			$operation = $service->completeOnline($job->getSpaceId(), $job->getTransactionId());
 			
 			if ($operation->getFailureReason() != null) {
@@ -53,7 +53,7 @@ class Completion extends AbstractJob {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionCommit();
 			return $job;
 		}
-		catch (\Wallee\Sdk\ApiException $api_exception) {
+		catch (\PostFinanceCheckout\Sdk\ApiException $api_exception) {
 			return $this->handleApiException($job, $api_exception);
 		}
 		catch (\Exception $e) {

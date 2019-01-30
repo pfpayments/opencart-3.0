@@ -4,13 +4,13 @@ namespace PostFinanceCheckout\Entity;
 
 /**
  *
- * @method getId()
- * @method getCreatedAt()
- * @method getUpdatedAt()
+ * @method int getId()
+ * @method DateTime getCreatedAt()
+ * @method DateTime getUpdatedAt()
  *
- * @method setId($id)
- * @method setCreatedAt($createdAt)
- * @method setUpdatedAt($updatedAt)
+ * @method void setId($id)
+ * @method void setCreatedAt($createdAt)
+ * @method void setUpdatedAt($updatedAt)
  *
  * Abstract implementation of a entity
  */
@@ -26,11 +26,11 @@ abstract class AbstractEntity {
 		);
 	}
 
-	protected static function getFieldDefinition() {
+	protected static function getFieldDefinition(){
 		throw new \Exception("Mock abstract, must be overwritten.");
 	}
 
-	protected static function getTableName() {
+	protected static function getTableName(){
 		throw new \Exception("Mock abstract, must be overwritten.");
 	}
 
@@ -198,6 +198,12 @@ abstract class AbstractEntity {
 		return new static($registry);
 	}
 
+	/**
+	 * Load all entities.
+	 *
+	 * @param \Registry $registry
+	 * @return \PostFinanceCheckout\Entity\AbstractEntity[]
+	 */
 	public static function loadAll(\Registry $registry){
 		$db = $registry->get('db');
 		
@@ -208,6 +214,98 @@ abstract class AbstractEntity {
 			$result[] = new static($registry, $row);
 		}
 		return $result;
+	}
+
+	/**
+	 * Return true or false if the field is treated as a date.
+	 *
+	 * @param string $field
+	 */
+	protected static function isDateField($field){
+		return in_array($field, array(
+			'created_at',
+			'updated_at' 
+		));
+	}
+	
+	private static function getDefaultFilter(array &$filters, $filterName, $default) {
+		if(isset($filters[$filterName])) {
+			$value = $filters[$filterName];
+			unset($filters[$filterName]);
+			return $value;
+		}
+		return $default;
+	}
+	
+	private static function buildWhereClause($db, array $filters) {
+		$query = '';
+		foreach ($filters as $field => $value) {
+			if($value){
+				$field = $db->escape($field);
+				$value = "'" . $db->escape($value) . "'";
+				if (self::isDateField($field)) {
+					$query .= "(DATE($field)=$value OR YEAR($field)=$value OR TIME($field)=$value OR $field=$value) AND";
+				}
+				else {
+					$query .= "$field=$value AND ";
+				}
+			}
+		}
+		if($query) {
+			$query = "WHERE " . rtrim($query, " AND");
+		}
+		return $query;
+	}
+
+	/**
+	 * Load entities which match the filters.
+	 * Filters are applied as sql =.
+	 * Special Filters: 
+	 * order: ASC or DESC. 
+	 * sort: ORDERBY.
+	 * isDateField($field)=true: Compares dates
+	 * start: Limit start
+	 * limit: Limit end
+	 *
+	 * @param \Registry $registry
+	 * @param array $filters (e.g. array(id=10) or (authorization_amount=10, STATE='FULFIL'))
+	 * @return \PostFinanceCheckout\Entity\AbstractEntity[]
+	 */
+	public static function loadByFilters(\Registry $registry, array $filters){
+		$db = $registry->get('db');
+		$table = DB_PREFIX . static::getTableName();
+		$orderBy = static::getDefaultFilter($filters, 'sort', 'id');
+		$ordering = static::getDefaultFilter($filters, 'order', 'ASC');
+		$page = 1;
+		if(isset($filters['page'])) {
+			$page = $filters['page'];
+			unset($filters['page']);
+		}
+		$start = \PostFinanceCheckoutHelper::instance($registry)->getLimitStart($page);
+		$end = \PostFinanceCheckoutHelper::instance($registry)->getLimitEnd($page);
+		
+		$query = "SELECT * FROM $table " . static::buildWhereClause($db, $filters) . " ORDER BY $orderBy $ordering LIMIT $start, $end;";
+		
+		$db_result = $db->query($query);
+		$result = array();
+		foreach ($db_result->rows as $row) {
+			$result[] = new static($registry, $row);
+		}
+		return $result;
+	}
+	
+	/**
+	 * Returns the count of all entites.
+	 * 
+	 * @param \Registry $registry
+	 * @return int
+	 */
+	public static function countRows(\Registry $registry) {
+		$db = $registry->get('db');
+		$table = DB_PREFIX . static::getTableName();
+		$query = "SELECT COUNT(id) as count FROM $table;";
+		$dbResult = $db->query($query);
+		return $dbResult->row['count'];
 	}
 
 	public function delete(\Registry $registry){

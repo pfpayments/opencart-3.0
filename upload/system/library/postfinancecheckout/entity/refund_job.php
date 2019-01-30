@@ -7,8 +7,8 @@ namespace PostFinanceCheckout\Entity;
  *
  * @method int getExternalId()
  * @method void setExternalId(int $id)
- * @method \Wallee\Sdk\Model\LineItemReduction[] getReductionItems()
- * @method void setReductionItems(\Wallee\Sdk\Model\LineItemReduction[] $reductions)
+ * @method \PostFinanceCheckout\Sdk\Model\LineItemReduction[] getReductionItems()
+ * @method void setReductionItems(\PostFinanceCheckout\Sdk\Model\LineItemReduction[] $reductions)
  * @method float getAmount()
  * @method void setAmount(float $amount)
  * @method void setFailureReason(map[string,string] $reasons)

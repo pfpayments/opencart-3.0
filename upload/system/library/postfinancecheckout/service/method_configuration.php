@@ -7,9 +7,9 @@ class MethodConfiguration extends AbstractService {
 	/**
 	 * Updates the data of the payment method configuration.
 	 *
-	 * @param \Wallee\Sdk\Model\PaymentMethodConfiguration $configuration
+	 * @param \PostFinanceCheckout\Sdk\Model\PaymentMethodConfiguration $configuration
 	 */
-	public function updateData(\Wallee\Sdk\Model\PaymentMethodConfiguration $configuration){
+	public function updateData(\PostFinanceCheckout\Sdk\Model\PaymentMethodConfiguration $configuration){
 		/* @var \PostFinanceCheckout\Entity\MethodConfiguration $entity */
 		$entity = \PostFinanceCheckout\Entity\MethodConfiguration::loadByConfiguration($this->registry, $configuration->getLinkedSpaceId(), $configuration->getId());
 		if ($entity->getId() !== null && $this->hasChanged($configuration, $entity)) {
@@ -22,7 +22,7 @@ class MethodConfiguration extends AbstractService {
 		}
 	}
 
-	private function hasChanged(\Wallee\Sdk\Model\PaymentMethodConfiguration $configuration, \PostFinanceCheckout\Entity\MethodConfiguration $entity){
+	private function hasChanged(\PostFinanceCheckout\Sdk\Model\PaymentMethodConfiguration $configuration, \PostFinanceCheckout\Entity\MethodConfiguration $entity){
 		if ($configuration->getName() != $entity->getConfigurationName()) {
 			return true;
 		}
@@ -53,9 +53,9 @@ class MethodConfiguration extends AbstractService {
 		$existing_found = array();
 		$existing_configurations = \PostFinanceCheckout\Entity\MethodConfiguration::loadBySpaceId($this->registry, $space_id);
 		
-		$payment_method_configuration_service = new \Wallee\Sdk\Service\PaymentMethodConfigurationService(
+		$payment_method_configuration_service = new \PostFinanceCheckout\Sdk\Service\PaymentMethodConfigurationService(
 				\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
-		$configurations = $payment_method_configuration_service->search($space_id, new \Wallee\Sdk\Model\EntityQuery());
+		$configurations = $payment_method_configuration_service->search($space_id, new \PostFinanceCheckout\Sdk\Model\EntityQuery());
 		
 		foreach ($configurations as $configuration) {
 			$method = \PostFinanceCheckout\Entity\MethodConfiguration::loadByConfiguration($this->registry, $space_id, $configuration->getId());
@@ -88,7 +88,7 @@ class MethodConfiguration extends AbstractService {
 	 * Returns the payment method for the given id.
 	 *
 	 * @param int $id
-	 * @return \Wallee\Sdk\Model\PaymentMethod
+	 * @return \PostFinanceCheckout\Sdk\Model\PaymentMethod
 	 */
 	protected function getPaymentMethod($id){
 		return \PostFinanceCheckout\Provider\PaymentMethod::instance($this->registry)->find($id);
@@ -97,14 +97,14 @@ class MethodConfiguration extends AbstractService {
 	/**
 	 * Returns the state for the payment method configuration.
 	 *
-	 * @param \Wallee\Sdk\Model\PaymentMethodConfiguration $configuration
+	 * @param \PostFinanceCheckout\Sdk\Model\PaymentMethodConfiguration $configuration
 	 * @return string
 	 */
-	protected function getConfigurationState(\Wallee\Sdk\Model\PaymentMethodConfiguration $configuration){
+	protected function getConfigurationState(\PostFinanceCheckout\Sdk\Model\PaymentMethodConfiguration $configuration){
 		switch ($configuration->getState()) {
-			case \Wallee\Sdk\Model\CreationEntityState::ACTIVE:
+			case \PostFinanceCheckout\Sdk\Model\CreationEntityState::ACTIVE:
 				return \PostFinanceCheckout\Entity\MethodConfiguration::STATE_ACTIVE;
-			case \Wallee\Sdk\Model\CreationEntityState::INACTIVE:
+			case \PostFinanceCheckout\Sdk\Model\CreationEntityState::INACTIVE:
 				return \PostFinanceCheckout\Entity\MethodConfiguration::STATE_INACTIVE;
 			default:
 				return \PostFinanceCheckout\Entity\MethodConfiguration::STATE_HIDDEN;

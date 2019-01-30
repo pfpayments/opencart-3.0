@@ -6,7 +6,7 @@ class PostFinanceCheckoutHelper {
 	const FALLBACK_LANGUAGE = 'en-US';
 	/**
 	 *
-	 * @var Wallee\Sdk\ApiClient
+	 * @var PostFinanceCheckout\Sdk\ApiClient
 	 */
 	private $apiClient;
 	/**
@@ -152,7 +152,7 @@ class PostFinanceCheckoutHelper {
 	}
 
 	public function isCompletionPossible(\PostFinanceCheckout\Entity\TransactionInfo $transaction_info){
-		return $transaction_info->getState() == \Wallee\Sdk\Model\TransactionState::AUTHORIZED &&
+		return $transaction_info->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::AUTHORIZED &&
 				 (\PostFinanceCheckout\Entity\CompletionJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) == 0) &&
 				 (\PostFinanceCheckout\Entity\VoidJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) == 0);
 	}
@@ -160,9 +160,9 @@ class PostFinanceCheckoutHelper {
 	public function isRefundPossible(\PostFinanceCheckout\Entity\TransactionInfo $transaction_info){
 		if (!in_array($transaction_info->getState(),
 				array(
-					\Wallee\Sdk\Model\TransactionState::COMPLETED,
-					\Wallee\Sdk\Model\TransactionState::FULFILL,
-					\Wallee\Sdk\Model\TransactionState::DECLINE 
+					\PostFinanceCheckout\Sdk\Model\TransactionState::COMPLETED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE 
 				))) {
 			return false;
 		}
@@ -355,7 +355,7 @@ class PostFinanceCheckoutHelper {
 
 	/**
 	 *
-	 * @return Wallee\Sdk\ApiClient
+	 * @return PostFinanceCheckout\Sdk\ApiClient
 	 */
 	public function getApiClient(){
 		if ($this->apiClient === null) {
@@ -365,7 +365,7 @@ class PostFinanceCheckoutHelper {
 	}
 
 	public function refreshApiClient(){
-		$this->apiClient = new Wallee\Sdk\ApiClient($this->registry->get('config')->get('postfinancecheckout_user_id'),
+		$this->apiClient = new PostFinanceCheckout\Sdk\ApiClient($this->registry->get('config')->get('postfinancecheckout_user_id'),
 				$this->registry->get('config')->get('postfinancecheckout_application_key'));
 		$this->apiClient->setBasePath(self::getBaseUrl() . "/api");
 		if ($this->registry->get('config')->get('wallee_log_level') >= self::LOG_DEBUG) {
@@ -499,6 +499,28 @@ class PostFinanceCheckoutHelper {
 	public function isAdmin(){
 		return defined('HTTPS_CATALOG') && defined('HTTP_CATALOG');
 	}
+	
+	/**
+	 * Get the starting value of LIMIT for db queries. Used for paginated requests.
+	 * 
+	 * @param int $page
+	 * @return int
+	 */
+	public function getLimitStart($page) {
+		$limit = $this->registry->get('config')->get('config_limit_admin');
+		return ($page - 1) * $limit;
+	}
+	
+	/**
+	 * Get the end value of LIMIT for db queries. Used for paginated requests.
+	 *
+	 * @param int $page
+	 * @return int
+	 */
+	public function getLimitEnd($page) {
+		$limit = $this->registry->get('config')->get('config_limit_admin');
+		return $page * $limit;
+	}
 
 	public static function instance(Registry $registry){
 		if (self::$instance === null) {
@@ -513,9 +535,9 @@ class PostFinanceCheckoutHelper {
 
 	public static function isEditableState($state){
 		$completable_states = array(
-			\Wallee\Sdk\Model\TransactionState::AUTHORIZED,
-			\Wallee\Sdk\Model\TransactionState::CONFIRMED,
-			\Wallee\Sdk\Model\TransactionState::PROCESSING 
+			\PostFinanceCheckout\Sdk\Model\TransactionState::AUTHORIZED,
+			\PostFinanceCheckout\Sdk\Model\TransactionState::CONFIRMED,
+			\PostFinanceCheckout\Sdk\Model\TransactionState::PROCESSING 
 		);
 		return in_array($state, $completable_states);
 	}

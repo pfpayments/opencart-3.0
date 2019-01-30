@@ -12,14 +12,14 @@ class Webhook extends AbstractService {
 	/**
 	 * The webhook listener API service.
 	 *
-	 * @var \Wallee\Sdk\Service\WebhookListenerService
+	 * @var \PostFinanceCheckout\Sdk\Service\WebhookListenerService
 	 */
 	private $webhook_listener_service;
 	
 	/**
 	 * The webhook url API service.
 	 *
-	 * @var \Wallee\Sdk\Service\WebhookUrlService
+	 * @var \PostFinanceCheckout\Sdk\Service\WebhookUrlService
 	 */
 	private $webhook_url_service;
 	private $webhook_entities = array();
@@ -31,61 +31,61 @@ class Webhook extends AbstractService {
 		parent::__construct($registry);
 		$this->webhook_entities[1487165678181] = new Entity(1487165678181, 'Manual Task',
 				array(
-					\Wallee\Sdk\Model\ManualTaskState::DONE,
-					\Wallee\Sdk\Model\ManualTaskState::EXPIRED,
-					\Wallee\Sdk\Model\ManualTaskState::OPEN 
+					\PostFinanceCheckout\Sdk\Model\ManualTaskState::DONE,
+					\PostFinanceCheckout\Sdk\Model\ManualTaskState::EXPIRED,
+					\PostFinanceCheckout\Sdk\Model\ManualTaskState::OPEN 
 				), 'PostFinanceCheckout\Webhook\ManualTask');
 		$this->webhook_entities[1472041857405] = new Entity(1472041857405, 'Payment Method Configuration',
 				array(
-					\Wallee\Sdk\Model\CreationEntityState::ACTIVE,
-					\Wallee\Sdk\Model\CreationEntityState::DELETED,
-					\Wallee\Sdk\Model\CreationEntityState::DELETING,
-					\Wallee\Sdk\Model\CreationEntityState::INACTIVE 
+					\PostFinanceCheckout\Sdk\Model\CreationEntityState::ACTIVE,
+					\PostFinanceCheckout\Sdk\Model\CreationEntityState::DELETED,
+					\PostFinanceCheckout\Sdk\Model\CreationEntityState::DELETING,
+					\PostFinanceCheckout\Sdk\Model\CreationEntityState::INACTIVE 
 				), 'PostFinanceCheckout\Webhook\MethodConfiguration', true);
 		$this->webhook_entities[1472041829003] = new Entity(1472041829003, 'Transaction',
 				array(
-					\Wallee\Sdk\Model\TransactionState::CONFIRMED,
-					\Wallee\Sdk\Model\TransactionState::AUTHORIZED,
-					\Wallee\Sdk\Model\TransactionState::DECLINE,
-					\Wallee\Sdk\Model\TransactionState::FAILED,
-					\Wallee\Sdk\Model\TransactionState::FULFILL,
-					\Wallee\Sdk\Model\TransactionState::VOIDED,
-					\Wallee\Sdk\Model\TransactionState::COMPLETED,
-					\Wallee\Sdk\Model\TransactionState::PROCESSING 
+					\PostFinanceCheckout\Sdk\Model\TransactionState::CONFIRMED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::AUTHORIZED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::FAILED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::VOIDED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::COMPLETED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::PROCESSING 
 				), 'PostFinanceCheckout\Webhook\Transaction');
 		$this->webhook_entities[1472041819799] = new Entity(1472041819799, 'Delivery Indication',
 				array(
-					\Wallee\Sdk\Model\DeliveryIndicationState::MANUAL_CHECK_REQUIRED 
+					\PostFinanceCheckout\Sdk\Model\DeliveryIndicationState::MANUAL_CHECK_REQUIRED 
 				), 'PostFinanceCheckout\Webhook\DeliveryIndication');
 		
 		$this->webhook_entities[1472041831364] = new Entity(1472041831364, 'Transaction Completion',
 				array(
-					\Wallee\Sdk\Model\TransactionCompletionState::FAILED,
-					\Wallee\Sdk\Model\TransactionCompletionState::SUCCESSFUL 
+					\PostFinanceCheckout\Sdk\Model\TransactionCompletionState::FAILED,
+					\PostFinanceCheckout\Sdk\Model\TransactionCompletionState::SUCCESSFUL 
 				), 'PostFinanceCheckout\Webhook\TransactionCompletion');
 		
 		$this->webhook_entities[1472041867364] = new Entity(1472041867364, 'Transaction Void',
 				array(
-					\Wallee\Sdk\Model\TransactionVoidState::FAILED,
-					\Wallee\Sdk\Model\TransactionVoidState::SUCCESSFUL 
+					\PostFinanceCheckout\Sdk\Model\TransactionVoidState::FAILED,
+					\PostFinanceCheckout\Sdk\Model\TransactionVoidState::SUCCESSFUL 
 				), 'PostFinanceCheckout\Webhook\TransactionVoid');
 		
 		$this->webhook_entities[1472041839405] = new Entity(1472041839405, 'Refund',
 				array(
-					\Wallee\Sdk\Model\RefundState::FAILED,
-					\Wallee\Sdk\Model\RefundState::SUCCESSFUL 
+					\PostFinanceCheckout\Sdk\Model\RefundState::FAILED,
+					\PostFinanceCheckout\Sdk\Model\RefundState::SUCCESSFUL 
 				), 'PostFinanceCheckout\Webhook\TransactionRefund');
 		$this->webhook_entities[1472041806455] = new Entity(1472041806455, 'Token',
 				array(
-					\Wallee\Sdk\Model\CreationEntityState::ACTIVE,
-					\Wallee\Sdk\Model\CreationEntityState::DELETED,
-					\Wallee\Sdk\Model\CreationEntityState::DELETING,
-					\Wallee\Sdk\Model\CreationEntityState::INACTIVE 
+					\PostFinanceCheckout\Sdk\Model\CreationEntityState::ACTIVE,
+					\PostFinanceCheckout\Sdk\Model\CreationEntityState::DELETED,
+					\PostFinanceCheckout\Sdk\Model\CreationEntityState::DELETING,
+					\PostFinanceCheckout\Sdk\Model\CreationEntityState::INACTIVE 
 				), 'PostFinanceCheckout\Webhook\Token');
 		$this->webhook_entities[1472041811051] = new Entity(1472041811051, 'Token Version',
 				array(
-					\Wallee\Sdk\Model\TokenVersionState::ACTIVE,
-					\Wallee\Sdk\Model\TokenVersionState::OBSOLETE 
+					\PostFinanceCheckout\Sdk\Model\TokenVersionState::ACTIVE,
+					\PostFinanceCheckout\Sdk\Model\TokenVersionState::OBSOLETE 
 				), 'PostFinanceCheckout\Webhook\TokenVersion');
 	}
 
@@ -146,15 +146,15 @@ class Webhook extends AbstractService {
 	 *
 	 * @param Entity $entity
 	 * @param int $space_id
-	 * @param \Wallee\Sdk\Model\WebhookUrl $webhook_url
-	 * @return \Wallee\Sdk\Model\WebhookListenerCreate
+	 * @param \PostFinanceCheckout\Sdk\Model\WebhookUrl $webhook_url
+	 * @return \PostFinanceCheckout\Sdk\Model\WebhookListenerCreate
 	 */
-	protected function createWebhookListener(Entity $entity, $space_id, \Wallee\Sdk\Model\WebhookUrl $webhook_url){
-		$webhook_listener = new \Wallee\Sdk\Model\WebhookListenerCreate();
+	protected function createWebhookListener(Entity $entity, $space_id, \PostFinanceCheckout\Sdk\Model\WebhookUrl $webhook_url){
+		$webhook_listener = new \PostFinanceCheckout\Sdk\Model\WebhookListenerCreate();
 		$webhook_listener->setEntity($entity->getId());
 		$webhook_listener->setEntityStates($entity->getStates());
 		$webhook_listener->setName('Opencart ' . $entity->getName());
-		$webhook_listener->setState(\Wallee\Sdk\Model\CreationEntityState::ACTIVE);
+		$webhook_listener->setState(\PostFinanceCheckout\Sdk\Model\CreationEntityState::ACTIVE);
 		$webhook_listener->setUrl($webhook_url->getId());
 		$webhook_listener->setNotifyEveryChange($entity->isNotifyEveryChange());
 		return $this->getWebhookListenerService()->create($space_id, $webhook_listener);
@@ -164,16 +164,16 @@ class Webhook extends AbstractService {
 	 * Returns the existing webhook listeners.
 	 *
 	 * @param int $space_id
-	 * @param \Wallee\Sdk\Model\WebhookUrl $webhook_url
-	 * @return \Wallee\Sdk\Model\WebhookListener[]
+	 * @param \PostFinanceCheckout\Sdk\Model\WebhookUrl $webhook_url
+	 * @return \PostFinanceCheckout\Sdk\Model\WebhookListener[]
 	 */
-	protected function getWebhookListeners($space_id, \Wallee\Sdk\Model\WebhookUrl $webhook_url){
-		$query = new \Wallee\Sdk\Model\EntityQuery();
-		$filter = new \Wallee\Sdk\Model\EntityQueryFilter();
-		$filter->setType(\Wallee\Sdk\Model\EntityQueryFilterType::_AND);
+	protected function getWebhookListeners($space_id, \PostFinanceCheckout\Sdk\Model\WebhookUrl $webhook_url){
+		$query = new \PostFinanceCheckout\Sdk\Model\EntityQuery();
+		$filter = new \PostFinanceCheckout\Sdk\Model\EntityQueryFilter();
+		$filter->setType(\PostFinanceCheckout\Sdk\Model\EntityQueryFilterType::_AND);
 		$filter->setChildren(
 				array(
-					$this->createEntityFilter('state', \Wallee\Sdk\Model\CreationEntityState::ACTIVE),
+					$this->createEntityFilter('state', \PostFinanceCheckout\Sdk\Model\CreationEntityState::ACTIVE),
 					$this->createEntityFilter('url.id', $webhook_url->getId()) 
 				));
 		$query->setFilter($filter);
@@ -184,12 +184,12 @@ class Webhook extends AbstractService {
 	 * Creates a webhook url.
 	 *
 	 * @param int $space_id
-	 * @return \Wallee\Sdk\Model\WebhookUrlCreate
+	 * @return \PostFinanceCheckout\Sdk\Model\WebhookUrlCreate
 	 */
 	protected function createWebhookUrl($space_id){
-		$webhook_url = new \Wallee\Sdk\Model\WebhookUrlCreate();
+		$webhook_url = new \PostFinanceCheckout\Sdk\Model\WebhookUrlCreate();
 		$webhook_url->setUrl($this->getUrl());
-		$webhook_url->setState(\Wallee\Sdk\Model\CreationEntityState::ACTIVE);
+		$webhook_url->setState(\PostFinanceCheckout\Sdk\Model\CreationEntityState::ACTIVE);
 		$webhook_url->setName('Opencart');
 		return $this->getWebhookUrlService()->create($space_id, $webhook_url);
 	}
@@ -198,16 +198,16 @@ class Webhook extends AbstractService {
 	 * Returns the existing webhook url if there is one.
 	 *
 	 * @param int $space_id
-	 * @return \Wallee\Sdk\Model\WebhookUrl
+	 * @return \PostFinanceCheckout\Sdk\Model\WebhookUrl
 	 */
 	protected function getWebhookUrl($space_id, $url){
-		$query = new \Wallee\Sdk\Model\EntityQuery();
+		$query = new \PostFinanceCheckout\Sdk\Model\EntityQuery();
 		$query->setNumberOfEntities(1);
-		$filter = new \Wallee\Sdk\Model\EntityQueryFilter();
-		$filter->setType(\Wallee\Sdk\Model\EntityQueryFilterType::_AND);
+		$filter = new \PostFinanceCheckout\Sdk\Model\EntityQueryFilter();
+		$filter->setType(\PostFinanceCheckout\Sdk\Model\EntityQueryFilterType::_AND);
 		$filter->setChildren(
 				array(
-					$this->createEntityFilter('state', \Wallee\Sdk\Model\CreationEntityState::ACTIVE),
+					$this->createEntityFilter('state', \PostFinanceCheckout\Sdk\Model\CreationEntityState::ACTIVE),
 					$this->createEntityFilter('url', $url)
 				));
 		$query->setFilter($filter);
@@ -232,11 +232,11 @@ class Webhook extends AbstractService {
 	/**
 	 * Returns the webhook listener API service.
 	 *
-	 * @return \Wallee\Sdk\Service\WebhookListenerService
+	 * @return \PostFinanceCheckout\Sdk\Service\WebhookListenerService
 	 */
 	protected function getWebhookListenerService(){
 		if ($this->webhook_listener_service == null) {
-			$this->webhook_listener_service = new \Wallee\Sdk\Service\WebhookListenerService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+			$this->webhook_listener_service = new \PostFinanceCheckout\Sdk\Service\WebhookListenerService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		}
 		return $this->webhook_listener_service;
 	}
@@ -244,11 +244,11 @@ class Webhook extends AbstractService {
 	/**
 	 * Returns the webhook url API service.
 	 *
-	 * @return \Wallee\Sdk\Service\WebhookUrlService
+	 * @return \PostFinanceCheckout\Sdk\Service\WebhookUrlService
 	 */
 	protected function getWebhookUrlService(){
 		if ($this->webhook_url_service == null) {
-			$this->webhook_url_service = new \Wallee\Sdk\Service\WebhookUrlService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+			$this->webhook_url_service = new \PostFinanceCheckout\Sdk\Service\WebhookUrlService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		}
 		return $this->webhook_url_service;
 	}

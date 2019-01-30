@@ -2,9 +2,9 @@
 
 namespace PostFinanceCheckout\Service;
 
-use Wallee\Sdk\Service\ChargeAttemptService;
-use Wallee\Sdk\Service\TransactionService;
-use Wallee\Sdk\Model\TransactionPending;
+use PostFinanceCheckout\Sdk\Service\ChargeAttemptService;
+use PostFinanceCheckout\Sdk\Service\TransactionService;
+use PostFinanceCheckout\Sdk\Model\TransactionPending;
 
 /**
  * This service provides functions to deal with PostFinanceCheckout transactions.
@@ -20,14 +20,14 @@ class Transaction extends AbstractService {
 		$cart_id = \PostFinanceCheckoutVersionHelper::getCurrentCartId($this->registry);
 		if (!$cart_id || !array_key_exists($cart_id, self::$possible_payment_method_cache)) {
 			$transaction = $this->update($order_info, false);
-			try{
+			try {
 				$payment_methods = $this->getTransactionService()->fetchPossiblePaymentMethods($transaction->getLinkedSpaceId(), $transaction->getId());
 				foreach ($payment_methods as $payment_method) {
 					MethodConfiguration::instance($this->registry)->updateData($payment_method);
 				}
 				self::$possible_payment_method_cache[$cart_id] = $payment_methods;
 			}
-			catch(\Exception $e) {
+			catch (\Exception $e) {
 				self::$possible_payment_method_cache[$cart_id] = array();
 				throw $e;
 			}
@@ -37,12 +37,12 @@ class Transaction extends AbstractService {
 
 	public function getJavascriptUrl(){
 		$transaction = $this->getTransaction(array(), false, array(
-			\Wallee\Sdk\Model\TransactionState::PENDING 
+			\PostFinanceCheckout\Sdk\Model\TransactionState::PENDING 
 		));
 		return $this->getTransactionService()->buildJavaScriptUrl($transaction->getLinkedSpaceId(), $transaction->getId());
 	}
 
-	public function getPaymentPageUrl(\Wallee\Sdk\Model\Transaction $transaction, $paymentCode){
+	public function getPaymentPageUrl(\PostFinanceCheckout\Sdk\Model\Transaction $transaction, $paymentCode){
 		$paymentMethodId = substr($paymentCode, strlen('postfinancecheckout_'));
 		return $this->getTransactionService()->buildPaymentPageUrl($transaction->getLinkedSpaceId(), $transaction->getId()) .
 				 '&paymentMethodConfigurationId=' . $paymentMethodId;
@@ -53,14 +53,14 @@ class Transaction extends AbstractService {
 		try {
 			for ($i = 0; $i < 5; $i++) {
 				$transaction = $this->getTransaction($order_info, false);
-				if ($transaction->getState() !== \Wallee\Sdk\Model\TransactionState::PENDING) {
+				if ($transaction->getState() !== \PostFinanceCheckout\Sdk\Model\TransactionState::PENDING) {
 					if ($confirm) {
 						throw new \Exception('No pending transaction available to be confirmed.');
 					}
 					return $this->create($order_info);
 				}
 				
-				$pending_transaction = new \Wallee\Sdk\Model\TransactionPending();
+				$pending_transaction = new \PostFinanceCheckout\Sdk\Model\TransactionPending();
 				$pending_transaction->setId($transaction->getId());
 				$pending_transaction->setVersion($transaction->getVersion());
 				$this->assembleTransaction($pending_transaction, $order_info);
@@ -78,7 +78,7 @@ class Transaction extends AbstractService {
 				return $transaction;
 			}
 		}
-		catch (\Wallee\Sdk\ApiException $e) {
+		catch (\PostFinanceCheckout\Sdk\ApiException $e) {
 			$last = $e;
 			if ($e->getCode() != 409) {
 				throw $e;
@@ -89,10 +89,33 @@ class Transaction extends AbstractService {
 	}
 
 	/**
+	 * Wait for the order to reach a given state.
+	 *
+	 * @param $order_id
+	 * @param array $states
+	 * @param int $maxWaitTime
+	 * @return boolean
+	 */
+	public function waitForStates($order_id, array $states, $maxWaitTime = 10){
+		$startTime = microtime(true);
+		while (true) {
+			$transactionInfo = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_id);
+			if (in_array($transactionInfo->getState(), $states)) {
+				return true;
+			}
+			
+			if (microtime(true) - $startTime >= $maxWaitTime) {
+				return false;
+			}
+			sleep(1);
+		}
+	}
+
+	/**
 	 * Reads or creates a new transaction.
 	 *
 	 * @param array $order_info
-	 * @return \Wallee\Sdk\Model\Transaction
+	 * @return \PostFinanceCheckout\Sdk\Model\Transaction
 	 */
 	public function getTransaction($order_info = array(), $cache = true, $allowed_states = array()){
 		$cart_id = \PostFinanceCheckoutVersionHelper::getCurrentCartId($this->registry);
@@ -142,9 +165,9 @@ class Transaction extends AbstractService {
 	}
 
 	private function create(array $order_info){
-		$create_transaction = new \Wallee\Sdk\Model\TransactionCreate();
+		$create_transaction = new \PostFinanceCheckout\Sdk\Model\TransactionCreate();
 		
-		$create_transaction->setCustomersPresence(\Wallee\Sdk\Model\CustomersPresence::VIRTUAL_PRESENT);
+		$create_transaction->setCustomersPresence(\PostFinanceCheckout\Sdk\Model\CustomersPresence::VIRTUAL_PRESENT);
 		if (isset($this->registry->get('request')->cookie['postfinancecheckout_device_id'])) {
 			$create_transaction->setDeviceSessionIdentifier($this->registry->get('request')->cookie['postfinancecheckout_device_id']);
 		}
@@ -159,7 +182,7 @@ class Transaction extends AbstractService {
 		return $transaction;
 	}
 
-	private function assembleTransaction(\Wallee\Sdk\Model\AbstractTransactionPending $transaction, array $order_info){
+	private function assembleTransaction(\PostFinanceCheckout\Sdk\Model\AbstractTransactionPending $transaction, array $order_info){
 		$order_id = isset($order_info['order_id']) ? $order_info['order_id'] : null;
 		$data = $this->registry->get('session')->data;
 		
@@ -200,35 +223,35 @@ class Transaction extends AbstractService {
 	/**
 	 * Cache for cart transactions.
 	 *
-	 * @var \Wallee\Sdk\Model\Transaction[]
+	 * @var \PostFinanceCheckout\Sdk\Model\Transaction[]
 	 */
 	private static $transaction_cache = array();
 	
 	/**
 	 * Cache for possible payment methods by cart.
 	 *
-	 * @var \Wallee\Sdk\Model\PaymentMethodConfiguration[]
+	 * @var \PostFinanceCheckout\Sdk\Model\PaymentMethodConfiguration[]
 	 */
 	private static $possible_payment_method_cache = array();
 	
 	/**
 	 * The transaction API service.
 	 *
-	 * @var \Wallee\Sdk\Service\TransactionService
+	 * @var \PostFinanceCheckout\Sdk\Service\TransactionService
 	 */
 	private $transaction_service;
 	
 	/**
 	 * The charge attempt API service.
 	 *
-	 * @var \Wallee\Sdk\Service\ChargeAttemptService
+	 * @var \PostFinanceCheckout\Sdk\Service\ChargeAttemptService
 	 */
 	private $charge_attempt_service;
 
 	/**
 	 * Returns the transaction API service.
 	 *
-	 * @return \Wallee\Sdk\Service\TransactionService
+	 * @return \PostFinanceCheckout\Sdk\Service\TransactionService
 	 */
 	private function getTransactionService(){
 		if ($this->transaction_service === null) {
@@ -240,7 +263,7 @@ class Transaction extends AbstractService {
 	/**
 	 * Returns the charge attempt API service.
 	 *
-	 * @return \Wallee\Sdk\Service\ChargeAttemptService
+	 * @return \PostFinanceCheckout\Sdk\Service\ChargeAttemptService
 	 */
 	private function getChargeAttemptService(){
 		if ($this->charge_attempt_service === null) {
@@ -253,7 +276,7 @@ class Transaction extends AbstractService {
 	 * Updates the line items to be in line with the current order.
 	 *
 	 * @param string $order_id
-	 * @return \Wallee\Sdk\Model\TransactionLineItemVersion
+	 * @return \PostFinanceCheckout\Sdk\Model\TransactionLineItemVersion
 	 */
 	public function updateLineItemsFromOrder($order_id){
 		$order_info = \PostFinanceCheckoutHelper::instance($this->registry)->getOrder($order_id);
@@ -262,7 +285,7 @@ class Transaction extends AbstractService {
 		$line_items = \PostFinanceCheckout\Service\LineItem::instance($this->registry)->getItemsFromOrder($order_info,
 				$transaction_info->getTransactionId(), $transaction_info->getSpaceId());
 		
-		$update_request = new \Wallee\Sdk\Model\TransactionLineItemUpdateRequest();
+		$update_request = new \PostFinanceCheckout\Sdk\Model\TransactionLineItemUpdateRequest();
 		$update_request->setTransactionId($transaction_info->getTransactionId());
 		$update_request->setNewLineItems($line_items);
 		return $this->getTransactionService()->updateTransactionLineItems($transaction_info->getSpaceId(), $update_request);
@@ -271,11 +294,11 @@ class Transaction extends AbstractService {
 	/**
 	 * Stores the transaction data in the database.
 	 *
-	 * @param \Wallee\Sdk\Model\Transaction $transaction
+	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
 	 * @param array $order_info
 	 * @return \PostFinanceCheckout\Entity\TransactionInfo
 	 */
-	public function updateTransactionInfo(\Wallee\Sdk\Model\Transaction $transaction, $order_id){
+	public function updateTransactionInfo(\PostFinanceCheckout\Sdk\Model\Transaction $transaction, $order_id){
 		$info = \PostFinanceCheckout\Entity\TransactionInfo::loadByTransaction($this->registry, $transaction->getLinkedSpaceId(),
 				$transaction->getId());
 		$info->setTransactionId($transaction->getId());
@@ -293,8 +316,8 @@ class Transaction extends AbstractService {
 						 null ? $transaction->getPaymentConnectorConfiguration()->getPaymentMethodConfiguration()->getPaymentMethod() : null);
 		$info->setImage($this->getPaymentMethodImage($transaction));
 		$info->setLabels($this->getTransactionLabels($transaction));
-		if ($transaction->getState() == \Wallee\Sdk\Model\TransactionState::FAILED ||
-				 $transaction->getState() == \Wallee\Sdk\Model\TransactionState::DECLINE) {
+		if ($transaction->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::FAILED ||
+				 $transaction->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE) {
 			$failed_charge_attempt = $this->getFailedChargeAttempt($transaction->getLinkedSpaceId(), $transaction->getId());
 			if ($failed_charge_attempt && $failed_charge_attempt->getFailureReason() != null) {
 				$info->setFailureReason($failed_charge_attempt->getFailureReason()->getDescription());
@@ -312,17 +335,17 @@ class Transaction extends AbstractService {
 	 *
 	 * @param int $space_id
 	 * @param int $transaction_id
-	 * @return \Wallee\Sdk\Model\ChargeAttempt
+	 * @return \PostFinanceCheckout\Sdk\Model\ChargeAttempt
 	 */
 	private function getFailedChargeAttempt($space_id, $transaction_id){
 		$charge_attempt_service = $this->getChargeAttemptService();
-		$query = new \Wallee\Sdk\Model\EntityQuery();
-		$filter = new \Wallee\Sdk\Model\EntityQueryFilter();
-		$filter->setType(\Wallee\Sdk\Model\EntityQueryFilterType::_AND);
+		$query = new \PostFinanceCheckout\Sdk\Model\EntityQuery();
+		$filter = new \PostFinanceCheckout\Sdk\Model\EntityQueryFilter();
+		$filter->setType(\PostFinanceCheckout\Sdk\Model\EntityQueryFilterType::_AND);
 		$filter->setChildren(
 				array(
 					$this->createEntityFilter('charge.transaction.id', $transaction_id),
-					$this->createEntityFilter('state', \Wallee\Sdk\Model\ChargeAttemptState::FAILED) 
+					$this->createEntityFilter('state', \PostFinanceCheckout\Sdk\Model\ChargeAttemptState::FAILED) 
 				));
 		$query->setFilter($filter);
 		$query->setOrderBys(array(
@@ -341,10 +364,10 @@ class Transaction extends AbstractService {
 	/**
 	 * Returns an array of the transaction's labels.
 	 *
-	 * @param \Wallee\Sdk\Model\Transaction $transaction
+	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
 	 * @return string[]
 	 */
-	private function getTransactionLabels(\Wallee\Sdk\Model\Transaction $transaction){
+	private function getTransactionLabels(\PostFinanceCheckout\Sdk\Model\Transaction $transaction){
 		$charge_attempt = $this->getChargeAttempt($transaction);
 		if ($charge_attempt != null) {
 			$labels = array();
@@ -361,18 +384,18 @@ class Transaction extends AbstractService {
 	/**
 	 * Returns the successful charge attempt of the transaction.
 	 *
-	 * @param \Wallee\Sdk\Model\Transaction $transaction
-	 * @return \Wallee\Sdk\Model\ChargeAttempt
+	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
+	 * @return \PostFinanceCheckout\Sdk\Model\ChargeAttempt
 	 */
-	private function getChargeAttempt(\Wallee\Sdk\Model\Transaction $transaction){
+	private function getChargeAttempt(\PostFinanceCheckout\Sdk\Model\Transaction $transaction){
 		$charge_attempt_service = $this->getChargeAttemptService();
-		$query = new \Wallee\Sdk\Model\EntityQuery();
-		$filter = new \Wallee\Sdk\Model\EntityQueryFilter();
-		$filter->setType(\Wallee\Sdk\Model\EntityQueryFilterType::_AND);
+		$query = new \PostFinanceCheckout\Sdk\Model\EntityQuery();
+		$filter = new \PostFinanceCheckout\Sdk\Model\EntityQueryFilter();
+		$filter->setType(\PostFinanceCheckout\Sdk\Model\EntityQueryFilterType::_AND);
 		$filter->setChildren(
 				array(
 					$this->createEntityFilter('charge.transaction.id', $transaction->getId()),
-					$this->createEntityFilter('state', \Wallee\Sdk\Model\ChargeAttemptState::SUCCESSFUL) 
+					$this->createEntityFilter('state', \PostFinanceCheckout\Sdk\Model\ChargeAttemptState::SUCCESSFUL) 
 				));
 		$query->setFilter($filter);
 		$query->setNumberOfEntities(1);
@@ -388,10 +411,10 @@ class Transaction extends AbstractService {
 	/**
 	 * Returns the payment method's image.
 	 *
-	 * @param \Wallee\Sdk\Model\Transaction $transaction
+	 * @param \PostFinanceCheckout\Sdk\Model\Transaction $transaction
 	 * @return string
 	 */
-	private function getPaymentMethodImage(\Wallee\Sdk\Model\Transaction $transaction){
+	private function getPaymentMethodImage(\PostFinanceCheckout\Sdk\Model\Transaction $transaction){
 		if ($transaction->getPaymentConnectorConfiguration() == null ||
 				 $transaction->getPaymentConnectorConfiguration()->getPaymentMethodConfiguration() == null) {
 			return null;
@@ -400,7 +423,7 @@ class Transaction extends AbstractService {
 	}
 
 	private function assembleAddress($source, $prefix = ''){
-		$address = new \Wallee\Sdk\Model\AddressCreate();
+		$address = new \PostFinanceCheckout\Sdk\Model\AddressCreate();
 		
 		if (isset($source[$prefix . 'city'])) {
 			$address->setCity($this->getFixedSource($source, $prefix . 'city', 100));
@@ -474,13 +497,13 @@ class Transaction extends AbstractService {
 		return $this->registry->get('session')->data['postfinancecheckout_space_id'];
 	}
 
-	private function storeTransactionIdsInSession(\Wallee\Sdk\Model\Transaction $transaction){
+	private function storeTransactionIdsInSession(\PostFinanceCheckout\Sdk\Model\Transaction $transaction){
 		$this->registry->get('session')->data['postfinancecheckout_customer'] = \PostFinanceCheckoutHelper::instance($this->registry)->getCustomerSessionIdentifier();
 		$this->registry->get('session')->data['postfinancecheckout_transaction_id'] = $transaction->getId();
 		$this->registry->get('session')->data['postfinancecheckout_space_id'] = $transaction->getLinkedSpaceId();
 	}
 
-	private function storeShipping(\Wallee\Sdk\Model\Transaction $transaction){
+	private function storeShipping(\PostFinanceCheckout\Sdk\Model\Transaction $transaction){
 		if (isset($this->registry->get('session')->data['shipping_method'])) {
 			$shipping_info = \PostFinanceCheckout\Entity\ShippingInfo::loadByTransaction($this->registry, $transaction->getLinkedSpaceId(),
 					$transaction->getId());
@@ -492,7 +515,7 @@ class Transaction extends AbstractService {
 		}
 	}
 
-	private function storeCoupon(\Wallee\Sdk\Model\Transaction $transaction){
+	private function storeCoupon(\PostFinanceCheckout\Sdk\Model\Transaction $transaction){
 		if (isset($this->registry->get('session')->data['coupon']) && isset($this->registry->get('session')->data['order_id'])) {
 			$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByTransaction($this->registry,
 					$this->registry->get('session')->data['order_id']);
@@ -500,7 +523,7 @@ class Transaction extends AbstractService {
 			$transaction_info->setSpaceId($transaction->getLinkedSpaceId());
 			$transaction_info->setOrderId($this->registry->get('session')->data['order_id']);
 			$transaction_info->setCouponCode($this->registry->get('session')->data['coupon']);
-			$transaction_info->setState(\Wallee\Sdk\Model\TransactionState::CREATE);
+			$transaction_info->setState(\PostFinanceCheckout\Sdk\Model\TransactionState::CREATE);
 			$transaction_info->save();
 		}
 	}

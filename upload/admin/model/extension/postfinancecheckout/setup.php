@@ -73,6 +73,7 @@ class ModelExtensionPostFinanceCheckoutSetup extends AbstractModel {
 		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/postfinancecheckout/update');
 		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/postfinancecheckout/pdf');
 		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/postfinancecheckout/alert');
+		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/postfinancecheckout/transaction');
 	}
 
 	private function removePermissions(){
@@ -84,5 +85,6 @@ class ModelExtensionPostFinanceCheckoutSetup extends AbstractModel {
 		$this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'extension/postfinancecheckout/update');
 		$this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'extension/postfinancecheckout/pdf');
 		$this->model_user_user_group->removePermission($this->user->getGroupId(), 'access', 'extension/postfinancecheckout/alert');
+		$this->model_user_user_group->addPermission($this->user->getGroupId(), 'access', 'extension/postfinancecheckout/transaction');
 	}
 }

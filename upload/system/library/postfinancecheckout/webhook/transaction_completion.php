@@ -10,30 +10,30 @@ class TransactionCompletion extends AbstractOrderRelated {
 	/**
 	 *
 	 * @see AbstractOrderRelated::loadEntity()
-	 * @return \Wallee\Sdk\Model\TransactionCompletion
+	 * @return \PostFinanceCheckout\Sdk\Model\TransactionCompletion
 	 */
 	protected function loadEntity(Request $request){
-		$completion_service = new \Wallee\Sdk\Service\TransactionCompletionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		$completion_service = new \PostFinanceCheckout\Sdk\Service\TransactionCompletionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		return $completion_service->read($request->getSpaceId(), $request->getEntityId());
 	}
 
 	protected function getOrderId($completion){
-		/* @var \Wallee\Sdk\Model\TransactionCompletion $completion */
+		/* @var \PostFinanceCheckout\Sdk\Model\TransactionCompletion $completion */
 		return $completion->getLineItemVersion()->getTransaction()->getMerchantReference();
 	}
 	
 	protected function getTransactionId($entity){
-		/* @var $entity \Wallee\Sdk\Model\TransactionCompletion */
+		/* @var $entity \PostFinanceCheckout\Sdk\Model\TransactionCompletion */
 		return $entity->getLinkedTransaction();
 	}
 	
 	protected function processOrderRelatedInner(array $order_info, $completion){
-		/* @var \Wallee\Sdk\Model\TransactionCompletion $completion */
+		/* @var \PostFinanceCheckout\Sdk\Model\TransactionCompletion $completion */
 		switch ($completion->getState()) {
-			case \Wallee\Sdk\Model\TransactionCompletionState::FAILED:
+			case \PostFinanceCheckout\Sdk\Model\TransactionCompletionState::FAILED:
 				$this->failed($completion, $order_info);
 				break;
-			case \Wallee\Sdk\Model\TransactionCompletionState::SUCCESSFUL:
+			case \PostFinanceCheckout\Sdk\Model\TransactionCompletionState::SUCCESSFUL:
 				$this->success($completion, $order_info);
 				break;
 			default:
@@ -43,7 +43,7 @@ class TransactionCompletion extends AbstractOrderRelated {
 		}
 	}
 
-	protected function success(\Wallee\Sdk\Model\TransactionCompletion $completion, array $order_info){
+	protected function success(\PostFinanceCheckout\Sdk\Model\TransactionCompletion $completion, array $order_info){
 		$completion_job = \PostFinanceCheckout\Entity\CompletionJob::loadByJob($this->registry, $completion->getLinkedSpaceId(), $completion->getId());
 		if (!$completion_job->getId()) {
 			//We have no completion job with this id -> the server could not store the id of the completion after sending the request. (e.g. connection issue or crash)
@@ -61,7 +61,7 @@ class TransactionCompletion extends AbstractOrderRelated {
 		$completion_job->save();
 	}
 
-	protected function failed(\Wallee\Sdk\Model\TransactionCompletion $completion, array $order_info){
+	protected function failed(\PostFinanceCheckout\Sdk\Model\TransactionCompletion $completion, array $order_info){
 		$completion_job = \PostFinanceCheckout\Entity\CompletionJob::loadByJob($this->registry, $completion->getLinkedSpaceId(), $completion->getId());
 		if (!$completion_job->getId()) {
 			//We have no completion job with this id -> the server could not store the id of the completion after sending the request. (e.g. connection issue or crash)

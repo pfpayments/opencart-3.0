@@ -1,1 +1,1 @@
-jQuery.ajax('index.php?route=extension/wallee/cron');
+jQuery.ajax('index.php?route=extension/postfinancecheckout/cron');

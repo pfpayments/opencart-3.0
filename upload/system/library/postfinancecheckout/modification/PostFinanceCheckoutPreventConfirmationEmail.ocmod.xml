@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>PostFinanceCheckoutPreventConfirmationEmail</code>
+	<name>postfinancecheckout email: prevent confirmation email.</name>
+	<version>1.0.1</version>
+	<author>Customweb GmbH</author>
+	<link>http://github.com/postfinancecheckout-payment/opencart</link>
+	<file path="catalog/model/checkout/order.php">
+		<operation>
+			<search><![CDATA[
+if (!$order_info['order_status_id'] && $order_status_id) {
+]]></search>
+			<add position="replace"><![CDATA[
+if ((!$order_info['order_status_id'] && $order_status_id) && (strpos($order_info['payment_code'], 'postfinancecheckout_') === false)) {
+            ]]></add>
+		</operation>
+	</file>
+</modification>

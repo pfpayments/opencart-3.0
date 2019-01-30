@@ -15,7 +15,7 @@ class LabelDescriptor extends AbstractProvider {
 	 * Returns the label descriptor by the given code.
 	 *
 	 * @param int $id
-	 * @return \Wallee\Sdk\Model\LabelDescriptor
+	 * @return \PostFinanceCheckout\Sdk\Model\LabelDescriptor
 	 */
 	public function find($id){
 		return parent::find($id);
@@ -24,19 +24,19 @@ class LabelDescriptor extends AbstractProvider {
 	/**
 	 * Returns a list of label descriptors.
 	 *
-	 * @return \Wallee\Sdk\Model\LabelDescriptor[]
+	 * @return \PostFinanceCheckout\Sdk\Model\LabelDescriptor[]
 	 */
 	public function getAll(){
 		return parent::getAll();
 	}
 
 	protected function fetchData(){
-		$label_descriptor_service = new \Wallee\Sdk\Service\LabelDescriptionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		$label_descriptor_service = new \PostFinanceCheckout\Sdk\Service\LabelDescriptionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		return $label_descriptor_service->all();
 	}
 
 	protected function getId($entry){
-		/* @var \Wallee\Sdk\Model\LabelDescriptor $entry */
+		/* @var \PostFinanceCheckout\Sdk\Model\LabelDescriptor $entry */
 		return $entry->getId();
 	}
 }

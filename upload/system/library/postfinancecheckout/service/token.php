@@ -10,14 +10,14 @@ class Token extends AbstractService {
 	/**
 	 * The token API service.
 	 *
-	 * @var \Wallee\Sdk\Service\TokenService
+	 * @var \PostFinanceCheckout\Sdk\Service\TokenService
 	 */
 	private $token_service;
 	
 	/**
 	 * The token version API service.
 	 *
-	 * @var \Wallee\Sdk\Service\TokenVersionService
+	 * @var \PostFinanceCheckout\Sdk\Service\TokenVersionService
 	 */
 	private $token_version_service;
 
@@ -27,13 +27,13 @@ class Token extends AbstractService {
 	}
 
 	public function updateToken($space_id, $token_id){
-		$query = new \Wallee\Sdk\Model\EntityQuery();
-		$filter = new \Wallee\Sdk\Model\EntityQueryFilter();
-		$filter->setType(\Wallee\Sdk\Model\EntityQueryFilterType::_AND);
+		$query = new \PostFinanceCheckout\Sdk\Model\EntityQuery();
+		$filter = new \PostFinanceCheckout\Sdk\Model\EntityQueryFilter();
+		$filter->setType(\PostFinanceCheckout\Sdk\Model\EntityQueryFilterType::_AND);
 		$filter->setChildren(
 				array(
 					$this->createEntityFilter('token.id', $token_id),
-					$this->createEntityFilter('state', \Wallee\Sdk\Model\TokenVersionState::ACTIVE) 
+					$this->createEntityFilter('state', \PostFinanceCheckout\Sdk\Model\TokenVersionState::ACTIVE) 
 				));
 		$query->setFilter($filter);
 		$query->setNumberOfEntities(1);
@@ -49,12 +49,12 @@ class Token extends AbstractService {
 		}
 	}
 
-	protected function updateInfo($space_id, \Wallee\Sdk\Model\TokenVersion $token_version){
+	protected function updateInfo($space_id, \PostFinanceCheckout\Sdk\Model\TokenVersion $token_version){
 		$info = \PostFinanceCheckout\Entity\TokenInfo::loadByToken($this->registry, $space_id, $token_version->getToken()->getId());
 		if (!in_array($token_version->getToken()->getState(),
 				array(
-					\Wallee\Sdk\Model\TokenVersionState::ACTIVE,
-					\Wallee\Sdk\Model\TokenVersionState::UNINITIALIZED 
+					\PostFinanceCheckout\Sdk\Model\TokenVersionState::ACTIVE,
+					\PostFinanceCheckout\Sdk\Model\TokenVersionState::UNINITIALIZED 
 				))) {
 			if ($info->getId()) {
 				$info->delete();
@@ -85,11 +85,11 @@ class Token extends AbstractService {
 	/**
 	 * Returns the token API service.
 	 *
-	 * @return \Wallee\Sdk\Service\TokenService
+	 * @return \PostFinanceCheckout\Sdk\Service\TokenService
 	 */
 	protected function getTokenService(){
 		if ($this->token_service == null) {
-			$this->token_service = new \Wallee\Sdk\Service\TokenService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+			$this->token_service = new \PostFinanceCheckout\Sdk\Service\TokenService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		}
 		
 		return $this->token_service;
@@ -98,11 +98,11 @@ class Token extends AbstractService {
 	/**
 	 * Returns the token version API service.
 	 *
-	 * @return \Wallee\Sdk\Service\TokenVersionService
+	 * @return \PostFinanceCheckout\Sdk\Service\TokenVersionService
 	 */
 	protected function getTokenVersionService(){
 		if ($this->token_version_service == null) {
-			$this->token_version_service = new \Wallee\Sdk\Service\TokenVersionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+			$this->token_version_service = new \PostFinanceCheckout\Sdk\Service\TokenVersionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		}
 		
 		return $this->token_version_service;

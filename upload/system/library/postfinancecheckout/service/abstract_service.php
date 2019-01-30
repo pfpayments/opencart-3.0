@@ -30,11 +30,11 @@ abstract class AbstractService {
 	 * @param string $field_name
 	 * @param mixed $value
 	 * @param string $operator
-	 * @return \Wallee\Sdk\Model\EntityQueryFilter
+	 * @return \PostFinanceCheckout\Sdk\Model\EntityQueryFilter
 	 */
-	protected function createEntityFilter($field_name, $value, $operator = \Wallee\Sdk\Model\CriteriaOperator::EQUALS){
-		$filter = new \Wallee\Sdk\Model\EntityQueryFilter();
-		$filter->setType(\Wallee\Sdk\Model\EntityQueryFilterType::LEAF);
+	protected function createEntityFilter($field_name, $value, $operator = \PostFinanceCheckout\Sdk\Model\CriteriaOperator::EQUALS){
+		$filter = new \PostFinanceCheckout\Sdk\Model\EntityQueryFilter();
+		$filter->setType(\PostFinanceCheckout\Sdk\Model\EntityQueryFilterType::LEAF);
 		$filter->setOperator($operator);
 		$filter->setFieldName($field_name);
 		$filter->setValue($value);
@@ -46,10 +46,10 @@ abstract class AbstractService {
 	 *
 	 * @param string $field_name
 	 * @param string $sort_order
-	 * @return \Wallee\Sdk\Model\EntityQueryOrderBy
+	 * @return \PostFinanceCheckout\Sdk\Model\EntityQueryOrderBy
 	 */
-	protected function createEntityOrderBy($field_name, $sort_order = \Wallee\Sdk\Model\EntityQueryOrderByType::DESC){
-		$order_by = new \Wallee\Sdk\Model\EntityQueryOrderBy();
+	protected function createEntityOrderBy($field_name, $sort_order = \PostFinanceCheckout\Sdk\Model\EntityQueryOrderByType::DESC){
+		$order_by = new \PostFinanceCheckout\Sdk\Model\EntityQueryOrderBy();
 		$order_by->setFieldName($field_name);
 		$order_by->setSorting($sort_order);
 		return $order_by;

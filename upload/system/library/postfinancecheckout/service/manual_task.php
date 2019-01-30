@@ -25,12 +25,12 @@ class ManualTask extends AbstractService {
 	 */
 	public function update(){
 		$number_of_manual_tasks = 0;
-		$manual_task_service = new \Wallee\Sdk\Service\ManualTaskService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		$manual_task_service = new \PostFinanceCheckout\Sdk\Service\ManualTaskService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		
 		$space_id = $this->registry->get('config')->get('postfinancecheckout_space_id');
 		if (!empty($space_id)) {
 			$number_of_manual_tasks = $manual_task_service->count($space_id,
-					$this->createEntityFilter('state', \Wallee\Sdk\Model\ManualTaskState::OPEN));
+					$this->createEntityFilter('state', \PostFinanceCheckout\Sdk\Model\ManualTaskState::OPEN));
 			
 			$table = DB_PREFIX . 'setting';
 			$key = self::CONFIG_KEY;

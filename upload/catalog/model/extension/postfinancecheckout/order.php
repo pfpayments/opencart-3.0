@@ -17,15 +17,15 @@ class ModelExtensionPostFinanceCheckoutOrder extends AbstractModel {
 		
 		$buttons = array();
 		
-		if ($this->config->get('postfinancecheckout_download_packaging') && $transaction_info->getState() == \Wallee\Sdk\Model\TransactionState::FULFILL) {
+		if ($this->config->get('postfinancecheckout_download_packaging') && $transaction_info->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL) {
 			$buttons[] = $this->getPackagingButton();
 		}
 		
 		if ($this->config->get('postfinancecheckout_download_invoice') && in_array($transaction_info->getState(),
 				array(
-					\Wallee\Sdk\Model\TransactionState::FULFILL,
-					\Wallee\Sdk\Model\TransactionState::COMPLETED,
-					\Wallee\Sdk\Model\TransactionState::DECLINE 
+					\PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::COMPLETED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE 
 				))) {
 			$buttons[] = $this->getInvoiceButton();
 		}

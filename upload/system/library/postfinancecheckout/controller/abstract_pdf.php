@@ -6,8 +6,8 @@ abstract class AbstractPdf extends AbstractController {
 
 	protected function downloadPackingSlip($order_id){
 		$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_id);
-		if ($transaction_info->getId() != null && $transaction_info->getState() == \Wallee\Sdk\Model\TransactionState::FULFILL) {
-			$service = new \Wallee\Sdk\Service\TransactionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		if ($transaction_info->getId() != null && $transaction_info->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL) {
+			$service = new \PostFinanceCheckout\Sdk\Service\TransactionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 			$document = $service->getPackingSlip($transaction_info->getSpaceId(), $transaction_info->getTransactionId());
 			$this->download($document);
 		}
@@ -17,11 +17,11 @@ abstract class AbstractPdf extends AbstractController {
 		$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_id);
 		if ($transaction_info->getId() != null && in_array($transaction_info->getState(),
 				array(
-					\Wallee\Sdk\Model\TransactionState::COMPLETED,
-					\Wallee\Sdk\Model\TransactionState::FULFILL,
-					\Wallee\Sdk\Model\TransactionState::DECLINE 
+					\PostFinanceCheckout\Sdk\Model\TransactionState::COMPLETED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE 
 				))) {
-			$service = new \Wallee\Sdk\Service\TransactionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+					$service = new \PostFinanceCheckout\Sdk\Service\TransactionService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 			$document = $service->getInvoiceDocument($transaction_info->getSpaceId(), $transaction_info->getTransactionId());
 			$this->download($document);
 		}
@@ -32,7 +32,7 @@ abstract class AbstractPdf extends AbstractController {
 	 *
 	 * @param string $path
 	 */
-	private function download(\Wallee\Sdk\Model\RenderedDocument $document){
+	private function download(\PostFinanceCheckout\Sdk\Model\RenderedDocument $document){
 		header('Pragma: public');
 		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 		header('Content-type: application/pdf');

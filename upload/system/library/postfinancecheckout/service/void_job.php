@@ -32,7 +32,7 @@ class VoidJob extends AbstractJob {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionStart();
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionLock($job->getSpaceId(), $job->getTransactionId());
 			
-			$service = new \Wallee\Sdk\Service\TransactionVoidService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+			$service = new \PostFinanceCheckout\Sdk\Service\TransactionVoidService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 			$operation = $service->voidOnline($job->getSpaceId(), $job->getTransactionId());
 			
 			if ($operation->getFailureReason() != null) {
@@ -52,7 +52,7 @@ class VoidJob extends AbstractJob {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionCommit();
 			return $job;
 		}
-		catch (\Wallee\Sdk\ApiException $api_exception) {
+		catch (\PostFinanceCheckout\Sdk\ApiException $api_exception) {
 		}
 		catch (\Exception $e) {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionRollback();

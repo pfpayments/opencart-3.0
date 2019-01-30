@@ -17,7 +17,7 @@ $_['button_packing_slip']			= 'Packing slip';
 
 // Webhook messages
 $_['message_webhook_processing']	= 'Transaction is processing via webhook.';
-$_['message_webhook_connfirm']		= 'Transaction has been confirmed via webhook.';
+$_['message_webhook_confirm']		= 'Transaction has been confirmed via webhook.';
 $_['message_webhook_authorize']		= 'Transaction has been authorized via webhook.';
 $_['message_webhook_waiting']		= 'Transaction is waiting via webhook.';
 $_['message_webhook_decline']		= 'Transaction has been declined via webhook.';

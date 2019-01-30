@@ -10,30 +10,30 @@ class TransactionRefund extends AbstractOrderRelated {
 	/**
 	 *
 	 * @see AbstractOrderRelated::load_entity()
-	 * @return \Wallee\Sdk\Model\Refund
+	 * @return \PostFinanceCheckout\Sdk\Model\Refund
 	 */
 	protected function loadEntity(Request $request){
-		$refund_service = new \Wallee\Sdk\Service\RefundService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		$refund_service = new \PostFinanceCheckout\Sdk\Service\RefundService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		return $refund_service->read($request->getSpaceId(), $request->getEntityId());
 	}
 
 	protected function getOrderId($refund){
-		/* @var \Wallee\Sdk\Model\Refund $refund */
+		/* @var \PostFinanceCheckout\Sdk\Model\Refund $refund */
 		return $refund->getTransaction()->getMerchantReference();
 	}
 	
 	protected function getTransactionId($entity){
-		/* @var $entity \Wallee\Sdk\Model\Refund */
+		/* @var $entity \PostFinanceCheckout\Sdk\Model\Refund */
 		return $entity->getTransaction()->getId();
 	}
 
 	protected function processOrderRelatedInner(array $order_info, $refund){
-		/* @var \Wallee\Sdk\Model\Refund $refund */
+		/* @var \PostFinanceCheckout\Sdk\Model\Refund $refund */
 		switch ($refund->getState()) {
-			case \Wallee\Sdk\Model\RefundState::FAILED:
+			case \PostFinanceCheckout\Sdk\Model\RefundState::FAILED:
 				$this->failed($refund, $order_info);
 				break;
-			case \Wallee\Sdk\Model\RefundState::SUCCESSFUL:
+			case \PostFinanceCheckout\Sdk\Model\RefundState::SUCCESSFUL:
 				$this->refunded($refund, $order_info);
 			default:
 				// Nothing to do.
@@ -41,7 +41,7 @@ class TransactionRefund extends AbstractOrderRelated {
 		}
 	}
 
-	protected function failed(\Wallee\Sdk\Model\Refund $refund, array $order_info){
+	protected function failed(\PostFinanceCheckout\Sdk\Model\Refund $refund, array $order_info){
 		$refund_job = \PostFinanceCheckout\Entity\RefundJob::loadByExternalId($this->registry, $refund->getLinkedSpaceId(), $refund->getExternalId());
 		
 		if ($refund_job->getId()) {
@@ -56,7 +56,7 @@ class TransactionRefund extends AbstractOrderRelated {
 		}
 	}
 
-	protected function refunded(\Wallee\Sdk\Model\Refund $refund, array $order_info){
+	protected function refunded(\PostFinanceCheckout\Sdk\Model\Refund $refund, array $order_info){
 		$refund_job = \PostFinanceCheckout\Entity\RefundJob::loadByExternalId($this->registry, $refund->getLinkedSpaceId(), $refund->getExternalId());
 		if ($refund_job->getId()) {
 			$refund_job->setState(\PostFinanceCheckout\Entity\RefundJob::STATE_SUCCESS);
@@ -82,11 +82,11 @@ class TransactionRefund extends AbstractOrderRelated {
 		}
 	}
 
-	protected function restock(\Wallee\Sdk\Model\Refund $refund){
+	protected function restock(\PostFinanceCheckout\Sdk\Model\Refund $refund){
 		$db = $this->registry->get('db');
 		$table = DB_PREFIX . 'product';
 		foreach ($refund->getLineItems() as $line_item) {
-			if ($line_item->getType() == \Wallee\Sdk\Model\LineItemType::PRODUCT) {
+			if ($line_item->getType() == \PostFinanceCheckout\Sdk\Model\LineItemType::PRODUCT) {
 				$quantity = $db->escape($line_item->getQuantity());
 				$id = $db->escape($line_item->getUniqueId());
 				$query = "UPDATE $table SET quantity=quantity+$quantity WHERE product_id='$id';";

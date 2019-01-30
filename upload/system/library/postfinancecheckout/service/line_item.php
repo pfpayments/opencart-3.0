@@ -2,9 +2,9 @@
 
 namespace PostFinanceCheckout\Service;
 
-use Wallee\Sdk\Model\LineItemCreate;
-use Wallee\Sdk\Model\LineItemType;
-use Wallee\Sdk\Model\TaxCreate;
+use PostFinanceCheckout\Sdk\Model\LineItemCreate;
+use PostFinanceCheckout\Sdk\Model\LineItemType;
+use PostFinanceCheckout\Sdk\Model\TaxCreate;
 
 /**
  * This service provides methods to handle manual tasks.
@@ -24,10 +24,10 @@ class LineItem extends AbstractService {
 	}
 
 	public function getTotalLineItem($total){
-		$line_item = new \Wallee\Sdk\Model\LineItemCreate();
+		$line_item = new \PostFinanceCheckout\Sdk\Model\LineItemCreate();
 		$line_item->setAmountIncludingTax($total);
 		$line_item->setQuantity(1);
-		$line_item->setType(\Wallee\Sdk\Model\LineItemType::PRODUCT);
+		$line_item->setType(\PostFinanceCheckout\Sdk\Model\LineItemType::PRODUCT);
 		$line_item->setName('temp');
 		$line_item->setUniqueId('temp');
 		return $line_item;
@@ -39,7 +39,7 @@ class LineItem extends AbstractService {
 	 * @param array $order_info
 	 * @param int $transaction_id
 	 * @param int $space_id
-	 * @return \Wallee\Sdk\Model\LineItemCreate[]
+	 * @return \PostFinanceCheckout\Sdk\Model\LineItemCreate[]
 	 */
 	public function getReducedItemsFromOrder(array $order_info, $transaction_id, $space_id){
 		$this->tax = \PostFinanceCheckoutVersionHelper::newTax($this->registry);
@@ -300,11 +300,11 @@ class LineItem extends AbstractService {
 	    if($total['value'] < 0){
 	        $line_item->setType(LineItemType::DISCOUNT);
 	    }	    
-	    $line_item->setAmountIncludingTax(\WalleeHelper::instance($this->registry)->formatAmount($total['value']));
+	    $line_item->setAmountIncludingTax(\PostFinanceCheckoutHelper::instance($this->registry)->formatAmount($total['value']));
 	    $fee_id = substr($total['code'], 4);
 	    if ($config->get ( 'xfee_tax_class_id' . $fee_id )) {
 	        $tax_amount = $this->addTaxesToLineItem($line_item, $total['value'], $config->get( 'xfee_tax_class_id' . $fee_id ));
-	        $line_item->setAmountIncludingTax(\WalleeHelper::instance($this->registry)->formatAmount($total['value'] + $tax_amount));
+	        $line_item->setAmountIncludingTax(\PostFinanceCheckoutHelper::instance($this->registry)->formatAmount($total['value'] + $tax_amount));
 	    }
 	    return $this->cleanLineItem($line_item);
 	}
@@ -560,8 +560,8 @@ class LineItem extends AbstractService {
 	/**
 	 * Cleans the given line item for it to meet the API's requirements.
 	 *
-	 * @param \Wallee\Sdk\Model\LineItemCreate $lineItem
-	 * @return \Wallee\Sdk\Model\LineItemCreate
+	 * @param \PostFinanceCheckout\Sdk\Model\LineItemCreate $lineItem
+	 * @return \PostFinanceCheckout\Sdk\Model\LineItemCreate
 	 */
 	private function cleanLineItem(LineItemCreate $line_item){
 		$line_item->setSku($this->fixLength($line_item->getSku(), 200));

@@ -1,0 +1,158 @@
+{{ header  }}
+{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<h1>
+				{{ heading_transaction_list }}
+			</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in  breadcrumbs %}
+				<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<i class="fa fa-list"></i>
+					{{ text_transaction_list }}
+				</h3>
+			</div>
+			<div class="panel-body">
+				<form method="post" action="{{ filterAction }}"
+					enctype="multipart/form-data" id="form-order">
+					<div class="table-responsive">
+						<table class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<td class="text-right"><a href="{{ sort_id }}"
+										class="{% if filters.sort == 'id' %} {{ filters.order|lower }} {% endif %}">{{ column_id }}</a>
+									</td>
+									<td class="text-right"><a href="{{ sort_order_id }}"
+										class="{% if filters.sort == 'order_id' %} {{ filters.order|lower }} {% endif %}">{{ column_order_id }}</a>
+									</td>
+									<td class="text-right"><a href="{{ sort_transaction_id }}"
+										class="{% if filters.sort == 'transaction_id' %} {{ filters.order|lower }} {% endif %}">{{ column_transaction_id }}</a>
+									</td>
+									<td class="text-right"><a href="{{ sort_space_id }}"
+										class="{% if filters.sort == 'space_id' %} {{ filters.order|lower }} {% endif %}">{{ column_space_id }}</a>
+									</td>
+									<td class="text-right"><a href="{{ sort_space_view_id }}"
+										class="{% if filters.sort == 'space_view_id' %} {{ filters.order|lower }} {% endif %}">{{ column_space_view_id }}</a>
+									</td>
+									<td class="text-right"><a href="{{ sort_state }}"
+										class="{% if filters.sort == 'state' %} {{ filters.order|lower }} {% endif %}">{{ column_state }}</a>
+									</td>
+									<td class="text-right"><span data-toggle="tooltip"
+										title="{{ description_payment_method }}"> <a
+											href="{{ sort_payment_method_id }}"
+											class="{% if filters.sort == 'payment_method_id' %} {{ filters.order|lower }} {% endif %}">{{ column_payment_method }}</a>
+									</span></td>
+									<td class="text-right"><a
+										href="{{ sort_authorization_amount }}"
+										class="{% if filters.sort == 'authorization_amount' %} {{ filters.order|lower }} {% endif %}">{{ column_authorization_amount }}</a>
+									</td>
+									<td class="text-right"><a href="{{ sort_created }}"
+										class="{% if filters.sort == 'created_at' %} {{ filters.order|lower }} {% endif %}">{{ column_created }}</a>
+									</td>
+									<td class="text-right"><a href="{{ sort_updated }}"
+										class="{% if filters.sort == 'updated_at' %} {{ filters.order|lower }} {% endif %}">{{ column_updated }}</a>
+									</td>
+									<td class="text-right"></td>
+								</tr>
+								<tr>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[id]"
+										value="{%  if filters.id is defined %} {{ filters.id }} {% endif %}">
+									</td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[order_id]"
+										value="{%  if  filters.order_id is defined %} {{ filters.order_id }} {% endif %}">
+									</td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[transaction_id]"
+										value="{%  if  filters.transaction_id is defined %} {{ filters.transaction_id }} {% endif %}">
+									</td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[space_id]"
+										value="{%  if  filters.space_id is defined %} {{ filters.space_id }} {% endif %}">
+									</td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[space_view_id]"
+										value="{%  if  filters.space_view_id is defined %} {{ filters.space_view_id }} {% endif %}">
+									</td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[order_id]"
+										value="{%  if  filters.order_id is defined %} {{ filters.order_id }} {% endif %}">
+									</td>
+									<td class="text-right"><select class="form-control"
+										name="filters[state]">
+											{% for status in order_statuses %}
+											<option value="{{ status }}"
+												{% if filters.state is defined and status == filters.state %}
+												selected {% endif %}>{{ status }}</option>
+											{% endfor %}
+									</select></td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[payment_method_id]"
+										value="{%  if  filters.payment_method_id is defined %} {{ filters.payment_method_id }} {% endif %}">
+									</td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[authorization_amount]"
+										value="{%  if  filters.authorization_amount is defined %} {{ filters.authorization_amount }} {% endif %}">
+									</td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[created_at]"
+										value="{%  if  filters.created_at is defined %} {{ filters.created_at }} {% endif %}">
+									</td>
+									<td class="text-right"><input type="text"
+										class="form-control" name="filters[updated_at]"
+										value="{%  if  filters.updated_at is defined %} {{ filters.updated_at }} {% endif %}">
+									</td>
+									<td><input type="submit"
+										class="form-control btn btn-success" name="filter_submit"
+										value="{{ button_filter }}">
+	                </td>
+                </tr>
+              </thead>
+        
+              <tbody>
+              	{% if transactions %}
+              	{% for transaction in transactions %}
+                <tr>
+                  <td class="text-left">{{ transaction.id }}</td>
+                  <td class="text-left">{{ transaction.order_id }}</td>
+                  <td class="text-left">{{ transaction.transaction_id }}</td>
+                  <td class="text-left">{{ transaction.space_id }}</td>
+                  <td class="text-left">{{ transaction.space_view_id }}</td>
+                  <td class="text-left">{{ transaction.state }}</td>
+                  <td class="text-left">
+                  	{{ transaction.payment_method }}
+                  </td>
+                  <td class="text-left">{{ transaction.authorization_amount }}</td>
+                  <td class="text-left">{{ transaction.created_at }}</td>
+                  <td class="text-left">{{ transaction.updated_at }}</td>
+                  <td class="text-left"><a href="{{ transaction.view }}" data-toggle="tooltip" title="{{ button_view }}" class="btn btn-info"><i class="fa fa-eye"></i></a></td>
+                </tr>
+              	{% endfor %}
+              	{% else %}
+                <tr>
+                  <td class="text-center" colspan="11">{{ text_no_results }}</td>
+                </tr>
+              	{% endif %}
+              </tbody>
+            </table>
+          </div>
+        </form>
+        <div class="row">
+          <div class="col-sm-6 text-left">{{ pagination }}</div>
+          <div class="col-sm-6 text-right">{{ results }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}

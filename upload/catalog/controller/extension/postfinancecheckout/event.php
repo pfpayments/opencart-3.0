@@ -24,7 +24,7 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 	 * @param array $parameters
 	 * @param object $output
 	 */
-	private function includeCronScript(){
+	public function includeCronScript(){
 		\PostFinanceCheckout\Entity\Cron::cleanUpHangingCrons($this->registry);
 		\PostFinanceCheckout\Entity\Cron::insertNewPendingCron($this->registry);
 		
@@ -44,7 +44,7 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 	 * @param array $parameters
 	 * @param object $output
 	 */
-	private function includeDeviceIdentifier(){
+	public function includeDeviceIdentifier(){
 		$script = \PostFinanceCheckoutHelper::instance($this->registry)->getBaseUrl();
 		$script .= '/s/[spaceId]/payment/device.js?sessionIdentifier=[UniqueSessionIdentifier]';
 		
@@ -128,7 +128,7 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 			
 			$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $this->request->get['order_id']);
 			
-			if ($transaction_info->getState() == \Wallee\Sdk\Model\TransactionState::AUTHORIZED) {
+			if ($transaction_info->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::AUTHORIZED) {
 				\PostFinanceCheckout\Service\Transaction::instance($this->registry)->updateLineItemsFromOrder($this->request->get['order_id']);
 				return;
 			}

@@ -6,10 +6,10 @@
  * Includes the plugin classes as well as wallee sdk classes.
  *
  * After registering this autoload function with SPL, the following line
- * would cause the function to attempt to load the \Wallee\Sdk\Baz\Qux class
+ * would cause the function to attempt to load the \PostFinanceCheckout\Sdk\Baz\Qux class
  * from /path/to/project/lib/Baz/Qux.php:
  *
- * new \Wallee\Sdk\Baz\Qux;
+ * new \PostFinanceCheckout\Sdk\Baz\Qux;
  *
  * @param string $class the fully-qualified class name.
  */
@@ -17,7 +17,7 @@ spl_autoload_register(
 		function ($class){
 			$base_dir = DIR_SYSTEM . 'library/postfinancecheckout/';
 			
-			$sdkPrefix = 'Wallee\\Sdk\\';
+			$sdkPrefix = 'PostFinanceCheckout\\Sdk\\';
 			
 			$ocPrefix = 'PostFinanceCheckout\\';
 			
@@ -32,7 +32,7 @@ spl_autoload_register(
 				// replace the namespace prefix with the base directory, replace namespace
 				// separators with directory separators in the relative class name, append
 				// with .php
-				$file = modification($base_dir . 'wallee-sdk/lib/' . str_replace('\\', '/', $relative_class) . '.php');
+				$file = modification($base_dir . 'postfinancecheckout-sdk/lib/' . str_replace('\\', '/', $relative_class) . '.php');
 				
 				// if the file exists, require it
 				 if(file_exists($file) ){

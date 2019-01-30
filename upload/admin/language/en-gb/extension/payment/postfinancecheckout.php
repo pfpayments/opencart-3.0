@@ -54,6 +54,7 @@ $_['entry_decline_status'] 							= "Decline status";
 $_['description_decline_status'] 					= "Status the order enters when the transaction is in the PostFinance Checkout declined status.";
 $_['entry_refund_status'] 							= "Refund status";
 $_['description_refund_status'] 					= "Status the order enters when the transaction has been fully refunded.";
+$_['description_none_status']						= "Standard OpenCart behaviour specificies that an order confirmation email is sent when an order is moved from the 'None' state into any other state. For this reason you may want to treat 'Processing' and 'Failed' as 'None' so no emails are sent.";
 
 // Modifications
 $_['title_modifications']							= "Modifications";
@@ -93,6 +94,25 @@ $_['error_space_id_numeric']						= "Space ID must be numeric.";
 $_['error_space_view_id_numeric']					= "Space view ID must be numeric.";
 $_['error_user_id_unset']							= "User ID must not be empty.";
 $_['error_user_id_numeric']							= "User ID must be numeric.";
+
+/**
+ * ===========================================================================================
+ * Transaction list
+ * ===========================================================================================
+ */
+$_['heading_transaction_list']				        = "PostFinanceCheckout Transactions";
+$_['text_transaction_list']	    			        = "Transactions";
+$_['column_id']										= "ID";
+$_['column_order_id']								= "Order ID";
+$_['column_transaction_id']							= "Transaction ID";
+$_['column_space_id']								= "Space ID";
+$_['column_space_view_id']							= "Space View ID";
+$_['column_state']									= "State";
+$_['column_payment_method']							= "Payment Method";
+$_['description_payment_method']					= "Here you may search using the payment method ID - e.g. searching for 'Credit Card' will not return any results.";
+$_['column_created']								= "Created";
+$_['column_updated']								= "Created";
+$_['column_authorization_amount']					= "Amount";
 
 /**
  * ===========================================================================================

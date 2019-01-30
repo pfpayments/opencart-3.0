@@ -12,11 +12,11 @@ abstract class AbstractJob extends AbstractService {
 	 * Expects a database transaction to be running, and will commit / rollback depending on outcome.
 	 * 
 	 * @param \PostFinanceCheckout\Entity\AbstractJob $job
-	 * @param \Wallee\Sdk\ApiException $api_exception
+	 * @param \PostFinanceCheckout\Sdk\ApiException $api_exception
 	 * @throws \Exception
 	 * @return \PostFinanceCheckout\Service\AbstractJob
 	 */
-	protected function handleApiException(\PostFinanceCheckout\Entity\AbstractJob $job, \Wallee\Sdk\ApiException $api_exception){
+	protected function handleApiException(\PostFinanceCheckout\Entity\AbstractJob $job, \PostFinanceCheckout\Sdk\ApiException $api_exception){
 		try {
 			$job->setState(\PostFinanceCheckout\Entity\AbstractJob::STATE_FAILED_CHECK);
 			$job->setFailureReason([

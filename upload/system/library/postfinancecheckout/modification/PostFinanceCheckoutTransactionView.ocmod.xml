@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>PostFinanceCheckoutTransactionView</code>
+	<name>postfinancecheckout transaction view: List transactions in the opencart backend.
+	</name>
+	<version>1.0.0</version>
+	<author>Customweb GmbH</author>
+	<link>http://github.com/postfinancecheckout-payment/opencart</link>
+	<file path="admin/controller/common/column_left.php">
+		<operation>
+			<search><![CDATA[if ($this->user->hasPermission('access', 'sale/recurring')) {]]></search>
+			<add position="before"><![CDATA[
+			if ($this->user->hasPermission('access', 'extension/postfinancecheckout/transaction')) {
+				$this->language->load('extension/postfinancecheckout');
+				$sale[] = array(
+					'name'	   => $this->language->get('heading_transaction_list'),
+					'href'     => $this->url->link('extension/postfinancecheckout/transaction', 'user_token=' . $this->session->data['user_token'], true),
+					'children' => array()		
+				);
+				$this->load->language('common/column_left');
+			}
+			]]></add>
+		</operation>
+	</file>
+</modification>

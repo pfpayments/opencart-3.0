@@ -15,7 +15,7 @@ class Language extends AbstractProvider {
 	 * Returns the language by the given code.
 	 *
 	 * @param string $code
-	 * @return \Wallee\Sdk\Model\RestLanguage
+	 * @return \PostFinanceCheckout\Sdk\Model\RestLanguage
 	 */
 	public function find($code){
 		return parent::find($code);
@@ -25,7 +25,7 @@ class Language extends AbstractProvider {
 	 * Returns the primary language in the given group.
 	 *
 	 * @param string $code
-	 * @return \Wallee\Sdk\Model\RestLanguage
+	 * @return \PostFinanceCheckout\Sdk\Model\RestLanguage
 	 */
 	public function findPrimary($code){
 		$code = substr($code, 0, 2);
@@ -50,19 +50,19 @@ class Language extends AbstractProvider {
 	/**
 	 * Returns a list of language.
 	 *
-	 * @return \Wallee\Sdk\Model\RestLanguage[]
+	 * @return \PostFinanceCheckout\Sdk\Model\RestLanguage[]
 	 */
 	public function getAll(){
 		return parent::getAll();
 	}
 
 	protected function fetchData(){
-		$language_service = new \Wallee\Sdk\Service\LanguageService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		$language_service = new \PostFinanceCheckout\Sdk\Service\LanguageService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		return $language_service->all();
 	}
 
 	protected function getId($entry){
-		/* @var \Wallee\Sdk\Model\RestLanguage $entry */
+		/* @var \PostFinanceCheckout\Sdk\Model\RestLanguage $entry */
 		return $entry->getIetfCode();
 	}
 }

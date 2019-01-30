@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>PostFinanceCheckoutFrontendPdf</code>
+	<name>postfinancecheckout customer pdf: Allow customers to download invoices and packing slips.
+	</name>
+	<version>1.0.1</version>
+	<author>Customweb GmbH</author>
+	<link>http://github.com/postfinancecheckout-payment/opencart</link>
+	<file path="catalog/controller/account/order.php">
+		<operation>
+			<search><![CDATA[
+			if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/account/order_info.tpl')) {
+            ]]></search>
+			<add position="before"><![CDATA[
+			$this->load->model('extension/postfinancecheckout/order');
+			$data['postfinancecheckout_buttons'] = $this->model_extension_postfinancecheckout_order->getButtons($order_info['order_id']);
+            ]]></add>
+		</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/account/order_info.tpl">
+		<operation>
+			<search><![CDATA[
+      <div class="buttons clearfix">
+            ]]></search>
+			<add position="after"><![CDATA[
+		<?php if ($postfinancecheckout_buttons) : ?>
+			<div class="pull-left">
+				<?php foreach ($postfinancecheckout_buttons as $button) : ?>
+					 <a href="<?php echo $button['url'];?>" class="btn btn-secondary"><i class="fa fa-<?php echo $button['icon']; ?>"></i> <?php echo $button['text']; ?></a> 
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+			]]></add>
+		</operation>
+	</file>
+</modification>

@@ -46,7 +46,7 @@ class Refund extends AbstractJob {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionStart();
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionLock($job->getSpaceId(), $job->getTransactionId());
 			
-			$service = new \Wallee\Sdk\Service\RefundService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+			$service = new \PostFinanceCheckout\Sdk\Service\RefundService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 			$operation = $service->refund($job->getSpaceId(), $this->createRefund($job));
 			
 			if ($operation->getFailureReason() != null) {
@@ -67,7 +67,7 @@ class Refund extends AbstractJob {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionCommit();
 			return $job;
 		}
-		catch (\Wallee\Sdk\ApiException $api_exception) {
+		catch (\PostFinanceCheckout\Sdk\ApiException $api_exception) {
 		}
 		catch (\Exception $e) {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionRollback();
@@ -78,11 +78,11 @@ class Refund extends AbstractJob {
 	}
 
 	private function createRefund(\PostFinanceCheckout\Entity\RefundJob $job){
-		$refund_create = new \Wallee\Sdk\Model\RefundCreate();
+		$refund_create = new \PostFinanceCheckout\Sdk\Model\RefundCreate();
 		$refund_create->setReductions($job->getReductionItems());
 		$refund_create->setExternalId($job->getExternalId());
 		$refund_create->setTransaction($job->getTransactionId());
-		$refund_create->setType(\Wallee\Sdk\Model\RefundType::MERCHANT_INITIATED_ONLINE);
+		$refund_create->setType(\PostFinanceCheckout\Sdk\Model\RefundType::MERCHANT_INITIATED_ONLINE);
 		return $refund_create;
 	}
 
@@ -90,7 +90,7 @@ class Refund extends AbstractJob {
 		$reduction_line_items = array();
 		foreach ($reductions as $reduction) {
 			if ($reduction['quantity'] || $reduction['unit_price']) {
-				$line_item = new \Wallee\Sdk\Model\LineItemReductionCreate();
+				$line_item = new \PostFinanceCheckout\Sdk\Model\LineItemReductionCreate();
 				$line_item->setLineItemUniqueId($reduction['id']);
 				$line_item->setQuantityReduction(floatval($reduction['quantity']));
 				$line_item->setUnitPriceReduction(floatval($reduction['unit_price']));

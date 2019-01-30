@@ -49,9 +49,9 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 	private function confirmTransaction(){
 		$transaction = PostFinanceCheckout\Service\Transaction::instance($this->registry)->getTransaction(array(), false,
 				array(
-					\Wallee\Sdk\Model\TransactionState::PENDING 
+					\PostFinanceCheckout\Sdk\Model\TransactionState::PENDING 
 				));
-		if ($transaction->getState() == \Wallee\Sdk\Model\TransactionState::PENDING) {
+		if ($transaction->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::PENDING) {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionStart();
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionLock($transaction->getLinkedSpaceId(), $transaction->getId());
 			PostFinanceCheckout\Service\Transaction::instance($this->registry)->update($this->session->data, true);

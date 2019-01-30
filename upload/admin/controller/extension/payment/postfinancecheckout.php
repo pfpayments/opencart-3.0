@@ -228,7 +228,11 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		$data['entry_space_view_id'] = $this->language->get("entry_space_view_id");
 		$data['help_space_view_id'] = $this->language->get("help_space_view_id");
 		
-		$data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+		$orderStatuses = $this->model_localisation_order_status->getOrderStatuses();
+		array_unshift($orderStatuses, array('order_status_id' => 0, 'name' => $this->language->get('text_none')));
+		$data['order_statuses'] = $orderStatuses;
+		$data['description_none_status'] = $this->language->get('description_none_status');
+		
 		$data['postfinancecheckout_statuses'] = $this->getOrderStatusTemplateVariables();
 		
 		$data['title_debug'] = $this->language->get('title_debug');
@@ -414,8 +418,8 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 			"postfinancecheckout_space_id" => null,
 			"postfinancecheckout_space_view_id" => null,
 			
-			"postfinancecheckout_processing_status_id" => 1,
-			"postfinancecheckout_failed_status_id" => 10,
+			"postfinancecheckout_processing_status_id" => 0,
+			"postfinancecheckout_failed_status_id" => 0,
 			"postfinancecheckout_voided_status_id" => 16,
 			"postfinancecheckout_decline_status_id" => 8,
 			"postfinancecheckout_fulfill_status_id" => 5,

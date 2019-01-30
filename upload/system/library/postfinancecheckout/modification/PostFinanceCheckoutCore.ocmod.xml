@@ -21,7 +21,7 @@
             ]]></add>
 		</operation>
 	</file>
-	<file path="admin/controller/setting/extension/payment.php">
+	<file path="admin/controller/extension/payment.php">
 		<operation>
 			<search><![CDATA[
        				$this->model_setting_extension->uninstall('payment', $value);
@@ -43,10 +43,10 @@
             ]]></add>
 		</operation>
 	</file>
-	<file path="admin/controller/startup/permission.php">
+	<file path="admin/controller/error/permission.php">
 		<operation>
 			<search><![CDATA[
-				$extension = array(
+				$ignore = array(
             ]]></search>
 			<add position="after"><![CDATA[
 					'extension/postfinancecheckout',
@@ -72,11 +72,11 @@
             ]]></add>
 		</operation>
 		<operation>
-			<search regex="true"><![CDATA[
-	~(require|include)(_once)?\(([^)]+)~
+			<search><![CDATA[
+				require($file)
             ]]></search>
-			<add><![CDATA[
-	$1$2(modification($3)
+			<add position="replace"><![CDATA[
+				require(modification($file))
             ]]></add>
 		</operation>
 	</file>
@@ -101,11 +101,19 @@
             ]]></add>
 		</operation>
 		<operation>
-			<search regex="true"><![CDATA[
-	~(require|include)(_once)?\(([^)]+)~
+			<search><![CDATA[
+	is_file($this->file)
             ]]></search>
-			<add><![CDATA[
-	$1$2(modification($3)
+			<add position="replace"><![CDATA[
+	is_file(modification($this->file))
+            ]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+	include_once($file)
+            ]]></search>
+			<add position="replace"><![CDATA[
+	include_once(modification($file))
             ]]></add>
 		</operation>
 	</file>
@@ -116,6 +124,30 @@
             ]]></search>
 			<add position="replace"><![CDATA[
 	is_file(modification($file))
+            ]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+	file_exists($file)
+            ]]></search>
+			<add position="replace"><![CDATA[
+	file_exists(modification($file))
+            ]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+	require($file)
+            ]]></search>
+			<add position="replace"><![CDATA[
+	require(modification($file))
+            ]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+	include_once($file)
+            ]]></search>
+			<add position="replace"><![CDATA[
+	include_once(modification($file))
             ]]></add>
 		</operation>
 	</file>
