@@ -28,6 +28,10 @@ class PostFinanceCheckoutVersionHelper {
 				'file' => 'PostFinanceCheckoutQuickCheckoutCompatibility.ocmod.xml',
 				'default_status' => 0 
 			),
+			'PostFinanceCheckoutXFeeProCompatibility' => array(
+				'file' => 'PostFinanceCheckoutXFeeProCompatibility.ocmod.xml',
+				'default_status' => 0
+			),
 			'PostFinanceCheckoutPreventConfirmationEmail' => array(
 				'file' => 'PostFinanceCheckoutPreventConfirmationEmail.ocmod.xml',
 				'default_status' => 0 

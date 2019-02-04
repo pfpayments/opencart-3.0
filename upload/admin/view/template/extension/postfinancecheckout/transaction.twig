@@ -55,10 +55,10 @@
 										href="{{ sort_authorization_amount }}"
 										class="{% if filters.sort == 'authorization_amount' %} {{ filters.order|lower }} {% endif %}">{{ column_authorization_amount }}</a>
 									</td>
-									<td class="text-right"><a href="{{ sort_created }}"
+									<td class="text-right"><a href="{{ sort_created_at }}"
 										class="{% if filters.sort == 'created_at' %} {{ filters.order|lower }} {% endif %}">{{ column_created }}</a>
 									</td>
-									<td class="text-right"><a href="{{ sort_updated }}"
+									<td class="text-right"><a href="{{ sort_updated_at }}"
 										class="{% if filters.sort == 'updated_at' %} {{ filters.order|lower }} {% endif %}">{{ column_updated }}</a>
 									</td>
 									<td class="text-right"></td>

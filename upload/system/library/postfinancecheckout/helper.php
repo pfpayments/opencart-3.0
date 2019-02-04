@@ -37,15 +37,21 @@ class PostFinanceCheckoutHelper {
 
 	/**
 	 * Create a customer identifier to verify that the session.
-	 * Either a concat of given values for guest or the user id (hashed).
-	 * If not enough guest information exists to create an identifier null is returned.
+	 * Either the customer id,
+	 * a concat of given values for guest (hashed),
+	 * the user id,
+	 * a hash of the current cart key,
+	 * a hash of the current token,
+	 * or the current order id.
+	 *  
+	 * If not enough information exists to create an identifier null is returned.
 	 *
 	 * @return string | null
 	 */
 	public function getCustomerSessionIdentifier(){
 		$customer = $this->getCustomer();
 		if (isset($customer['customer_id']) && $this->registry->get('customer')->isLogged()) {
-			return $customer['customer_id'];
+			return "customer_" . $customer['customer_id'];
 		}
 		$id = '';
 		if (isset($customer['firstname'])) {
@@ -60,7 +66,24 @@ class PostFinanceCheckoutHelper {
 		if (isset($customer['telephone'])) {
 			$id .= $customer['telephone'];
 		}
-		return empty($id) ? null : hash('sha512', $id);
+		if($id) {
+			return "guest_" . hash('sha512', $id);
+		}
+		$data = $this->registry->get('session')->data;
+		if(isset($data['user_id'])) {
+			return "user_" . $data['user_id'];
+		}
+		if(isset($data['cart']) && is_array($data['cart']) && count($data['cart'] == 1)) {
+			$cartKeys = array_keys($data['cart']);
+			return "cart_" .hash('sha512', $cartKeys[0]);
+		}
+		if(isset($data['user_token'])) {
+			return "token_" . hash('sha512', $data['user_token']);
+		}
+		if(isset($data['order_id'])) {
+			return "order_" . $data['order_id'];
+		}
+		return null;
 	}
 
 	/**
@@ -236,8 +259,9 @@ class PostFinanceCheckoutHelper {
 		else if (isset($data['guest'])) {
 			return $data['guest'];
 		}
+		$this->log("Unable to retrieve customer from session.");
 		$this->log($data);
-		throw new Exception('Could not extract customer data.');
+		return array();
 	}
 
 	/**
@@ -386,7 +410,7 @@ class PostFinanceCheckoutHelper {
 	public function getFailedUrl($order_id){
 		return str_replace('&amp;', '&',
 				PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'checkout/checkout', array(
-					'order_id' => $order_id
+					'order_id' => $order_id 
 				), $this->registry->get('config')->get('config_secure')));
 	}
 
@@ -499,25 +523,27 @@ class PostFinanceCheckoutHelper {
 	public function isAdmin(){
 		return defined('HTTPS_CATALOG') && defined('HTTP_CATALOG');
 	}
-	
+
 	/**
-	 * Get the starting value of LIMIT for db queries. Used for paginated requests.
-	 * 
-	 * @param int $page
-	 * @return int
-	 */
-	public function getLimitStart($page) {
-		$limit = $this->registry->get('config')->get('config_limit_admin');
-		return ($page - 1) * $limit;
-	}
-	
-	/**
-	 * Get the end value of LIMIT for db queries. Used for paginated requests.
+	 * Get the starting value of LIMIT for db queries.
+	 * Used for paginated requests.
 	 *
 	 * @param int $page
 	 * @return int
 	 */
-	public function getLimitEnd($page) {
+	public function getLimitStart($page){
+		$limit = $this->registry->get('config')->get('config_limit_admin');
+		return ($page - 1) * $limit;
+	}
+
+	/**
+	 * Get the end value of LIMIT for db queries.
+	 * Used for paginated requests.
+	 *
+	 * @param int $page
+	 * @return int
+	 */
+	public function getLimitEnd($page){
 		$limit = $this->registry->get('config')->get('config_limit_admin');
 		return $page * $limit;
 	}
