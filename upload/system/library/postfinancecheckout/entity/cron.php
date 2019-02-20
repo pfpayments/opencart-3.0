@@ -49,7 +49,7 @@ class Cron extends AbstractEntity {
 		$time = $time->format('Y-m-d H:i:s');
 		
 		$query = "UPDATE $table SET constraint_key='$constraint', state='$processing', date_started='$time' WHERE security_token='$security_token' AND state='$pending';";
-		$result = $db->query($query);
+		self::query($query, $db);
 		
 		return $db->countAffected() == 1;
 	}
@@ -68,7 +68,7 @@ class Cron extends AbstractEntity {
 		$time = $time->format('Y-m-d H:i:s');
 		
 		$query = "UPDATE $table SET `constraint_key`=id, `state`='$status', date_completed='$time', `error_message`='$error' WHERE `security_token`='$security_token' AND `state`='$processing';";
-		$result = $db->query($query);
+		self::query($query, $db);
 		
 		return $db->countAffected() == 1;
 	}
@@ -89,7 +89,7 @@ class Cron extends AbstractEntity {
 			$end_time = new \DateTime();
 			$end_time = $end_time->format('Y-m-d H:i:s');
 			$query = "UPDATE $table SET constraint_key=id, `state`='$error', date_completed='$end_time', error_message='$timeout_message' WHERE `state`='$processing' AND date_started<'$timeout';";
-			$db->query($query);
+			self::query($query, $db);
 			\PostFinanceCheckoutHelper::instance($registry)->dbTransactionCommit();
 		}
 		catch (\Exception $e) {
@@ -105,7 +105,7 @@ class Cron extends AbstractEntity {
 		$table = DB_PREFIX . self::getTableName();
 		try {
 			$hasQuery = "SELECT security_token FROM $table WHERE `state`='$pending';";
-			$result = $db->query($hasQuery);
+			$result = self::query($hasQuery, $db);
 			if ($result->num_rows == 1) {
 				\PostFinanceCheckoutHelper::instance($registry)->dbTransactionCommit();
 				return false;
@@ -116,7 +116,7 @@ class Cron extends AbstractEntity {
 			$time->add(new \DateInterval('PT1M'));
 			$time = $time->format('Y-m-d H:i:s');
 			$insertQuery = "INSERT INTO $table (constraint_key, state, security_token, date_scheduled) VALUES ('$constraint', '$pending', '$uuid', '$time');";
-			$db->query($insertQuery);
+			self::query($insertQuery, $db);
 			\PostFinanceCheckoutHelper::instance($registry)->dbTransactionCommit();
 			return $db->countAffected() == 1;
 		}
@@ -143,7 +143,8 @@ class Cron extends AbstractEntity {
 			$now = $now->format('Y-m-d H:i:s');
 			$query = "SELECT security_token FROM $table WHERE `state`='$pending' AND date_scheduled<'$now';";
 			
-			$result = $db->query($query);
+			
+			$result = self::query($query, $db);
 			\PostFinanceCheckoutHelper::instance($registry)->dbTransactionCommit();
 			
 			if ($result->num_rows) {

@@ -17,22 +17,22 @@ use PostFinanceCheckout\Sdk\Model\TransactionPending;
 class Transaction extends AbstractService {
 
 	public function getPaymentMethods(array $order_info){
-		$cart_id = \PostFinanceCheckoutVersionHelper::getCurrentCartId($this->registry);
-		if (!$cart_id || !array_key_exists($cart_id, self::$possible_payment_method_cache)) {
+		$sessionId = \PostFinanceCheckoutHelper::instance($this->registry)->getCustomerSessionIdentifier();
+		if (!$sessionId || !array_key_exists($sessionId, self::$possible_payment_method_cache)) {
 			$transaction = $this->update($order_info, false);
 			try {
 				$payment_methods = $this->getTransactionService()->fetchPossiblePaymentMethods($transaction->getLinkedSpaceId(), $transaction->getId());
 				foreach ($payment_methods as $payment_method) {
 					MethodConfiguration::instance($this->registry)->updateData($payment_method);
 				}
-				self::$possible_payment_method_cache[$cart_id] = $payment_methods;
+				self::$possible_payment_method_cache[$sessionId] = $payment_methods;
 			}
 			catch (\Exception $e) {
-				self::$possible_payment_method_cache[$cart_id] = array();
+				self::$possible_payment_method_cache[$sessionId] = array();
 				throw $e;
 			}
 		}
-		return self::$possible_payment_method_cache[$cart_id];
+		return self::$possible_payment_method_cache[$sessionId];
 	}
 
 	public function getJavascriptUrl(){
@@ -118,29 +118,28 @@ class Transaction extends AbstractService {
 	 * @return \PostFinanceCheckout\Sdk\Model\Transaction
 	 */
 	public function getTransaction($order_info = array(), $cache = true, $allowed_states = array()){
-		$cart_id = \PostFinanceCheckoutVersionHelper::getCurrentCartId($this->registry);
+		$sessionId = \PostFinanceCheckoutHelper::instance($this->registry)->getCustomerSessionIdentifier();
 		
-		// guest has $cart_id = 0
-		if ($cart_id && isset(self::$transaction_cache[$cart_id]) && $cache) {
-			return self::$transaction_cache[$cart_id];
+		if ($sessionId && isset(self::$transaction_cache[$sessionId]) && $cache) {
+			return self::$transaction_cache[$sessionId];
 		}
 		
 		$create = true;
 		
 		// attempt to load via session variables
 		if ($this->hasTransactionInSession()) {
-			self::$transaction_cache[$cart_id] = $this->getTransactionService()->read($this->getSessionSpaceId(), $this->getSessionTransactionId());
+			self::$transaction_cache[$sessionId] = $this->getTransactionService()->read($this->getSessionSpaceId(), $this->getSessionTransactionId());
 			// check if the status is expected
-			$create = empty($allowed_states) ? false : !in_array(self::$transaction_cache[$cart_id]->getState(), $allowed_states);
+			$create = empty($allowed_states) ? false : !in_array(self::$transaction_cache[$sessionId]->getState(), $allowed_states);
 		}
 		
 		// attempt to load via order id (existing transaction_info
 		if (isset($order_info['order_id']) && $create) {
 			$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_info['order_id']);
 			if ($transaction_info->getId() && $transaction_info->getState() === 'PENDING') {
-				self::$transaction_cache[$cart_id] = $this->getTransactionService()->read($transaction_info->getSpaceId(),
+				self::$transaction_cache[$sessionId] = $this->getTransactionService()->read($transaction_info->getSpaceId(),
 						$transaction_info->getTransactionId());
-				$create = empty($allowed_states) ? false : !in_array(self::$transaction_cache[$cart_id]->getState(), $allowed_states);
+				$create = empty($allowed_states) ? false : !in_array(self::$transaction_cache[$sessionId]->getState(), $allowed_states);
 			}
 			if ($create) {
 				unset($order_info['order_id']);
@@ -149,10 +148,10 @@ class Transaction extends AbstractService {
 		
 		// no applicable transaction found, create new one.
 		if ($create) {
-			self::$transaction_cache[$cart_id] = $this->create($order_info);
+			self::$transaction_cache[$sessionId] = $this->create($order_info);
 		}
 		
-		return self::$transaction_cache[$cart_id];
+		return self::$transaction_cache[$sessionId];
 	}
 
 	private function persist($transaction, array $order_info){
@@ -476,9 +475,7 @@ class Transaction extends AbstractService {
 		$data = $this->registry->get('session')->data;
 		return isset($data['postfinancecheckout_transaction_id']) && isset($data['postfinancecheckout_space_id']) &&
 				 $data['postfinancecheckout_space_id'] == $this->registry->get('config')->get('postfinancecheckout_space_id') &&
-				 array_key_exists('postfinancecheckout_customer', $data) &&
-				 $data['postfinancecheckout_customer'] === \PostFinanceCheckoutHelper::instance($this->registry)->getCustomerSessionIdentifier() &&
-				 $data['postfinancecheckout_customer'];
+				 \PostFinanceCheckoutHelper::instance($this->registry)->compareStoredCustomerSessionIdentifier();
 	}
 
 	private function clearTransactionInSession(){

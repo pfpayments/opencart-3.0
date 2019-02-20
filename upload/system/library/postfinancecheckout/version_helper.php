@@ -28,6 +28,10 @@ class PostFinanceCheckoutVersionHelper {
 				'file' => 'PostFinanceCheckoutQuickCheckoutCompatibility.ocmod.xml',
 				'default_status' => 0 
 			),
+			'PostFinanceCheckoutJournalCompatibility' => array(
+				'file' => 'PostFinanceCheckoutJournalCompatibility.ocmod.xml',
+				'default_status' => 0
+			),
 			'PostFinanceCheckoutXFeeProCompatibility' => array(
 				'file' => 'PostFinanceCheckoutXFeeProCompatibility.ocmod.xml',
 				'default_status' => 0
@@ -103,27 +107,6 @@ class PostFinanceCheckoutVersionHelper {
 		
 		array_multisort($sort_order, SORT_ASC, $totals);
 		return $total_data['totals'];
-	}
-
-	public static function getCurrentCartId(\Registry $registry){
-		if (isset($registry->get('session')->data['cart_id'])) {
-			return $registry->get('session')->data['cart_id'];
-		}
-		
-		$table = DB_PREFIX . 'cart';
-		$api_id = (isset($registry->get('session')->data['api_id']) ? (int) $registry->get('session')->data['api_id'] : 0);
-		$customer_id = (int) $registry->get('customer')->getId();
-		$session_id = $registry->get('session')->getId();
-		$session_id = $registry->get('db')->escape($session_id);
-		$customer_id = $registry->get('db')->escape($customer_id);
-		$api_id = $registry->get('db')->escape($api_id);
-		
-		$query = "SELECT cart_id FROM $table WHERE api_id = '$api_id' AND customer_id = '$customer_id' AND session_id = '$session_id';";
-		$result = $registry->get('db')->query($query);
-		if ($result->num_rows > 0) {
-			return $result->row['cart_id'];
-		}
-		return 0;
 	}
 	
 	public static function persistPluginStatus(\Registry $registry, array $post) {

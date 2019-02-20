@@ -63,7 +63,7 @@ abstract class AbstractJob extends AbstractEntity {
 		
 		$query = "SELECT * FROM $table WHERE order_id='$order_id';";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		
 		$result = array();
 		if ($db_result->num_rows) {
@@ -83,7 +83,7 @@ abstract class AbstractJob extends AbstractEntity {
 		
 		$query = "SELECT * FROM $table WHERE job_id='$job_id' AND space_id='$space_id';";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		
 		if (isset($db_result->row) && !empty($db_result->row)) {
 			return new static($registry, $db_result->row);
@@ -128,7 +128,7 @@ abstract class AbstractJob extends AbstractEntity {
 			$timestamp = $time->format('Y-m-dd h:i:s');
 			
 			$query = "SELECT * FROM $table WHERE STATE='$created' AND updated_at<'$timestamp';";
-			$db_result = $registry->get('db')->query($query);
+			$db_result = self::query($query, $registry->get('db'));
 			$result = array();
 			if ($db_result->num_rows) {
 				foreach ($result->rows as $row) {
@@ -164,7 +164,7 @@ abstract class AbstractJob extends AbstractEntity {
 				") as pending_job";
 		//@formatter:on
 		
-		$result = $registry->get('db')->query($query);
+		$db_result = self::query($query, $registry->get('db'));
 		
 		if ($result->row) {
 			return true;
@@ -181,7 +181,7 @@ abstract class AbstractJob extends AbstractEntity {
 		
 		$query = "SELECT * FROM $table WHERE order_id='$order_id' AND state='$created';";
 		
-		$result = $db->query($query);
+		$result = self::query($query, $db);
 		
 		if (isset($result->row) && !empty($result->row)) {
 			return new static($registry, $result->row);
@@ -201,7 +201,7 @@ abstract class AbstractJob extends AbstractEntity {
 		
 		$query = "SELECT * FROM $table WHERE order_id='$order_id' AND state NOT IN ('$created', '$success', '$failed_1', '$failed_2');";
 		
-		$result = $db->query($query);
+		$result = self::query($query, $db);
 		
 		if (isset($result->row) && !empty($result->row)) {
 			return new static($registry, $result->row);
@@ -217,7 +217,7 @@ abstract class AbstractJob extends AbstractEntity {
 		
 		$query = "SELECT * FROM $table WHERE state='$state' ORDER BY updated_at ASC LIMIT 1;";
 		
-		$db_result = $db->query($query);
+		$result = self::query($query, $db);
 		
 		if (isset($db_result->row) && !empty($db_result->row)) {
 			return new static($registry, $db_result->row);
@@ -233,7 +233,7 @@ abstract class AbstractJob extends AbstractEntity {
 		
 		$query = "SELECT COUNT(id) FROM $table WHERE order_id='$order_id';";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		
 		return $db_result->row['COUNT(id)'];
 	}
@@ -247,7 +247,7 @@ abstract class AbstractJob extends AbstractEntity {
 		
 		$query = "SELECT * FROM $table WHERE order_id='$order_id' AND state='$state';";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		
 		$result = array();
 		if ($db_result->num_rows) {
@@ -272,7 +272,7 @@ abstract class AbstractJob extends AbstractEntity {
 		
 		$query = "SELECT * FROM $table WHERE order_id='$order_id' AND state='$state';";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		
 		if ($db_result->num_rows) {
 			foreach ($db_result->rows as $row) {

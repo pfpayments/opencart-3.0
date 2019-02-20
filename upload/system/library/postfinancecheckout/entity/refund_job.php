@@ -42,8 +42,7 @@ class RefundJob extends AbstractJob {
 		$state = self::STATE_SUCCESS;
 		$query = "SELECT SUM(amount) FROM $table WHERE order_id='$order_id' AND state='$state';";
 		
-		$db_result = $db->query($query);
-		
+		$db_result = self::query($query, $db);
 		if (isset($db_result->row['SUM(amount)'])) {
 			return $db_result->row['SUM(amount)'];
 		}
@@ -63,11 +62,9 @@ class RefundJob extends AbstractJob {
 		$space_id = $db->escape($space_id);
 		$state_pending = self::STATE_PENDING;
 		$state_manual = self::STATE_MANUAL_CHECK;
-		
 		$query = "SELECT COUNT(id) FROM $table WHERE space_id='$space_id' AND state IN ('$state_pending', '$state_manual');";
 		
-		$db_result = $db->query($query);
-		
+		$db_result = self::query($query, $db);
 		if (isset($db_result->row['COUNT(id)'])) {
 			return $db_result->row['COUNT(id)'];
 		}
@@ -82,7 +79,7 @@ class RefundJob extends AbstractJob {
 		$external_id = $db->escape($external_id);
 		$query = "SELECT * FROM $table WHERE space_id='$space_id' AND external_id='$external_id';";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		if (isset($db_result->row) && !empty($db_result->row)) {
 			return new static($registry, $db_result->row);
 		}

@@ -3,7 +3,7 @@
 	<code>PostFinanceCheckoutCore</code>
 	<name>postfinancecheckout core: load payment methods.
 	</name>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<author>Customweb GmbH</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="catalog/controller/checkout/checkout.php">
@@ -16,6 +16,7 @@
 		if (isset($this->request->get['order_id']) && \PostFinanceCheckoutHelper::instance($this->registry)->isValidOrder($this->request->get['order_id'])
 			&& \PostFinanceCheckout\Service\Transaction::instance($this->registry)->waitForStates($this->request->get['order_id'], array(\PostFinanceCheckout\Sdk\Model\TransactionState::FAILED), 5)) {
 			$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $this->request->get['order_id']);
+			unset($this->registry->get('session')->data['order_id']);
 			$data['error_warning'] = $transaction_info->getFailureReason();
 		} else 
             ]]></add>

@@ -32,6 +32,18 @@ abstract class ModelExtensionPaymentPostFinanceCheckoutBase extends Model {
 		}
 		
 		try {
+			if (isset($this->session->data['order_id'])) {
+				$transaction = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $this->session->data['order_id']);
+				if ($transaction->getTransactionId() &&
+						 !in_array($transaction->getState(),
+								array(
+									\PostFinanceCheckout\Sdk\Model\TransactionState::PENDING,
+									\PostFinanceCheckout\Sdk\Model\TransactionState::CREATE 
+								))) {
+					unset($this->session->data['order_id']);
+				}
+			}
+			
 			$available_methods = \PostFinanceCheckout\Service\Transaction::instance($this->registry)->getPaymentMethods($order_info);
 			$configuration_id = substr($this->getCode(), strlen('postfinancecheckout_'));
 			

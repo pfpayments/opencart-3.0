@@ -10,6 +10,7 @@ $_['heading_error']					= 'Error';
 $_['error_default']					= 'This action is not permitted.';
 $_['error_order_edit']				= 'The PostFinance Checkout transaction is in a state in which the line items may no longer be changed.';
 $_['error_not_pending']				= 'Transaction exists and is not in state pending.';
+$_['error_confirmation']			= 'The transaction could not be confirmed. Please check to see if any payment has been made from your account, and retry if no charge has taken place.';
 
 // Order overview / download buttons
 $_['button_invoice']				= 'Invoice';

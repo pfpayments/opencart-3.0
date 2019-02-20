@@ -39,7 +39,9 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 		}
 		catch (Exception $e) {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionRollback();
-			$result['message'] = $e->getMessage();
+			\PostFinanceCheckoutHelper::instance($this->registry)->log($e->getMessage(), \PostFinanceCheckoutHelper::LOG_ERROR);
+			$result['message'] = $this->language->get('error_confirmation'); 
+			unset($this->session->data['order_id']); // this order number cannot be used anymore
 		}
 		
 		$this->response->addHeader('Content-Type: application/json');
@@ -58,6 +60,7 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionCommit();
 			return $transaction;
 		}
+		
 		throw new Exception('Transaction is not pending.');
 	}
 

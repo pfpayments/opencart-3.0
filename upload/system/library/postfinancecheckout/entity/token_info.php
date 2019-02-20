@@ -48,8 +48,7 @@ class TokenInfo extends AbstractEntity {
 		$token_id = $db->escape($token_id);
 		$query = "SELECT * FROM $table WHERE space_id = $space_id AND token_id = $token_id;";
 		
-		$db_result = $db->query($query);
-		
+		$db_result = self::query($query, $db);
 		if (isset($db_result->row) && !empty($db_result->row)) {
 			return new self($registry, $db_result->row);
 		}

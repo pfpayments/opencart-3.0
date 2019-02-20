@@ -43,7 +43,7 @@ class PostFinanceCheckoutHelper {
 	 * a hash of the current cart key,
 	 * a hash of the current token,
 	 * or the current order id.
-	 *  
+	 *
 	 * If not enough information exists to create an identifier null is returned.
 	 *
 	 * @return string | null
@@ -53,6 +53,33 @@ class PostFinanceCheckoutHelper {
 		if (isset($customer['customer_id']) && $this->registry->get('customer')->isLogged()) {
 			return "customer_" . $customer['customer_id'];
 		}
+		$guestId = $this->buildGuestSessionIdentifier($customer);
+		if ($guestId) {
+			return $guestId;
+		}
+		$data = $this->registry->get('session')->data;
+		if (isset($data['user_id'])) {
+			return "user_" . $data['user_id'];
+		}
+		$cartId = $this->buildCartSessionIdentifier($data);
+		if ($cartId) {
+			return $cartId;
+		}
+		if (isset($data['user_token'])) {
+			return "token_" . hash('sha512', $data['user_token']);
+		}
+		return null;
+	}
+
+	private function buildCartSessionIdentifier(array $data){
+		if (isset($data['cart']) && is_array($data['cart']) && count($data['cart'] == 1)) {
+			$cartKeys = array_keys($data['cart']);
+			return "cart_" . hash('sha512', $cartKeys[0]);
+		}
+		return null;
+	}
+
+	private function buildGuestSessionIdentifier(array $customer){
 		$id = '';
 		if (isset($customer['firstname'])) {
 			$id .= $customer['firstname'];
@@ -66,24 +93,38 @@ class PostFinanceCheckoutHelper {
 		if (isset($customer['telephone'])) {
 			$id .= $customer['telephone'];
 		}
-		if($id) {
+		if ($id) {
 			return "guest_" . hash('sha512', $id);
 		}
-		$data = $this->registry->get('session')->data;
-		if(isset($data['user_id'])) {
-			return "user_" . $data['user_id'];
-		}
-		if(isset($data['cart']) && is_array($data['cart']) && count($data['cart'] == 1)) {
-			$cartKeys = array_keys($data['cart']);
-			return "cart_" .hash('sha512', $cartKeys[0]);
-		}
-		if(isset($data['user_token'])) {
-			return "token_" . hash('sha512', $data['user_token']);
-		}
-		if(isset($data['order_id'])) {
-			return "order_" . $data['order_id'];
-		}
 		return null;
+	}
+
+	public function compareStoredCustomerSessionIdentifier(){
+		$data = $this->registry->get('session')->data;
+		if (isset($data['postfinancecheckout_customer']) && !empty($data['postfinancecheckout_customer'])) {
+			$id = $data['postfinancecheckout_customer'];
+		}
+		else {
+			return false;
+		}
+		
+		$parts = explode('_', $id);
+		$customer = $this->getCustomer();
+		switch ($parts[0]) {
+			case 'customer':
+				return isset($customer['customer_id']) && 'customer_' . $customer['customer_id'] == $id;
+			case 'user':
+				return isset($customer['user_id']) && 'user_' . $customer['user_id'] == $id;
+			case 'guest':
+				return $this->buildGuestSessionIdentifier($customer) == $id;
+			case 'cart':
+				return $this->buildCartSessionIdentifier($data) == $id;
+			case 'token':
+				return isset($data['user_token']) && 'token_' . hash('sha512', $data['user_token']) == $id;
+			default:
+				$this->log("Unkown comparison on {$parts[0]} with {$id}");
+		}
+		return false;
 	}
 
 	/**
@@ -259,11 +300,9 @@ class PostFinanceCheckoutHelper {
 		else if (isset($data['guest'])) {
 			return $data['guest'];
 		}
-		$this->log("Unable to retrieve customer from session.");
-		$this->log($data);
 		return array();
 	}
-
+	
 	/**
 	 * Formats the given amount for the given currency.
 	 * If no currency is given, the current session currency is used. If that is not set the shop configuration is used.
@@ -277,6 +316,25 @@ class PostFinanceCheckoutHelper {
 			$currency = $this->getCurrency();
 		}
 		return $this->registry->get('currency')->format($amount, $currency, false, false);
+	}
+	
+	/**
+	 * Rounds the amount like Xfee would
+	 *
+	 * @param float $amount
+	 * @param string $currency
+	 * @return string
+	 */
+	public function roundXfeeAmount($amount, $currency = null){
+		if (!$currency) {
+			$currency = $this->getCurrency();
+		}
+		$decimals = $this->registry->get('currency')->getDecimalPlace();
+		$mode = PHP_ROUND_HALF_UP;
+		if($amount < 0) {
+			$mode = PHP_ROUND_HALF_DOWN;
+		}
+		return round($amount, $decimals, $mode);
 	}
 
 	public function getCurrency(){
@@ -553,6 +611,14 @@ class PostFinanceCheckoutHelper {
 			self::$instance = new self($registry);
 		}
 		return self::$instance;
+	}
+
+	public static function exceptionErrorHandler($severity, $message, $file, $line){
+		if (!(error_reporting() & $severity)) {
+			// This error code is not included in error_reporting
+			return false;
+		}
+		throw new \ErrorException($message, 0, $severity, $file, $line);
 	}
 
 	public static function getBaseUrl(){

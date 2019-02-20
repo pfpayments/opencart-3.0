@@ -60,7 +60,7 @@ class Alert extends AbstractEntity {
 		
 		$query = "SELECT * FROM $table WHERE `key`='$key';";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		
 		if (isset($db_result->row) && !empty($db_result->row)) {
 			return new self($registry, $db_result->row);

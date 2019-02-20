@@ -54,7 +54,7 @@ class MethodConfiguration extends AbstractEntity {
 		$configuration_id = $db->escape($configuration_id);
 		$query = "SELECT * FROM $table WHERE space_id='$space_id' AND configuration_id='$configuration_id'";
 		
-		$result = $db->query($query);
+		$result = self::query($query, $db);
 		
 		if (isset($result->row) && !empty($result->row)) {
 			return new self($registry, $result->row);
@@ -69,7 +69,7 @@ class MethodConfiguration extends AbstractEntity {
 		$space_id = $db->escape($space_id);
 		$query = "SELECT * FROM $table WHERE space_id='$space_id'";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		
 		$result = array();
 		if ($db_result->num_rows) {

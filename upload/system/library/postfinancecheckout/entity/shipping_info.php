@@ -46,8 +46,7 @@ class ShippingInfo extends AbstractEntity {
 		$transaction_id = $db->escape($transaction_id);
 		$query = "SELECT * FROM $table WHERE space_id='$space_id' AND transaction_id='$transaction_id';";
 		
-		$db_result = $db->query($query);
-		
+		$db_result = self::query($query, $db);
 		if (isset($db_result->row) && !empty($db_result->row)) {
 			return new self($registry, $db_result->row);
 		}

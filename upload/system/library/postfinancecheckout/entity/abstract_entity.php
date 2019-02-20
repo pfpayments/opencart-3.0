@@ -46,6 +46,13 @@ abstract class AbstractEntity {
 		return array_key_exists($variable_name, $this->data);
 	}
 
+	protected static function query($query, $db){
+		set_error_handler('PostFinanceCheckoutHelper::exceptionErrorHandler');
+		$result = $db->query($query);
+		restore_error_handler();
+		return $result;
+	}
+
 	public function __call($name, $arguments){
 		$variable_name = substr($name, 3);
 		
@@ -172,12 +179,12 @@ abstract class AbstractEntity {
 		
 		if ($this->getId() === null) {
 			$query = "INSERT INTO $table SET $valuesQuery;";
-			$res = $db->query($query);
+			$res = self::query($query, $db);
 			$this->setId($db->getLastId());
 		}
 		else {
 			$query = "UPDATE $table SET $valuesQuery WHERE id = {$this->getId()};";
-			$res = $db->query($query);
+			$res = self::query($query, $db);
 		}
 	}
 
@@ -187,9 +194,7 @@ abstract class AbstractEntity {
 	 * @return static
 	 */
 	public static function loadById(\Registry $registry, $id){
-		$db = $registry->get('db');
-		
-		$result = $db->query("SELECT * FROM " . DB_PREFIX . static::getTableName() . " WHERE id = '$id';");
+		$result = self::query("SELECT * FROM " . DB_PREFIX . static::getTableName() . " WHERE id = '$id';", $registry->get('db'));
 		
 		if (isset($result->row) && !empty($result->row)) {
 			return new static($registry, $result->row);
@@ -205,9 +210,7 @@ abstract class AbstractEntity {
 	 * @return \PostFinanceCheckout\Entity\AbstractEntity[]
 	 */
 	public static function loadAll(\Registry $registry){
-		$db = $registry->get('db');
-		
-		$db_result = $db->query("SELECT * FROM " . DB_PREFIX . static::getTableName() . ";");
+		$db_result = self::query("SELECT * FROM " . DB_PREFIX . static::getTableName() . ";", $registry->get('db'));
 		
 		$result = array();
 		foreach ($db_result->rows as $row) {
@@ -227,20 +230,20 @@ abstract class AbstractEntity {
 			'updated_at' 
 		));
 	}
-	
-	private static function getDefaultFilter(array &$filters, $filterName, $default) {
-		if(isset($filters[$filterName])) {
+
+	private static function getDefaultFilter(array &$filters, $filterName, $default){
+		if (isset($filters[$filterName])) {
 			$value = $filters[$filterName];
 			unset($filters[$filterName]);
 			return $value;
 		}
 		return $default;
 	}
-	
-	private static function buildWhereClause($db, array $filters) {
+
+	private static function buildWhereClause($db, array $filters){
 		$query = '';
 		foreach ($filters as $field => $value) {
-			if($value){
+			if ($value) {
 				$field = $db->escape($field);
 				$value = "'" . $db->escape($value) . "'";
 				if (self::isDateField($field)) {
@@ -251,7 +254,7 @@ abstract class AbstractEntity {
 				}
 			}
 		}
-		if($query) {
+		if ($query) {
 			$query = "WHERE " . rtrim($query, " AND");
 		}
 		return $query;
@@ -260,8 +263,8 @@ abstract class AbstractEntity {
 	/**
 	 * Load entities which match the filters.
 	 * Filters are applied as sql =.
-	 * Special Filters: 
-	 * order: ASC or DESC. 
+	 * Special Filters:
+	 * order: ASC or DESC.
 	 * sort: ORDERBY.
 	 * isDateField($field)=true: Compares dates
 	 * start: Limit start
@@ -277,7 +280,7 @@ abstract class AbstractEntity {
 		$orderBy = static::getDefaultFilter($filters, 'sort', 'id');
 		$ordering = static::getDefaultFilter($filters, 'order', 'ASC');
 		$page = 1;
-		if(isset($filters['page'])) {
+		if (isset($filters['page'])) {
 			$page = $filters['page'];
 			unset($filters['page']);
 		}
@@ -286,32 +289,29 @@ abstract class AbstractEntity {
 		
 		$query = "SELECT * FROM $table " . static::buildWhereClause($db, $filters) . " ORDER BY $orderBy $ordering LIMIT $start, $end;";
 		
-		$db_result = $db->query($query);
+		$db_result = self::query($query, $db);
 		$result = array();
 		foreach ($db_result->rows as $row) {
 			$result[] = new static($registry, $row);
 		}
 		return $result;
 	}
-	
+
 	/**
 	 * Returns the count of all entites.
-	 * 
+	 *
 	 * @param \Registry $registry
 	 * @return int
 	 */
-	public static function countRows(\Registry $registry) {
+	public static function countRows(\Registry $registry){
 		$db = $registry->get('db');
 		$table = DB_PREFIX . static::getTableName();
 		$query = "SELECT COUNT(id) as count FROM $table;";
-		$dbResult = $db->query($query);
+		$dbResult = self::query($query, $db);
 		return $dbResult->row['count'];
 	}
 
 	public function delete(\Registry $registry){
-		$db = $registry->get('db');
-		
-		$query = "DELETE FROM " . DB_PREFIX . static::getTableName() . " WHERE id = {$this->getId};";
-		$db->query($query);
+		self::query("DELETE FROM " . DB_PREFIX . static::getTableName() . " WHERE id = {$this->getId()};", $registry->get('db'));
 	}
 }
