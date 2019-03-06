@@ -80,7 +80,11 @@
 				PostFinanceCheckout.handler
 						.setInitializeCallback(this.initialized);
 				PostFinanceCheckout.handler
-						.setValidationCallback(this.validated);
+					.setValidationCallback(this.validated);
+				PostFinanceCheckout.handler
+					.setEnableSubmitCallback(this.enableConfirmButton);
+				PostFinanceCheckout.handler
+					.setDisableSubmitCallback(this.disableConfirmButton);
 				PostFinanceCheckout.handler
 						.create('postfinancecheckout-iframe-container');
 			}

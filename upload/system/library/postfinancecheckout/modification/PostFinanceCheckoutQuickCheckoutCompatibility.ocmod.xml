@@ -3,29 +3,13 @@
 	<code>PostFinanceCheckoutQuickCheckoutCompatibility</code>
 	<name>postfinancecheckout compatibility: patch for Ajax Quick Checkout.
 	</name>
-	<version>1.0.2</version>
+	<version>1.1.0</version>
 	<author>Customweb GmbH</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="catalog/model/extension/d_quickcheckout/method.php">
 		<operation>
 			<search><![CDATA[
 				if(file_exists(DIR_APPLICATION . 'model/extension/payment/' . $result['code'] . '.php')){
-            ]]></search>
-			<add position="replace"><![CDATA[
-				if(file_exists(modification(DIR_APPLICATION . 'model/extension/payment/' . $result['code'] . '.php'))){
-            ]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[
-				if (file_exists(DIR_APPLICATION . 'model/extension/payment/' . $result['code'] . '.php')){
-            ]]></search>
-			<add position="replace"><![CDATA[
-				if (file_exists(modification(DIR_APPLICATION . 'model/extension/payment/' . $result['code'] . '.php'))){
-            ]]></add>
-		</operation>
-		<operation>
-			<search regex="true"><![CDATA[
-				/if *\( *file_exists *\( *DIR\_APPLICATION *\. *\'model\/payment\/\' *\. *\$result *\[ *\'code\' *\] *\. *\'\.php\' *\) *\) *\{/
             ]]></search>
 			<add position="replace"><![CDATA[
 				if(file_exists(modification(DIR_APPLICATION . 'model/extension/payment/' . $result['code'] . '.php'))){

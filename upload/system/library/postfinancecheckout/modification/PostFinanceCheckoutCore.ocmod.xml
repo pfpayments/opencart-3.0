@@ -3,26 +3,10 @@
 	<code>PostFinanceCheckoutCore</code>
 	<name>postfinancecheckout core: load payment methods.
 	</name>
-	<version>1.0.2</version>
+	<version>1.1.2</version>
 	<author>Customweb GmbH</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
-	<file path="catalog/controller/checkout/checkout.php">
-		<operation>
-			<search><![CDATA[
-		if (isset($this->session->data['error'])) {
-            ]]></search>
-			<add position="before"><![CDATA[
-		require_once modification(DIR_SYSTEM . 'library/postfinancecheckout/helper.php');
-		if (isset($this->request->get['order_id']) && \PostFinanceCheckoutHelper::instance($this->registry)->isValidOrder($this->request->get['order_id'])
-			&& \PostFinanceCheckout\Service\Transaction::instance($this->registry)->waitForStates($this->request->get['order_id'], array(\PostFinanceCheckout\Sdk\Model\TransactionState::FAILED), 5)) {
-			$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $this->request->get['order_id']);
-			unset($this->registry->get('session')->data['order_id']);
-			$data['error_warning'] = $transaction_info->getFailureReason();
-		} else 
-            ]]></add>
-		</operation>
-	</file>
-	<file path="admin/controller/extension/payment.php">
+	<file path="admin/controller/setting/extension/payment.php">
 		<operation>
 			<search><![CDATA[
        				$this->model_setting_extension->uninstall('payment', $value);
@@ -44,10 +28,10 @@
             ]]></add>
 		</operation>
 	</file>
-	<file path="admin/controller/error/permission.php">
+	<file path="admin/controller/startup/permission.php">
 		<operation>
 			<search><![CDATA[
-				$ignore = array(
+				$extension = array(
             ]]></search>
 			<add position="after"><![CDATA[
 					'extension/postfinancecheckout',
@@ -73,11 +57,11 @@
             ]]></add>
 		</operation>
 		<operation>
-			<search><![CDATA[
-				require($file)
+			<search regex="true"><![CDATA[
+	~(require|include)(_once)?\(([^)]+)~
             ]]></search>
-			<add position="replace"><![CDATA[
-				require(modification($file))
+			<add><![CDATA[
+	$1$2(modification($3)
             ]]></add>
 		</operation>
 	</file>
@@ -102,19 +86,11 @@
             ]]></add>
 		</operation>
 		<operation>
-			<search><![CDATA[
-	is_file($this->file)
+			<search regex="true"><![CDATA[
+	~(require|include)(_once)?\(([^)]+)~
             ]]></search>
-			<add position="replace"><![CDATA[
-	is_file(modification($this->file))
-            ]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[
-	include_once($file)
-            ]]></search>
-			<add position="replace"><![CDATA[
-	include_once(modification($file))
+			<add><![CDATA[
+	$1$2(modification($3)
             ]]></add>
 		</operation>
 	</file>
@@ -125,30 +101,6 @@
             ]]></search>
 			<add position="replace"><![CDATA[
 	is_file(modification($file))
-            ]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[
-	file_exists($file)
-            ]]></search>
-			<add position="replace"><![CDATA[
-	file_exists(modification($file))
-            ]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[
-	require($file)
-            ]]></search>
-			<add position="replace"><![CDATA[
-	require(modification($file))
-            ]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[
-	include_once($file)
-            ]]></search>
-			<add position="replace"><![CDATA[
-	include_once(modification($file))
             ]]></add>
 		</operation>
 	</file>

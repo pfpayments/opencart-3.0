@@ -40,6 +40,7 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 		catch (Exception $e) {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionRollback();
 			\PostFinanceCheckoutHelper::instance($this->registry)->log($e->getMessage(), \PostFinanceCheckoutHelper::LOG_ERROR);
+			$this->load->language('extension/payment/postfinancecheckout');
 			$result['message'] = $this->language->get('error_confirmation'); 
 			unset($this->session->data['order_id']); // this order number cannot be used anymore
 		}
@@ -49,7 +50,7 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 	}
 
 	private function confirmTransaction(){
-		$transaction = PostFinanceCheckout\Service\Transaction::instance($this->registry)->getTransaction(array(), false,
+		$transaction = PostFinanceCheckout\Service\Transaction::instance($this->registry)->getTransaction($this->getOrderInfo(), false,
 				array(
 					\PostFinanceCheckout\Sdk\Model\TransactionState::PENDING 
 				));
@@ -62,6 +63,14 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 		}
 		
 		throw new Exception('Transaction is not pending.');
+	}
+	
+	private function getOrderInfo() {
+		if(!isset($this->session->data['order_id'])) {
+			throw new Exception("No order_id to confirm.");
+		}
+		$this->load->model('checkout/order');
+		return $this->model_checkout_order->getOrder($this->session->data['order_id']);
 	}
 
 	protected function getRequiredPermission(){

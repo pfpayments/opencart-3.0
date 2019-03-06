@@ -18,19 +18,10 @@ class LineItem extends AbstractService {
 	private $coupon;
 	private $voucher;
 	private $total;
+	private $xfeepro;
 
 	public static function instance(\Registry $registry){
 		return new self($registry);
-	}
-
-	public function getTotalLineItem($total){
-		$line_item = new \PostFinanceCheckout\Sdk\Model\LineItemCreate();
-		$line_item->setAmountIncludingTax($total);
-		$line_item->setQuantity(1);
-		$line_item->setType(\PostFinanceCheckout\Sdk\Model\LineItemType::PRODUCT);
-		$line_item->setName('temp');
-		$line_item->setUniqueId('temp');
-		return $line_item;
 	}
 
 	/**
@@ -46,7 +37,9 @@ class LineItem extends AbstractService {
 		$this->tax->setShippingAddress($order_info['shipping_country_id'], $order_info['shipping_zone_id']);
 		$this->tax->setPaymentAddress($order_info['payment_country_id'], $order_info['payment_zone_id']);
 		
+		\PostFinanceCheckoutHelper::instance($this->registry)->xfeeproDisableIncVat();
 		$line_items = $this->getItemsFromOrder($order_info, $transaction_id, $space_id);
+		\PostFinanceCheckoutHelper::instance($this->registry)->xfeeproRestoreIncVat();
 		
 		// get all succesfully reduced items
 		$refund_jobs = \PostFinanceCheckout\Entity\RefundJob::loadByOrder($this->registry, $order_info['order_id']);
@@ -127,7 +120,7 @@ class LineItem extends AbstractService {
 				break;
 			}
 		}
-		
+				
 		$this->coupon = $this->getCoupon($transaction_info->getCouponCode(), $sub_total, $order_info['customer_id']);
 		
 		return $this->createLineItems($order_info['currency_code']);
@@ -136,10 +129,13 @@ class LineItem extends AbstractService {
 	public function getItemsFromSession(){
 		$this->tax = $this->registry->get('tax');
 		
-		$i = 0;
-		$items = array();
-		$fees = array();
-		
+		$session = $this->registry->get('session');
+		if (isset($session->data['shipping_country_id']) && isset($session->data['shipping_country_id'])) {
+			$this->tax->setShippingAddress($session->data['shipping_country_id'], $session->data['shipping_zone_id']);
+		}
+		if (isset($session->data['payment_country_id']) && isset($session->data['payment_zone_id'])) {
+			$this->tax->setPaymentAddress($session->data['payment_country_id'], $session->data['payment_zone_id']);
+		}
 		$this->products = $this->registry->get('cart')->getProducts();
 		
 		if (!empty($this->registry->get('session')->data['vouchers'])) {
@@ -159,7 +155,9 @@ class LineItem extends AbstractService {
 			$this->shipping = false;
 		}
 		
+		\PostFinanceCheckoutHelper::instance($this->registry)->xfeeproDisableIncVat();
 		$this->total = \PostFinanceCheckoutVersionHelper::getSessionTotals($this->registry);
+		\PostFinanceCheckoutHelper::instance($this->registry)->xfeeProRestoreIncVat();
 		
 		$sub_total = 0;
 		foreach ($this->total as $total) {
@@ -295,7 +293,7 @@ class LineItem extends AbstractService {
 		$line_item = new LineItemCreate();
 		$line_item->setName($total['title']);
 		$line_item->setSku($total['code']);
-		$line_item->setUniqueId($total['code']);
+		$line_item->setUniqueId($this->createUniqueIdFromXfee($total));
 		$line_item->setQuantity(1);
 		$line_item->setType(LineItemType::FEE);
 		if ($total['value'] < 0) {
@@ -304,12 +302,47 @@ class LineItem extends AbstractService {
 		$line_item->setAmountIncludingTax(
 				\PostFinanceCheckoutHelper::instance($this->registry)->formatAmount(
 						\PostFinanceCheckoutHelper::instance($this->registry)->roundXfeeAmount($total['value'])));
-		$fee_id = substr($total['code'], 4);
-		if ($config->get('xfee_tax_class_id' . $fee_id)) {
-			$tax_amount = $this->addTaxesToLineItem($line_item, $total['value'], $config->get('xfee_tax_class_id' . $fee_id));
+		$taxClass = $this->getXfeeTaxClass($total);
+		if ($taxClass) {
+			$tax_amount = $this->addTaxesToLineItem($line_item, $total['value'], $taxClass);
 			$line_item->setAmountIncludingTax(\PostFinanceCheckoutHelper::instance($this->registry)->formatAmount($total['value'] + $tax_amount));
 		}
 		return $this->cleanLineItem($line_item);
+	}
+
+	private function createUniqueIdFromXfee($total){
+		if (isset($total['xcode'])) {
+			return $total['xcode'];
+		}
+		else {
+			return substr($total['code'] . preg_replace("/\W/", "-", $total['title']), 0, 200);
+		}
+	}
+
+	private function getXfeeTaxClass($total){
+		$config = $this->registry->get('config');
+		if ($total['code'] == 'xfee') {
+			for ($i = 0; $i < 12; $i++) {
+				// TODO value comparison percentages
+				if ($config->get('xfee_name' . $i) == $total['title'] /* && $config->get('xfee_value') == $total['value']*/) {
+					return $config->get('xfee_tax_class_id' . $i);
+				}
+			}
+		}
+		else if ($total['code'] == 'xfeepro') {
+			$i = substr($total['xcode'], strlen('xfeepro.xfeepro'));
+			$xfeepro = $this->getXfeePro();
+			return $xfeepro['tax_class_id'][$i];
+		}
+		return null;
+	}
+	
+	private function getXfeePro() {
+		if($this->xfeepro === null) {
+			$config = $this->registry->get('config');
+			$this->xfeepro = $xfeepro = unserialize(base64_decode($config->get('xfeepro')));
+		}
+		return $this->xfeepro;
 	}
 
 	private function createLineItemFromProduct($product){
@@ -362,7 +395,7 @@ class LineItem extends AbstractService {
 					$id .= '=' . $option['option_value_id'];
 				}
 			}
-			if(isset($option['value']) && !$hasValue) {
+			if (isset($option['value']) && !$hasValue) {
 				$id .= '_v=' . $option['value'];
 			}
 		}

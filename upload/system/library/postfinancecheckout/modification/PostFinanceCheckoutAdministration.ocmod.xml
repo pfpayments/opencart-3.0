@@ -3,64 +3,34 @@
 	<code>PostFinanceCheckoutAdministration</code>
 	<name>postfinancecheckout administration: complete, refund and void from the OpenCart backend.
 	</name>
-	<version>1.0.2</version>
+	<version>1.1.0</version>
 	<author>Customweb GmbH</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="admin/controller/sale/order.php">
 		<operation>
 			<search><![CDATA[
-			$this->response->setOutput($this->load->view('sale/order_info.tpl', $data));
+			$data['shipping'] = $this->url->link('sale/order/shipping', 'user_token=' . $this->session->data['user_token'] . '&order_id=' . (int)$this->request->get['order_id'], true);
             ]]></search>
 			<add position="before"><![CDATA[
+			$this->document->addScript('view/javascript/postfinancecheckout/order.js');
 			$this->load->model('extension/postfinancecheckout/order');
-			$data['postfinancecheckout_buttons'] = $this->model_extension_postfinancecheckout_order->getButtons((int)$this->request->get['order_id']);
-			$data['postfinancecheckout_failed_jobs'] = $this->model_extension_postfinancecheckout_order->getFailedJobs((int)$this->request->get['order_id']);
-			$data['postfinancecheckout_tab'] = $this->load->controller('payment/' . $order_info['payment_code'] . '/order');
+			$data['postfinancecheckout_buttons'] = json_encode($this->model_extension_postfinancecheckout_order->getButtons((int)$this->request->get['order_id']));
+			$data['postfinancecheckout_failed_jobs'] = json_encode($this->model_extension_postfinancecheckout_order->getFailedJobs((int)$this->request->get['order_id']));
             ]]></add>
 		</operation>
 	</file>
 	<!-- order_info.tpl ajax api callback autoremoves all alerts, so must add 
 		with delay. -->
-	<file path="admin/view/template/sale/order_info.tpl">
-			<operation>
-			<search><![CDATA[
-<li><a href="#tab-history" data-toggle="tab"><?php echo $tab_history; ?></a></li>
-            ]]></search>
-			<add position="before"><![CDATA[
-<?php if($postfinancecheckout_tab): ?>
-<li><a href="#tab-postfinancecheckout" data-toggle="tab"><?php echo $postfinancecheckout_tab['title']; ?></a></li>
-<?php endif; ?>
-]]></add>
-		</operation>
-			<operation>
-			<search><![CDATA[
-          <div class="tab-pane" id="tab-history">
-            ]]></search>
-			<add position="before"><![CDATA[
-          <?php if($postfinancecheckout_tab) : ?>
-          <div class="tab-pane" id="tab-postfinancecheckout">
-          <?php echo $postfinancecheckout_tab['content']; ?>
-          </div>
-          <?php endif; ?>
-]]></add>
-		</operation>
-		<operation>
-			<search><![CDATA[
-<div id="content">
-            ]]></search>
-			<add position="after"><![CDATA[
-<script src="view/javascript/postfinancecheckout/order.js"></script>
-]]></add>
-		</operation>
+	<file path="admin/view/template/sale/order_info.twig">
 		<operation>
 			<search><![CDATA[
 //--></script>
             ]]></search>
 			<add position="before"><![CDATA[
-document.orderId = '<?php echo $order_id; ?>';
-document.adminToken = '<?php echo $token; ?>';
-setPostFinanceCheckoutButtons(<?php echo json_encode($postfinancecheckout_buttons); ?>);
-var postfinancecheckout_failed_jobs = <?php echo json_encode($postfinancecheckout_failed_jobs); ?>;
+document.orderId = '{{ order_id }}';
+document.adminToken = '{{ user_token }}';
+setPostFinanceCheckoutButtons({{ postfinancecheckout_buttons }});
+var postfinancecheckout_failed_jobs = {{ postfinancecheckout_failed_jobs }};
 window.setTimeout(function() {
 	for (var i = 0; i < postfinancecheckout_failed_jobs.length; i++) {
 		addPostFinanceCheckoutError(postfinancecheckout_failed_jobs[i]);

@@ -281,8 +281,10 @@ class Transaction extends AbstractService {
 		$order_info = \PostFinanceCheckoutHelper::instance($this->registry)->getOrder($order_id);
 		$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_id);
 		
+		\PostFinanceCheckoutHelper::instance($this->registry)->xfeeproDisableIncVat();
 		$line_items = \PostFinanceCheckout\Service\LineItem::instance($this->registry)->getItemsFromOrder($order_info,
 				$transaction_info->getTransactionId(), $transaction_info->getSpaceId());
+		\PostFinanceCheckoutHelper::instance($this->registry)->xfeeproRestoreIncVat();
 		
 		$update_request = new \PostFinanceCheckout\Sdk\Model\TransactionLineItemUpdateRequest();
 		$update_request->setTransactionId($transaction_info->getTransactionId());

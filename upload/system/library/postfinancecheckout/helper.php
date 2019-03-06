@@ -14,6 +14,7 @@ class PostFinanceCheckoutHelper {
 	 * @var Registry
 	 */
 	private $registry;
+	private $xfeepro;
 	private static $instance;
 	private $catalog_url;
 	const LOG_INFO = 2;
@@ -302,7 +303,7 @@ class PostFinanceCheckoutHelper {
 		}
 		return array();
 	}
-	
+
 	/**
 	 * Formats the given amount for the given currency.
 	 * If no currency is given, the current session currency is used. If that is not set the shop configuration is used.
@@ -317,7 +318,7 @@ class PostFinanceCheckoutHelper {
 		}
 		return $this->registry->get('currency')->format($amount, $currency, false, false);
 	}
-	
+
 	/**
 	 * Rounds the amount like Xfee would
 	 *
@@ -331,7 +332,7 @@ class PostFinanceCheckoutHelper {
 		}
 		$decimals = $this->registry->get('currency')->getDecimalPlace();
 		$mode = PHP_ROUND_HALF_UP;
-		if($amount < 0) {
+		if ($amount < 0) {
 			$mode = PHP_ROUND_HALF_DOWN;
 		}
 		return round($amount, $decimals, $mode);
@@ -461,15 +462,18 @@ class PostFinanceCheckoutHelper {
 	}
 
 	public function getSuccessUrl(){
-		return PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'checkout/success', '',
-				$this->registry->get('config')->get('config_secure'));
+		return PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'checkout/success', array(
+			'utm_nooverride' => 1 
+		), $this->registry->get('config')->get('config_secure'));
 	}
 
 	public function getFailedUrl($order_id){
 		return str_replace('&amp;', '&',
-				PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'checkout/checkout', array(
-					'order_id' => $order_id 
-				), $this->registry->get('config')->get('config_secure')));
+				PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'extension/postfinancecheckout/transaction/fail',
+						array(
+							'order_id' => $order_id,
+							'utm_nooverride' => 1 
+						), $this->registry->get('config')->get('config_secure')));
 	}
 
 	public function getWebhookUrl(){
@@ -604,6 +608,31 @@ class PostFinanceCheckoutHelper {
 	public function getLimitEnd($page){
 		$limit = $this->registry->get('config')->get('config_limit_admin');
 		return $page * $limit;
+	}
+	
+	/**
+	 * Disable inc vat setting in xfeepro. Necessary to ensure taxes are calculated and transmitted correctly.
+	 */
+	public function xfeeproDisableIncVat() {
+		$config = $this->registry->get('config');
+		$xfeepro = $config->get('xfeepro');
+		if($xfeepro) {
+			$xfeepro = unserialize(base64_decode($xfeepro));
+			$this->xfeepro = $xfeepro;
+			foreach($xfeepro['inc_vat'] as $i => $value) {
+				$xfeepro['inc_vat'][$i] = 0;
+			}
+			$config->set('xfeepro', base64_encode(serialize($xfeepro)));
+		}
+	}
+	
+	/**
+	 * Restore xfeepro settings.
+	 */
+	public function xfeeProRestoreIncVat() {
+		if($this->xfeepro) {
+			$this->registry->get('config')->set('xfeepro', base64_encode(serialize($this->xfeepro)));
+		}
 	}
 
 	public static function instance(Registry $registry){

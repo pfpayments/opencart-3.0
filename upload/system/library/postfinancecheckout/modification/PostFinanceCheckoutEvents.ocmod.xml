@@ -3,15 +3,15 @@
 	<code>PostFinanceCheckoutEvents</code>
 	<name>postfinancecheckout events: handle events unavailable in Opencart 2.0.x and 2.1.x.
 	</name>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 	<author>Customweb GmbH</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="catalog/controller/common/header.php">
 		<operation>
 			<search><![CDATA[
-		$data['cart'] = $this->load->controller('common/cart');
+		$data['analytics'] = array();
             ]]></search>
-			<add position="after"><![CDATA[
+			<add position="before"><![CDATA[
 		try{
 			$this->load->controller('extension/postfinancecheckout/event/includeDeviceIdentifier');
 			
@@ -26,20 +26,10 @@
             ]]></add>
 		</operation>
 	</file>
-	<file path="catalog/view/theme/*/template/common/header.tpl">
-		<operation>
-			<search><![CDATA[
-		<head>
-            ]]></search>
-			<add position="after"><![CDATA[
-		<?php if (isset($postfinancecheckout_cron)) : ?> <img src="<?php echo $postfinancecheckout_cron; ?>" style="display:none;"> <?php endif; ?>
-            ]]></add>
-		</operation>
-	</file>
 	<file path="admin/controller/extension/modification.php">
 		<operation>
 			<search><![CDATA[
-		// Just after modifications are complete, if config settings say maintenance mode is on AND is different org state, then turn it back on
+		// Maintance mode back to original settings
             ]]></search>
 			<add position="before"><![CDATA[
 		$this->load->controller('extension/postfinancecheckout/event/createMethodConfigurationFiles');

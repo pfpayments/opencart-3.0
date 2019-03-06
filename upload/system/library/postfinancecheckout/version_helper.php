@@ -28,10 +28,6 @@ class PostFinanceCheckoutVersionHelper {
 				'file' => 'PostFinanceCheckoutQuickCheckoutCompatibility.ocmod.xml',
 				'default_status' => 0 
 			),
-			'PostFinanceCheckoutJournalCompatibility' => array(
-				'file' => 'PostFinanceCheckoutJournalCompatibility.ocmod.xml',
-				'default_status' => 0
-			),
 			'PostFinanceCheckoutXFeeProCompatibility' => array(
 				'file' => 'PostFinanceCheckoutXFeeProCompatibility.ocmod.xml',
 				'default_status' => 0
@@ -82,7 +78,6 @@ class PostFinanceCheckoutVersionHelper {
 		);
 		
 		$sort_order = array();
-		
 		$results = $registry->get('model_setting_extension')->getExtensions('total');
 		foreach ($results as $key => $value) {
 			$sort_order[$key] = $registry->get('config')->get('total_' . $value['code'] . '_sort_order');
