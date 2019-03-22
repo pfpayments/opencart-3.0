@@ -48,6 +48,8 @@
 				is_file(modification($file))
             ]]></add>
 		</operation>
+	</file>
+	<file path="system/library/language.php">
 		<operation>
 			<search><![CDATA[
 				file_exists($file)
@@ -56,6 +58,8 @@
 				file_exists(modification($file))
             ]]></add>
 		</operation>
+	</file>
+	<file path="system/library/language.php">
 		<operation>
 			<search regex="true"><![CDATA[
 	~(require|include)(_once)?\(([^)]+)~
@@ -85,6 +89,8 @@
 	is_file(modification($file))
             ]]></add>
 		</operation>
+	</file>
+	<file path="system/engine/action.php">
 		<operation>
 			<search regex="true"><![CDATA[
 	~(require|include)(_once)?\(([^)]+)~

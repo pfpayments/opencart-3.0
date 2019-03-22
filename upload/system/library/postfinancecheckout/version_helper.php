@@ -55,7 +55,7 @@ class PostFinanceCheckoutVersionHelper {
 		return $value;
 	}
 
-	public static function getTemplate($template){
+	public static function getTemplate($theme, $template){
 		return $template;
 	}
 
