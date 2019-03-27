@@ -25,8 +25,8 @@ abstract class ModelExtensionPaymentPostFinanceCheckoutBase extends Model {
 		$order_info = array(
 			'payment_address' => $address 
 		);
-		$billing = \PostFinanceCheckoutHelper::instance($this->registry)->getAddress('billing');
-		$shipping = \PostFinanceCheckoutHelper::instance($this->registry)->getAddress('payment', $order_info);
+		$billing = \PostFinanceCheckoutHelper::instance($this->registry)->getAddress('payment');
+		$shipping = \PostFinanceCheckoutHelper::instance($this->registry)->getAddress('shipping', $order_info);
 		if (empty($billing) && empty($shipping)) {
 			return array();
 		}

@@ -59,6 +59,9 @@
 				PostFinanceCheckout.submit();
 			} else {
 				PostFinanceCheckout.reenable();
+				if(result.errors) {
+					alert(result.errors.join(" "));
+				}
 			}
 		},
 

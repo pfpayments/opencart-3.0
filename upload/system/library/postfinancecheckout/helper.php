@@ -141,23 +141,28 @@ class PostFinanceCheckoutHelper {
 		$address_model = $this->registry->get('model_account_address');
 		$address = array();
 		
-		if ($customer->isLogged() && isset($session[$key . '_address_id'])) {
-			$address = $address_model->getAddress($session[$key . '_address_id']);
-		}
 		if (isset($order_info[$key . '_address'])) {
 			$address = \PostFinanceCheckoutHelper::mergeArray($address, $order_info[$key . '_address']);
 		}
 		if (isset($order_info[$key . '_address_id'])) {
 			$address = \PostFinanceCheckoutHelper::mergeArray($address, $address_model->getAddress($$order_info[$key . '_address_id']));
 		}
-		if (isset($session['guest'][$key]) && is_array($session['guest'][$key])) { // billing only
-			$address = \PostFinanceCheckoutHelper::mergeArray($address, $session['guest'][$key]);
+		if(empty($address) && $key != 'payment') {
+			$address = $this->getAddress('payment', $order_info);
 		}
-		if (isset($session[$key][$key . '_address'])) { // shipping only
-			$address = \PostFinanceCheckoutHelper::mergeArray($address, $session[$key][$key . '_address']);
-		}
-		if (isset($session[$key . '_address']) && is_array($session[$key . '_address'])) {
-			$address = \PostFinanceCheckoutHelper::mergeArray($address, $session[$key . '_address']);
+		if(empty($address)) {
+			if ($customer->isLogged() && isset($session[$key . '_address_id'])) {
+				$address = $address_model->getAddress($session[$key . '_address_id']);
+			}
+			if (isset($session['guest'][$key]) && is_array($session['guest'][$key])) { // billing only
+				$address = \PostFinanceCheckoutHelper::mergeArray($address, $session['guest'][$key]);
+			}
+			if (isset($session[$key][$key . '_address'])) { // shipping only
+				$address = \PostFinanceCheckoutHelper::mergeArray($address, $session[$key][$key . '_address']);
+			}
+			if (isset($session[$key . '_address']) && is_array($session[$key . '_address'])) {
+				$address = \PostFinanceCheckoutHelper::mergeArray($address, $session[$key . '_address']);
+			}
 		}
 		return $address;
 	}
@@ -619,8 +624,10 @@ class PostFinanceCheckoutHelper {
 		if($xfeepro) {
 			$xfeepro = unserialize(base64_decode($xfeepro));
 			$this->xfeepro = $xfeepro;
-			foreach($xfeepro['inc_vat'] as $i => $value) {
-				$xfeepro['inc_vat'][$i] = 0;
+			if(isset($xfeepro['inc_vat'])) {
+				foreach($xfeepro['inc_vat'] as $i => $value) {
+					$xfeepro['inc_vat'][$i] = 0;
+				}	
 			}
 			$config->set('xfeepro', base64_encode(serialize($xfeepro)));
 		}

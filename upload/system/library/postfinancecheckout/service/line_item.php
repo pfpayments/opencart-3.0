@@ -363,7 +363,7 @@ class LineItem extends AbstractService {
 		
 		$line_item->setName($product['name']);
 		$line_item->setQuantity($product['quantity']);
-		$line_item->setShippingRequired(isset($product['shipping']));
+		$line_item->setShippingRequired(isset($product['shipping']) && $product['shipping']);
 		if (isset($product['sku'])) {
 			$line_item->setSku($product['sku']);
 		}

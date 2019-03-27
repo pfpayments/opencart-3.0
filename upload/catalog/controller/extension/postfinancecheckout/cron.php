@@ -80,7 +80,9 @@ class ControllerExtensionPostFinanceCheckoutCron extends Controller {
 	}
 
 	private function endRequestPrematurely(){
-		ob_end_clean();
+		if(ob_get_length()){
+			ob_end_clean();
+		}
 		// Return request but keep executing
 		set_time_limit(0);
 		ignore_user_abort(true);
