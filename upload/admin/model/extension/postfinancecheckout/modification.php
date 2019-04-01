@@ -6,8 +6,15 @@ class ModelExtensionPostFinanceCheckoutModification extends AbstractModel {
 
 	public function install(){
 		$path = DIR_SYSTEM . "library/postfinancecheckout/modification/";
+		$installedModifications = $this->getModificationModel()->getModifications();
 		foreach (PostFinanceCheckoutVersionHelper::getModifications() as $code => $modification) {
-			$this->importModification($path . $modification['file'], $modification['default_status']);
+			$status = 0;
+			foreach($installedModifications as $installedModification) {
+				if($installedModification['code'] == $code) {
+					$status = $installedModification['status'];
+				}
+			}
+			$this->importModification($path . $modification['file'], $status);
 		}
 	}
 
