@@ -25,7 +25,7 @@ class ControllerExtensionPostFinanceCheckoutWebhook extends Controller {
 			}
 			$webhook_handler_class_name = $webhook_model->getHandlerClassName();
 			$webhook_handler = $webhook_handler_class_name::instance($this->registry);
-			\PostFinanceCheckoutHelper::instance($this->registry)->log("Processing webhook with $webhook_handler_class_name", \PostFinanceCheckoutHelper::LOG_DEBUG);
+			\PostFinanceCheckoutHelper::instance($this->registry)->log("Processing webhook ({$request->getEventId()}) with $webhook_handler_class_name", \PostFinanceCheckoutHelper::LOG_DEBUG);
 			$webhook_handler->process($request);
 		}
 		catch (Exception $e) {
