@@ -381,22 +381,24 @@ class LineItem extends AbstractService {
 
 	private function createUniqueIdFromProduct($product){
 		$id = $product['product_id'];
-		foreach ($product['option'] as $option) {
-			$hasValue = false;
-			if (isset($option['product_option_id'])) {
-				$id .= '_po-' . $option['product_option_id'];
-				if (isset($option['product_option_value_id'])) {
-					$id .= '=' . $option['product_option_value_id'];
+		if(isset($product['option'])) {
+			foreach ($product['option'] as $option) {
+				$hasValue = false;
+				if (isset($option['product_option_id'])) {
+					$id .= '_po-' . $option['product_option_id'];
+					if (isset($option['product_option_value_id'])) {
+						$id .= '=' . $option['product_option_value_id'];
+					}
 				}
-			}
-			if (isset($option['option_id']) && isset($option['option_value_id'])) {
-				$id .= '_o-' . $option['option_id'];
-				if (isset($option['option_value_id']) && !empty($option['option_value_id'])) {
-					$id .= '=' . $option['option_value_id'];
+				if (isset($option['option_id']) && isset($option['option_value_id'])) {
+					$id .= '_o-' . $option['option_id'];
+					if (isset($option['option_value_id']) && !empty($option['option_value_id'])) {
+						$id .= '=' . $option['option_value_id'];
+					}
 				}
-			}
-			if (isset($option['value']) && !$hasValue) {
-				$id .= '_v=' . $option['value'];
+				if (isset($option['value']) && !$hasValue) {
+					$id .= '_v=' . $option['value'];
+				}
 			}
 		}
 		return $id;

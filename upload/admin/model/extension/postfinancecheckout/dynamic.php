@@ -33,7 +33,8 @@ class ModelExtensionPostFinanceCheckoutDynamic extends AbstractModel {
 				foreach ($configuration as $partialKey => $value) {
 					$settings[PostFinanceCheckoutVersionHelper::extractPaymentSettingCode($configuration['code']) . '_' . $partialKey] = $value;
 				}
-				$this->model_setting_setting->editSetting(PostFinanceCheckoutVersionHelper::extractPaymentSettingCode($configuration['code']), $settings, $store['store_id']);
+				$this->model_setting_setting->editSetting(PostFinanceCheckoutVersionHelper::extractPaymentSettingCode($configuration['code']),
+						$settings, $store['store_id']);
 				
 				$this->createModel($configuration);
 				$this->createController($configuration);
@@ -107,22 +108,25 @@ class ModelExtensionPostFinanceCheckoutDynamic extends AbstractModel {
 		$this->load->model('localisation/language');
 		$languages = $this->model_localisation_language->getLanguages();
 		foreach ($languages as $code => $language) {
-			if (!$language['status']) {
+			if (!$language['status'] || count($configuration['title']) === 0) {
 				continue;
 			}
-			$primary_language = \PostFinanceCheckout\Provider\Language::instance($this->registry)->findPrimary($code);
-			if ($primary_language === false) {
+			$restLang = \PostFinanceCheckout\Provider\Language::instance($this->registry)->findForStore($language['code'], $language['locale']);
+			if ($restLang === false) {
+				\PostFinanceCheckoutHelper::instance($this->registry)->log("Could not find language for code $code.");
 				continue;
 			}
-			if (!isset($configuration['title'][$primary_language->getIetfCode()])) {
-				continue;
+			
+			$title = array_values($configuration['title'])[0];
+			if (isset($configuration['title'][$restLang->getIetfCode()])) {
+				$title = \PostFinanceCheckout\Provider\Language::instance($this->registry)->find($code);
 			}
 			$target = str_replace('#code#', PostFinanceCheckoutVersionHelper::extractLanguageDirectory($language), $target_base);
 			
 			$content = str_replace(array(
 				'#Title#' 
 			), array(
-				$configuration['title'][$primary_language->getIetfCode()] 
+				$title
 			), $this->loadSource($source));
 			
 			// create directories as required

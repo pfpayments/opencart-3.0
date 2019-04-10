@@ -47,6 +47,41 @@ class Language extends AbstractProvider {
 		return false;
 	}
 
+	public function findForStore($code, $locale = ""){
+		$code = strtolower(substr($code, 0, 2)); // code may be de, deu, or de-DE. In case of three-letter may cause issues
+		$possibleIetfs = array();
+		if ($locale) { // locale may contain ietf codes. Or it may contain garbage
+			$locales = explode(',', $locale);
+			foreach ($locales as $possibleIetf) {
+				if (strlen($possibleIetf) === 5) {
+					$possibleIetf = strtolower(substr($possibleIetf, 0, 2)) . "-" . strtoupper(substr($possibleIetf, 3)); // change de_DE and de.de to de-DE
+					if (!isset($possibleIetfs[$possibleIetf])) {
+						$possibleIetfs[$possibleIetf] = true;
+					}
+				}
+			}
+		}
+		$usePrimary = empty($possibleIetfs);
+		$fallback = null;
+		foreach ($this->getAll() as $language) {
+			if ($language->getIso2Code() == $code) {
+				if ($language->getPrimaryOfGroup()) {
+					if ($usePrimary) {
+						return $language;
+					}
+					$fallback = $language;
+				}
+				if (isset($possibleIetfs[$language->getIetfCode()])) {
+					return $language;
+				}
+			}
+			else if ($language->getIetfCode() === 'en-US' && empty($fallback)) {
+				$fallback = $language;
+			}
+		}
+		return $fallback; // fallback to primary if no ietf match
+	}
+
 	/**
 	 * Returns a list of language.
 	 *
@@ -57,7 +92,8 @@ class Language extends AbstractProvider {
 	}
 
 	protected function fetchData(){
-		$language_service = new \PostFinanceCheckout\Sdk\Service\LanguageService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		$language_service = new \PostFinanceCheckout\Sdk\Service\LanguageService(
+				\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
 		return $language_service->all();
 	}
 
