@@ -39,6 +39,7 @@ class Transaction extends AbstractService {
 		$transaction = $this->getTransaction(array(), false, array(
 			\PostFinanceCheckout\Sdk\Model\TransactionState::PENDING 
 		));
+		$this->persist($transaction, array());
 		return $this->getTransactionService()->buildJavaScriptUrl($transaction->getLinkedSpaceId(), $transaction->getId());
 	}
 
@@ -142,7 +143,7 @@ class Transaction extends AbstractService {
 				$create = empty($allowed_states) ? false : !in_array(self::$transaction_cache[$sessionId]->getState(), $allowed_states);
 			}
 			if ($create) {
-				unset($order_info['order_id']);
+				throw new Exception("Order ID was already used."); // Todo test
 			}
 		}
 		
@@ -155,9 +156,11 @@ class Transaction extends AbstractService {
 	}
 
 	private function persist($transaction, array $order_info){
+		$id = null;
 		if (isset($order_info['order_id'])) {
-			$this->updateTransactionInfo($transaction, $order_info['order_id']);
+			$id = $order_info['order_id'];  // Todo test
 		}
+		$this->updateTransactionInfo($transaction, $id);
 		$this->storeTransactionIdsInSession($transaction);
 		$this->storeCoupon($transaction);
 		$this->storeShipping($transaction);
@@ -485,7 +488,7 @@ class Transaction extends AbstractService {
 				 \PostFinanceCheckoutHelper::instance($this->registry)->compareStoredCustomerSessionIdentifier();
 	}
 
-	private function clearTransactionInSession(){
+	public function clearTransactionInSession(){
 		if ($this->hasTransactionInSession()) {
 			unset($this->registry->get('session')->data['postfinancecheckout_transaction_id']);
 			unset($this->registry->get('session')->data['postfinancecheckout_customer']);

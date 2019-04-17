@@ -51,7 +51,7 @@ class PostFinanceCheckoutHelper {
 	 */
 	public function getCustomerSessionIdentifier(){
 		$customer = $this->getCustomer();
-		if (isset($customer['customer_id']) && $this->registry->get('customer')->isLogged()) {
+		if (isset($customer['customer_id']) && $this->registry->get('customer') && $this->registry->get('customer')->isLogged()) {
 			return "customer_" . $customer['customer_id'];
 		}
 		$guestId = $this->buildGuestSessionIdentifier($customer);
@@ -73,7 +73,7 @@ class PostFinanceCheckoutHelper {
 	}
 
 	private function buildCartSessionIdentifier(array $data){
-		if (isset($data['cart']) && is_array($data['cart']) && count($data['cart'] == 1)) {
+		if (isset($data['cart']) && is_array($data['cart']) && count($data['cart']) == 1) {
 			$cartKeys = array_keys($data['cart']);
 			return "cart_" . hash('sha512', $cartKeys[0]);
 		}
@@ -151,7 +151,7 @@ class PostFinanceCheckoutHelper {
 			$address = $this->getAddress('payment', $order_info);
 		}
 		if(empty($address)) {
-			if ($customer->isLogged() && isset($session[$key . '_address_id'])) {
+			if ($customer && $customer->isLogged() && isset($session[$key . '_address_id'])) {
 				$address = $address_model->getAddress($session[$key . '_address_id']);
 			}
 			if (isset($session['guest'][$key]) && is_array($session['guest'][$key])) { // billing only
@@ -297,7 +297,7 @@ class PostFinanceCheckoutHelper {
 
 	public function getCustomer(){
 		$data = $this->registry->get('session')->data;
-		if ($this->registry->get('customer')->isLogged()) {
+		if ($this->registry->get('customer') && $this->registry->get('customer')->isLogged()) {
 			$customer_id = $this->registry->get('session')->data['customer_id'];
 			$this->registry->get('load')->model('account/customer');
 			$customer = $this->registry->get('model_account_customer')->getCustomer($customer_id);
@@ -494,7 +494,7 @@ class PostFinanceCheckoutHelper {
 	public function isValidOrder($order_id){
 		if (!$this->isAdmin()) {
 			$order_info = $this->getOrder($order_id);
-			if ($this->registry->get('customer')->isLogged() && isset($this->registry->get('session')->data['customer_id'])) {
+			if ($this->registry->get('customer') && $this->registry->get('customer')->isLogged() && isset($this->registry->get('session')->data['customer_id'])) {
 				if ($this->registry->get('session')->data['customer_id'] != $order_info['customer_id']) {
 					return false;
 				}

@@ -170,7 +170,15 @@ abstract class AbstractEntity {
 		$valuesQuery = '';
 		
 		foreach ($data_array as $key => $value) {
-			$valuesQuery .= "`" . $key . '`="' . $db->escape($value) . '",';
+			if($value === null) {
+				$value = 'NULL';
+			}
+			else {
+				$value = '"'.$db->escape($value) .'"';
+			}
+			if($value !== null) {
+				$valuesQuery .= "`$key`=$value,";
+			}
 		}
 		
 		$valuesQuery = rtrim($valuesQuery, ',');

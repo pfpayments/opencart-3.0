@@ -43,6 +43,7 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 			$this->load->language('extension/payment/postfinancecheckout');
 			$result['message'] = $this->language->get('error_confirmation'); 
 			unset($this->session->data['order_id']); // this order number cannot be used anymore
+			PostFinanceCheckout\Service\Transaction::instance($this->registry)->clearTransactionInSession();
 		}
 		
 		$this->response->addHeader('Content-Type: application/json');
