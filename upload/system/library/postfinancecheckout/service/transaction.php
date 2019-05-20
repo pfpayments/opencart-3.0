@@ -162,7 +162,6 @@ class Transaction extends AbstractService {
 		}
 		$this->updateTransactionInfo($transaction, $id);
 		$this->storeTransactionIdsInSession($transaction);
-		$this->storeCoupon($transaction);
 		$this->storeShipping($transaction);
 	}
 
@@ -334,6 +333,10 @@ class Transaction extends AbstractService {
 			else if ($transaction->getFailureReason()) {
 				$info->setFailureReason($transaction->getFailureReason()->getDescription());
 			}
+		}
+		// TODO into helper?
+		if($this->hasSaveableCoupon()) {
+			$info->setCouponCode($this->getCoupon());
 		}
 		$info->save();
 		return $info;
@@ -522,17 +525,12 @@ class Transaction extends AbstractService {
 			$shipping_info->save();
 		}
 	}
-
-	private function storeCoupon(\PostFinanceCheckout\Sdk\Model\Transaction $transaction){
-		if (isset($this->registry->get('session')->data['coupon']) && isset($this->registry->get('session')->data['order_id'])) {
-			$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry,
-					$this->registry->get('session')->data['order_id']);
-			$transaction_info->setTransactionId($transaction->getId());
-			$transaction_info->setSpaceId($transaction->getLinkedSpaceId());
-			$transaction_info->setOrderId($this->registry->get('session')->data['order_id']);
-			$transaction_info->setCouponCode($this->registry->get('session')->data['coupon']);
-			$transaction_info->setState(\PostFinanceCheckout\Sdk\Model\TransactionState::CREATE);
-			$transaction_info->save();
-		}
+	
+	private function hasSaveableCoupon() {
+		return isset($this->registry->get('session')->data['coupon']) && isset($this->registry->get('session')->data['order_id']);
+	}
+	
+	private function getCoupon() {
+		return $this->registry->get('session')->data['coupon'];
 	}
 }

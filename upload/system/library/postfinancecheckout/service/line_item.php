@@ -16,6 +16,7 @@ class LineItem extends AbstractService {
 	private $products;
 	private $shipping;
 	private $coupon;
+	private $coupon_total;
 	private $voucher;
 	private $total;
 	private $xfeepro;
@@ -36,6 +37,7 @@ class LineItem extends AbstractService {
 		$this->tax = \PostFinanceCheckoutVersionHelper::newTax($this->registry);
 		$this->tax->setShippingAddress($order_info['shipping_country_id'], $order_info['shipping_zone_id']);
 		$this->tax->setPaymentAddress($order_info['payment_country_id'], $order_info['payment_zone_id']);
+		$this->coupon_total = 0;
 		
 		\PostFinanceCheckoutHelper::instance($this->registry)->xfeeproDisableIncVat();
 		$line_items = $this->getItemsFromOrder($order_info, $transaction_id, $space_id);
@@ -88,6 +90,7 @@ class LineItem extends AbstractService {
 		$order_total = 0;
 		$items = array();
 		
+		$this->coupon_total = 0;
 		$this->fixed_taxes = array();
 		$this->products = $order_model->getOrderProducts($order_info['order_id']);
 		$voucher = $order_model->getOrderVouchers($order_info['order_id']);
@@ -187,6 +190,11 @@ class LineItem extends AbstractService {
 		
 		if ($this->voucher) {
 			$items[] = $item = $this->createLineItemFromVoucher();
+			$calculated_total += $item->getAmountIncludingTax();
+		}
+		
+		if($this->coupon) {
+			$items[] = $item  = $this->createLineItemFromCoupon();
 			$calculated_total += $item->getAmountIncludingTax();
 		}
 		
@@ -358,7 +366,13 @@ class LineItem extends AbstractService {
 			elseif ($this->coupon['type'] == 'P') {
 				$discount = $product['total'] / 100 * $this->coupon['discount'];
 			}
-			$amount_excluding_tax -= $discount;
+			$this->coupon_total -= $discount;
+			$line_item->setAttributes(array(
+				"coupon" => new \PostFinanceCheckout\Sdk\Model\LineItemAttributeCreate(array(
+					'label' => $this->coupon['name'],
+					'value' => $discount
+				))
+			));
 		}
 		
 		$line_item->setName($product['name']);
@@ -403,8 +417,21 @@ class LineItem extends AbstractService {
 		}
 		return $id;
 	}
-
-	private function createLineItemFromVoucher($voucher, $id){
+	
+	private function createLineItemFromCoupon(){
+		$line_item = new LineItemCreate();
+		
+		$line_item->setName($this->coupon['name']);
+		$line_item->setQuantity(1);
+		$line_item->setType(LineItemType::DISCOUNT);
+		$line_item->setSKU($this->coupon['code']);
+		$line_item->setUniqueId($this->coupon['coupon_id']);
+		$line_item->setAmountIncludingTax(\PostFinanceCheckoutHelper::instance($this->registry)->formatAmount($this->coupon_total));
+		
+		return $this->cleanLineItem($line_item);
+	}
+	
+	private function createLineItemFromVoucher(){
 		$line_item = new LineItemCreate();
 		
 		$line_item->setName($this->voucher['name']);

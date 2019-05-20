@@ -115,7 +115,7 @@ class PostFinanceCheckoutHelper {
 			case 'customer':
 				return isset($customer['customer_id']) && 'customer_' . $customer['customer_id'] == $id;
 			case 'user':
-				return isset($customer['user_id']) && 'user_' . $customer['user_id'] == $id;
+				return (isset($customer['user_id']) && 'user_' . $customer['user_id'] == $id) || (isset($data['user_id']) && 'user_' . $data['user_id'] == $id);
 			case 'guest':
 				return $this->buildGuestSessionIdentifier($customer) == $id;
 			case 'cart':
