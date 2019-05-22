@@ -137,9 +137,9 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 		$download_labels = array();
 		if (in_array($transaction_info->getState(),
 				array(
-					\Wallee\Sdk\Model\TransactionState::COMPLETED,
-					\Wallee\Sdk\Model\TransactionState::FULFILL,
-					\Wallee\Sdk\Model\TransactionState::DECLINE 
+					\PostFinanceCheckout\Sdk\Model\TransactionState::COMPLETED,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL,
+					\PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE 
 				))) {
 			$download_labels[] = array(
 				'name' => $this->language->get('label_invoice'),
@@ -147,7 +147,7 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 				'value' => $this->getDownloadLink('invoice') 
 			);
 		}
-		if ($transaction_info->getState() == \Wallee\Sdk\Model\TransactionState::FULFILL) {
+		if ($transaction_info->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL) {
 			$download_labels[] = array(
 				'name' => $this->language->get('label_packing'),
 				'description' => $this->language->get('description_packing'),

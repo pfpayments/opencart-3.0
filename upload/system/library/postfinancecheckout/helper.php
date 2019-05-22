@@ -456,9 +456,9 @@ class PostFinanceCheckoutHelper {
 		$this->apiClient = new PostFinanceCheckout\Sdk\ApiClient($this->registry->get('config')->get('postfinancecheckout_user_id'),
 				$this->registry->get('config')->get('postfinancecheckout_application_key'));
 		$this->apiClient->setBasePath(self::getBaseUrl() . "/api");
-		if ($this->registry->get('config')->get('wallee_log_level') >= self::LOG_DEBUG) {
+		if ($this->registry->get('config')->get('postfinancecheckout_log_level') >= self::LOG_DEBUG) {
 			$this->apiClient->enableDebugging();
-			$this->apiClient->setDebugFile(DIR_LOGS . "wallee_communication.log");
+			$this->apiClient->setDebugFile(DIR_LOGS . "postfinancecheckout_communication.log");
 		}
 	}
 

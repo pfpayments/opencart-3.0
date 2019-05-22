@@ -8,7 +8,7 @@
 $_['heading_title']									= 'PostFinance Checkout';
 $_['heading_postfinancecheckout']					= 'PostFinance Checkout';
 $_['text_postfinancecheckout']					= '<a target="_BLANK" href="https://www.postfinance.ch"><img src="view/image/extension/payment/postfinancecheckout.png" alt="PostFinance Checkout Website" title="PostFinance Checkout Website" style="border: 1px solid #EEEEEE;" /></a>';
-// Wallee Configurations (user id, application key, spaces)
+// PostFinanceCheckout Configurations (user id, application key, spaces)
 $_['title_global_settings']							= "Global credentials";
 $_['title_store_settings']							= "Store settings";
 $_['entry_user_id']									= "User Id";

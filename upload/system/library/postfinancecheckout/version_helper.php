@@ -106,7 +106,7 @@ class PostFinanceCheckoutVersionHelper {
 	
 	public static function persistPluginStatus(\Registry $registry, array $post) {
 		$status = array(
-			'payment_wallee_status' => $post['postfinancecheckout_status']
+			'payment_postfinancecheckout_status' => $post['postfinancecheckout_status']
 		);
 		$registry->get('model_setting_setting')->editSetting('payment_postfinancecheckout', $status, $post['id']);
 	}

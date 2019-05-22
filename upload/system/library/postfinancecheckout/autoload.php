@@ -3,7 +3,7 @@
 /**
  * Autoload function.
  * 
- * Includes the plugin classes as well as wallee sdk classes.
+ * Includes the plugin classes as well as PostFinanceCheckout sdk classes.
  *
  * After registering this autoload function with SPL, the following line
  * would cause the function to attempt to load the \PostFinanceCheckout\Sdk\Baz\Qux class

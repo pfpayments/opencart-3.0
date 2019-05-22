@@ -119,7 +119,7 @@ class ModelExtensionPostFinanceCheckoutDynamic extends AbstractModel {
 			
 			$title = array_values($configuration['title'])[0];
 			if (isset($configuration['title'][$restLang->getIetfCode()])) {
-				$title = \PostFinanceCheckout\Provider\Language::instance($this->registry)->find($code);
+				$title = $configuration['title'][$restLang->getIetfCode()];
 			}
 			$target = str_replace('#code#', PostFinanceCheckoutVersionHelper::extractLanguageDirectory($language), $target_base);
 			
