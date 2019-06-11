@@ -123,6 +123,7 @@ class LineItem extends AbstractService {
 				break;
 			}
 		}
+		$this->sub_total = $sub_total;
 				
 		$this->coupon = $this->getCoupon($transaction_info->getCouponCode(), $sub_total, $order_info['customer_id']);
 		
@@ -169,6 +170,7 @@ class LineItem extends AbstractService {
 				break;
 			}
 		}
+		$this->sub_total = $sub_total;
 		
 		if (isset($this->registry->get('session')->data['coupon']) && isset($this->registry->get('session')->data['customer_id'])) {
 			$this->coupon = $this->getCoupon($this->registry->get('session')->data['coupon'], $sub_total,
