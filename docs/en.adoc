@@ -11,7 +11,7 @@
 
 == Installation
 
-1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.20/[Download] the extension.
+1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.21/[Download] the extension.
 2. Extract the files and upload the content of the `Upload` directory into the root directory of your store using FTP/SSH.
 3. Login to the backend of your OpenCart store.
 4. Navigate to Extensions -> Payment to install the plugin.
@@ -58,6 +58,18 @@ In the following section we provide you an overview about how the PostFinance Ch
 Below you find a diagram that shows the state machine of OpenCart for orders including additional information for the state transitions.
 
 image::state_graph.svg[]
+
+[glossary]
+1. When the transaction is marked as `authorized` in PostFinance Checkout the order within OpenCart will be marked as `Processed`. The amount is only reserved at this point. The order is not yet ready to be fulfilled.
+2. When the transaction fails during the authorization process the OpenCart order is marked as `Failed`.
+3. In case the delivery indication is pending, the order within OpenCart will move into `Processing` (in thise case you have to decide the outcome of the delivery indication e.g. You have configured to manually check transactions without 3d Secure). In such situations a manual task is created and an alert appears in the PostFinance Checkout & OpenCart backends. You can then resolve the manual task within the PostFinance Checkout backend. This changes the transaction status, which is transmitted back to OpenCart.  See more details in xref:On hold orders[].
+4. In case the decision about the fulfillment is negative, the order within OpenCart will be marked as `Declined` and should not be fulfilled.
+5. If you decide to void an authorized transaction (in case for example the products ordered are no longer in stock), the order within OpenCart will be marked as `Voided`.
+6. When the transaction is marked in PostFinance Checkout as `fulfill` the order within OpenCart will be be marked as `Complete`. This is when you can start the fulfillment process. The plugin will in this case not change the status anymore.
+
+NOTE: This describes the default state machine of OpenCart orders, however you have the option in the PostFinance Checkout plugin configuration to define different order status.
+
+For information about deferred completion, see xref:Complete (capture) an order[]
 
 == Transaction management
 

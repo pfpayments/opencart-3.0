@@ -44,9 +44,16 @@ class Transaction extends AbstractService {
 	}
 
 	public function getPaymentPageUrl(\PostFinanceCheckout\Sdk\Model\Transaction $transaction, $paymentCode){
-		$paymentMethodId = substr($paymentCode, strlen('postfinancecheckout_'));
+		$paymentMethodId = \PostFinanceCheckoutHelper::extractPaymentMethodId($paymentCode);
 		return $this->getTransactionService()->buildPaymentPageUrl($transaction->getLinkedSpaceId(), $transaction->getId()) .
 				 '&paymentMethodConfigurationId=' . $paymentMethodId;
+	}
+	
+	protected function getAllowedPaymentMethodConfigurations(array $order_info) {
+		if(isset($order_info['payment_method']) && isset($order_info['payment_method']['code'])){
+			return array(\PostFinanceCheckoutHelper::extractPaymentMethodId($order_info['payment_method']['code']));
+		}
+		return null;
 	}
 
 	public function update(array $order_info, $confirm = false){
@@ -156,11 +163,9 @@ class Transaction extends AbstractService {
 	}
 
 	private function persist($transaction, array $order_info){
-		$id = null;
 		if (isset($order_info['order_id'])) {
-			$id = $order_info['order_id'];  // Todo test
+			$this->updateTransactionInfo($transaction, $order_info['order_id']);
 		}
-		$this->updateTransactionInfo($transaction, $id);
 		$this->storeTransactionIdsInSession($transaction);
 		$this->storeShipping($transaction);
 	}
@@ -219,7 +224,8 @@ class Transaction extends AbstractService {
 		
 		$transaction->setLineItems(LineItem::instance($this->registry)->getItemsFromSession());
 		$transaction->setSuccessUrl(\PostFinanceCheckoutHelper::instance($this->registry)->getSuccessUrl());
-		
+		$transaction->setAllowedPaymentMethodConfigurations($this->getAllowedPaymentMethodConfigurations($order_info));
+
 		if ($order_id) {
 			$transaction->setMerchantReference($order_id);
 			$transaction->setFailedUrl(\PostFinanceCheckoutHelper::instance($this->registry)->getFailedUrl($order_id));

@@ -9,8 +9,9 @@ abstract class ControllerExtensionPaymentPostFinanceCheckoutBase extends Abstrac
 			return '';
 		}
 		$this->load->language('extension/payment/postfinancecheckout');
+		$data = array();
 		
-		$data['configuration_id'] = substr($this->getCode(), strlen('postfinancecheckout_'));
+		$data['configuration_id'] = \PostFinanceCheckoutHelper::extractPaymentMethodId($this->getCode());
 		
 		$data['button_confirm'] = $this->language->get('button_confirm');
 		$data['text_loading'] = $this->language->get('text_loading');

@@ -45,7 +45,7 @@ abstract class ModelExtensionPaymentPostFinanceCheckoutBase extends Model {
 			}
 			
 			$available_methods = \PostFinanceCheckout\Service\Transaction::instance($this->registry)->getPaymentMethods($order_info);
-			$configuration_id = substr($this->getCode(), strlen('postfinancecheckout_'));
+			$configuration_id = substr($this->getCode(), \PostFinanceCheckoutHelper::extractPaymentMethodId($this->getCode()));
 			
 			foreach ($available_methods as $method) {
 				if ($method->getId() == $configuration_id) {

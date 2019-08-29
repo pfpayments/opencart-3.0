@@ -648,6 +648,10 @@ class PostFinanceCheckoutHelper {
 		}
 		return self::$instance;
 	}
+	
+	public static function extractPaymentMethodId($code) {
+		return substr($code, strlen('postfinancecheckout_'));
+	}
 
 	public static function exceptionErrorHandler($severity, $message, $file, $line){
 		if (!(error_reporting() & $severity)) {
