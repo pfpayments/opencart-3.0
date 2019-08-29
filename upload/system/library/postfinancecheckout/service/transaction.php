@@ -74,7 +74,7 @@ class Transaction extends AbstractService {
 				$this->assembleTransaction($pending_transaction, $order_info);
 				
 				if ($confirm) {
-					$pending_transaction->setAllowedPaymentMethodBrands($this->getAllowedPaymentMethodConfigurations($order_info));
+					$pending_transaction->setAllowedPaymentMethodConfigurations($this->getAllowedPaymentMethodConfigurations($order_info));
 					$transaction = $this->getTransactionService()->confirm($transaction->getLinkedSpaceId(), $pending_transaction);
 					$this->clearTransactionInSession();
 				}
