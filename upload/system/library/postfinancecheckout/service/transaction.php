@@ -224,7 +224,6 @@ class Transaction extends AbstractService {
 		
 		$transaction->setLineItems(LineItem::instance($this->registry)->getItemsFromSession());
 		$transaction->setSuccessUrl(\PostFinanceCheckoutHelper::instance($this->registry)->getSuccessUrl());
-		$transaction->setAllowedPaymentMethodConfigurations($this->getAllowedPaymentMethodConfigurations($order_info));
 
 		if ($order_id) {
 			$transaction->setMerchantReference($order_id);
