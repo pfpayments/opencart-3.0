@@ -125,6 +125,8 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		$newSettings['postfinancecheckout_download_invoice'] = isset($store['postfinancecheckout_download_invoice']);
 		$newSettings['postfinancecheckout_download_packaging'] = isset($store['postfinancecheckout_download_packaging']);
 		
+		$newSettings['postfinancecheckout_rounding_adjustment'] = isset($store['postfinancecheckout_rounding_adjustment']);
+		
 		PostFinanceCheckoutVersionHelper::persistPluginStatus($this->registry, $newSettings);
 		
 		$this->model_setting_setting->editSetting('postfinancecheckout', $newSettings, $store['id']);
@@ -239,6 +241,10 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		$data['entry_log_level'] = $this->language->get('entry_log_level');
 		$data['help_log_level'] = $this->language->get('help_log_level');
 		$data['log_levels'] = $this->getLogLevels();
+		
+		$data['title_rounding_adjustment'] = $this->language->get('title_rounding_adjustment');
+		$data['entry_rounding_adjustment'] = $this->language->get('entry_rounding_adjustment');
+		$data['description_rounding_adjustment'] = $this->language->get('description_rounding_adjustment');
 		
 		$data['entry_email'] = $this->language->get("entry_email");
 		$data['description_email'] = $this->language->get("description_email");
@@ -430,6 +436,8 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 			"postfinancecheckout_log_level" => \PostFinanceCheckoutHelper::LOG_ERROR,
 			
 			"postfinancecheckout_notification_url" => null,
+			
+			"postfinancecheckout_rounding_adjustment" => 0,
 			
 			"postfinancecheckout_download_packaging" => 1,
 			"postfinancecheckout_download_invoice" => 1,

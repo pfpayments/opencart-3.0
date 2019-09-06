@@ -12,6 +12,8 @@ $_['error_order_edit']				= 'The PostFinance Checkout transaction is in a state 
 $_['error_not_pending']				= 'Transaction exists and is not in state pending.';
 $_['error_confirmation']			= 'The transaction could not be confirmed. Please check to see if any payment has been made from your account, and retry if no charge has taken place.';
 
+$_['rounding_adjustment_item_name']	= 'Rounding Adjustment';
+
 // Order overview / download buttons
 $_['button_invoice']				= 'Invoice';
 $_['button_packing_slip']			= 'Packing slip';

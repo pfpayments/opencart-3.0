@@ -36,6 +36,11 @@ $_['help_log_level']								= 'Here you can set what sort of information should 
 $_['log_level_error']								= 'Error';
 $_['log_level_debug']								= 'Debug';
 
+// Rounding
+$_['title_rounding_adjustment']						= 'Rounding adjustments';
+$_['entry_rounding_adjustment']						= 'Send Item';
+$_['description_rounding_adjustment']				= 'If we cannot map the Opencart totals to PostFinance Checkout line items exactly, instead of disabling the payment methods you can instead choose to send an Adjustment Item which contains the difference. In this case tax amounts may no longer be exact, and features such as reconciliation in PostFinance Checkout and refunds from the Opencart backend may not fully work.';
+
 // Status
 $_['title_payment_status']							= "Status mapping";
 $_['entry_processing_status'] 						= "Processing status";
@@ -249,6 +254,8 @@ $_['entry_total']									= 'Total';
 $_['entry_name']									= 'Name';
 $_['entry_sku']										= 'SKU';
 $_['entry_id']										= 'Unique ID';
+
+$_['rounding_adjustment_item_name']					= 'Rounding Adjustment';
 
 $_['entry_restock']									= 'Restock products';
 $_['button_reset']									= 'Reset';

@@ -249,6 +249,25 @@
 									</div>
 								</div>
 							</fieldset>
+														
+							<fieldset>
+								<legend>
+									{{ title_rounding_adjustment}}
+								</legend>
+								<div class="form-group">
+									<label class="col-sm-2 control-label">{{ entry_rounding_adjustment }}</label>
+
+									<div class="col-sm-10">
+										<input type="checkbox"
+											name="stores[{{ store.id }}][postfinancecheckout_rounding_adjustment]"
+											{% if stores[store.id]['postfinancecheckout_rounding_adjustment'] %} checked
+											{% endif %} value="1" />
+										<p class="form-control-static">
+											{{ description_rounding_adjustment }}
+										</p>
+									</div>
+								</div>
+							</fieldset>
 						</div>
 					</div>
 				</div>

@@ -1,4 +1,5 @@
 <?php
+
 require_once modification(DIR_SYSTEM . 'library/postfinancecheckout/helper.php');
 
 class ModelExtensionPostFinanceCheckoutMigration extends Model {
@@ -16,9 +17,11 @@ class ModelExtensionPostFinanceCheckoutMigration extends Model {
 	);
 
 	public function migrate(){
+		\PostFinanceCheckoutHelper::instance($this->registry)->log("Starting migration");
 		$currentVersion = '0.0.0';
 		if ($this->config->has('postfinancecheckout_migration_version')) {
 			$currentVersion = $this->config->get('postfinancecheckout_migration_version');
+			\PostFinanceCheckoutHelper::instance($this->registry)->log("Current version: $currentVersion");
 		}
 		$startingVersion = $currentVersion;
 		
@@ -26,12 +29,14 @@ class ModelExtensionPostFinanceCheckoutMigration extends Model {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionStart();
 			try {
 				if (version_compare($currentVersion, $migration['version']) === -1) {
+					\PostFinanceCheckoutHelper::instance($this->registry)->log("Running {$migration['name']}");
 					$this->{$migration['function']}();
 					\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionCommit();
 					$currentVersion = $migration['version'];
 				}
 			}
 			catch (Exception $e) {
+				\PostFinanceCheckoutHelper::instance($this->registry)->log($e->getMessage());
 				\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionRollback();
 				break;
 			}
@@ -39,10 +44,12 @@ class ModelExtensionPostFinanceCheckoutMigration extends Model {
 		
 		// update version if required
 		if (version_compare($startingVersion, $currentVersion) !== 0) {
+			\PostFinanceCheckoutHelper::instance($this->registry)->log("Updating version");
 			$this->load->model('setting/setting');
 			$settings = $this->model_setting_setting->getSetting('postfinancecheckout');
 			$settings['postfinancecheckout_migration_version'] = self::$migrations[$currentVersion]['version'];
 			$settings['postfinancecheckout_migration_name'] = self::$migrations[$currentVersion]['name'];
+			\PostFinanceCheckoutHelper::instance($this->registry)->log("Currently at ". self::$migrations[$currentVersion]['version'].": ".self::$migrations[$currentVersion]['name']);
 			$this->model_setting_setting->editSetting('postfinancecheckout', $settings);
 		}
 	}

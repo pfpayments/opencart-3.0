@@ -44,7 +44,7 @@ class Token extends AbstractService {
 		else {
 			$info = \PostFinanceCheckout\Entity\TokenInfo::loadByToken($this->registry, $space_id, $token_id);
 			if ($info->getId()) {
-				$info->delete();
+				$info->delete($this->registry);
 			}
 		}
 	}
@@ -57,15 +57,13 @@ class Token extends AbstractService {
 					\PostFinanceCheckout\Sdk\Model\TokenVersionState::UNINITIALIZED 
 				))) {
 			if ($info->getId()) {
-				$info->delete();
+				$info->delete($this->registry);
 			}
 			return;
 		}
 		
 		$info->setCustomerId($token_version->getToken()->getCustomerId());
 		$info->setName($token_version->getName());
-		
-		/* @var PostFinanceCheckout_Payment_Model_Entity_PaymentMethodConfiguration $paymentMethod */
 		
 		$payment_method = \PostFinanceCheckout\Entity\MethodConfiguration::loadByConfiguration($this->registry, $space_id,
 				$token_version->getPaymentConnectorConfiguration()->getPaymentMethodConfiguration()->getId());
