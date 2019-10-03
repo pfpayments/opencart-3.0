@@ -9,7 +9,6 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 
 	public function includeScripts(){
 		try {
-			\PostFinanceCheckoutHelper::instance($this->registry)->refreshWebhook();
 			$this->includeCronScript();
 			$this->includeDeviceIdentifier();
 		}

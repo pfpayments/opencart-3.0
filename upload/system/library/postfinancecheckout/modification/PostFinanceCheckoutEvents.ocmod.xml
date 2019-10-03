@@ -15,7 +15,6 @@
 		try{
 			$this->load->controller('extension/postfinancecheckout/event/includeDeviceIdentifier');
 			
-			\PostFinanceCheckoutHelper::instance($this->registry)->refreshWebhook();
 			\PostFinanceCheckout\Entity\Cron::cleanUpHangingCrons($this->registry);
 			\PostFinanceCheckout\Entity\Cron::insertNewPendingCron($this->registry);
 			$postfinancecheckout_cron_token = \PostFinanceCheckout\Entity\Cron::getCurrentSecurityTokenForPendingCron($this->registry);
