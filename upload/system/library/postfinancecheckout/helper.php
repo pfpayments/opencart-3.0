@@ -662,7 +662,7 @@ class PostFinanceCheckoutHelper {
 	}
 
 	public static function getBaseUrl(){
-		return "https://app-postfinancecheckout.com:443";
+		return rtrim("https://www.postfinance-checkout.ch/", '/');
 	}
 
 	public static function isEditableState($state){
