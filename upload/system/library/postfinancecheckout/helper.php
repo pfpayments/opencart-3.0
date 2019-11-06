@@ -28,7 +28,7 @@ class PostFinanceCheckoutHelper {
 			$this->loggers = array(
 				self::LOG_ERROR => $registry->get('log'),
 				self::LOG_DEBUG => new Log('postfinancecheckout_debug.log'),
-				self::LOG_INFO => new Log('postfinancecheckout_info.log') 
+				self::LOG_INFO => new Log('postfinancecheckout_info.log')
 			);
 		}
 		else {
@@ -108,14 +108,15 @@ class PostFinanceCheckoutHelper {
 		else {
 			return false;
 		}
-		
+
 		$parts = explode('_', $id);
 		$customer = $this->getCustomer();
 		switch ($parts[0]) {
 			case 'customer':
 				return isset($customer['customer_id']) && 'customer_' . $customer['customer_id'] == $id;
 			case 'user':
-				return (isset($customer['user_id']) && 'user_' . $customer['user_id'] == $id) || (isset($data['user_id']) && 'user_' . $data['user_id'] == $id);
+				return (isset($customer['user_id']) && 'user_' . $customer['user_id'] == $id) ||
+						(isset($data['user_id']) && 'user_' . $data['user_id'] == $id);
 			case 'guest':
 				return $this->buildGuestSessionIdentifier($customer) == $id;
 			case 'cart':
@@ -140,17 +141,17 @@ class PostFinanceCheckoutHelper {
 		$session = $this->registry->get('session')->data;
 		$address_model = $this->registry->get('model_account_address');
 		$address = array();
-		
+
 		if (isset($order_info[$key . '_address'])) {
 			$address = \PostFinanceCheckoutHelper::mergeArray($address, $order_info[$key . '_address']);
 		}
 		if (isset($order_info[$key . '_address_id'])) {
 			$address = \PostFinanceCheckoutHelper::mergeArray($address, $address_model->getAddress($$order_info[$key . '_address_id']));
 		}
-		if(empty($address) && $key != 'payment') {
+		if (empty($address) && $key != 'payment') {
 			$address = $this->getAddress('payment', $order_info);
 		}
-		if(empty($address)) {
+		if (empty($address)) {
 			if ($customer && $customer->isLogged() && isset($session[$key . '_address_id'])) {
 				$address = $address_model->getAddress($session[$key . '_address_id']);
 			}
@@ -170,7 +171,7 @@ class PostFinanceCheckoutHelper {
 	public function refreshWebhook(){
 		$db = $this->registry->get('db');
 		$config = DB_PREFIX . 'setting';
-		
+
 		$generated = $this->getWebhookUrl();
 		$saved = $this->registry->get('config')->get('postfinancecheckout_notification_url');
 		if ($generated == $saved) {
@@ -179,7 +180,7 @@ class PostFinanceCheckoutHelper {
 		$space_id = $this->registry->get('config')->get('postfinancecheckout_space_id');
 		\PostFinanceCheckout\Service\Webhook::instance($this->registry)->uninstall($space_id, $saved);
 		\PostFinanceCheckout\Service\Webhook::instance($this->registry)->install($space_id, $generated);
-		
+
 		$store_id = $this->registry->get('config')->get('config_store_id');
 		if ($store_id === null) {
 			$store_id = 0;
@@ -217,14 +218,14 @@ class PostFinanceCheckoutHelper {
 
 	public function hasRunningJobs(\PostFinanceCheckout\Entity\TransactionInfo $transaction_info){
 		return \PostFinanceCheckout\Entity\CompletionJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) +
-				 \PostFinanceCheckout\Entity\VoidJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) +
-				 \PostFinanceCheckout\Entity\RefundJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) > 0;
+				\PostFinanceCheckout\Entity\VoidJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) +
+				\PostFinanceCheckout\Entity\RefundJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) > 0;
 	}
 
 	public function isCompletionPossible(\PostFinanceCheckout\Entity\TransactionInfo $transaction_info){
 		return $transaction_info->getState() == \PostFinanceCheckout\Sdk\Model\TransactionState::AUTHORIZED &&
-				 (\PostFinanceCheckout\Entity\CompletionJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) == 0) &&
-				 (\PostFinanceCheckout\Entity\VoidJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) == 0);
+				(\PostFinanceCheckout\Entity\CompletionJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) == 0) &&
+				(\PostFinanceCheckout\Entity\VoidJob::countRunningForOrder($this->registry, $transaction_info->getOrderId()) == 0);
 	}
 
 	public function isRefundPossible(\PostFinanceCheckout\Entity\TransactionInfo $transaction_info){
@@ -232,7 +233,7 @@ class PostFinanceCheckoutHelper {
 				array(
 					\PostFinanceCheckout\Sdk\Model\TransactionState::COMPLETED,
 					\PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL,
-					\PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE 
+					\PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE
 				))) {
 			return false;
 		}
@@ -372,14 +373,14 @@ class PostFinanceCheckoutHelper {
 	 */
 	public function dbTransactionLock($space_id, $transaction_id){
 		$db = $this->registry->get('db');
-		
+
 		$table = DB_PREFIX . 'postfinancecheckout_transaction_info';
 		$locked_at = date('Y-m-d H:i:s');
 		$space_id = $db->escape($space_id);
 		$transaction_id = $db->escape($transaction_id);
-		
+
 		$db->query("SELECT locked_at FROM $table WHERE transaction_id = '$transaction_id' AND space_id = '$space_id' FOR UPDATE");
-		
+
 		$db->query("UPDATE $table SET locked_at = '$locked_at' WHERE transaction_id = '$transaction_id' AND space_id = '$space_id'");
 	}
 
@@ -388,7 +389,7 @@ class PostFinanceCheckoutHelper {
 		if (isset($strings[$language])) {
 			return $strings[$language];
 		}
-		
+
 		if ($language) {
 			try {
 				$language_provider = \PostFinanceCheckout\Provider\Language::instance($this->registry);
@@ -434,10 +435,10 @@ class PostFinanceCheckoutHelper {
 				$language = $config->get('config_admin_language');
 			}
 		}
-		
+
 		$prefixWithDash = substr($language, 0, 3);
 		$postfix = strtoupper(substr($language, 3));
-		
+
 		return $prefixWithDash . $postfix;
 	}
 
@@ -468,7 +469,7 @@ class PostFinanceCheckoutHelper {
 
 	public function getSuccessUrl(){
 		return PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'checkout/success', array(
-			'utm_nooverride' => 1 
+			'utm_nooverride' => 1
 		), $this->registry->get('config')->get('config_secure'));
 	}
 
@@ -477,7 +478,7 @@ class PostFinanceCheckoutHelper {
 				PostFinanceCheckoutVersionHelper::createUrl($this->getCatalogUrl(), 'extension/postfinancecheckout/transaction/fail',
 						array(
 							'order_id' => $order_id,
-							'utm_nooverride' => 1 
+							'utm_nooverride' => 1
 						), $this->registry->get('config')->get('config_secure')));
 	}
 
@@ -494,7 +495,8 @@ class PostFinanceCheckoutHelper {
 	public function isValidOrder($order_id){
 		if (!$this->isAdmin()) {
 			$order_info = $this->getOrder($order_id);
-			if ($this->registry->get('customer') && $this->registry->get('customer')->isLogged() && isset($this->registry->get('session')->data['customer_id'])) {
+			if ($this->registry->get('customer') && $this->registry->get('customer')->isLogged() &&
+					isset($this->registry->get('session')->data['customer_id'])) {
 				if ($this->registry->get('session')->data['customer_id'] != $order_info['customer_id']) {
 					return false;
 				}
@@ -539,6 +541,21 @@ class PostFinanceCheckoutHelper {
 		$this->registry->get('model_checkout_order')->addOrderHistory($order_id, $status, $message, $notify);
 	}
 
+	public function ensurePaymentCode(array $order_info, \PostFinanceCheckout\Sdk\Model\Transaction $transaction){
+		$code = 'postfinancecheckout_' . $transaction->getPaymentConnectorConfiguration()->getPaymentMethodConfiguration()->getId();
+		if ($order_info['payment_code'] == $code) {
+			return;
+		}
+		$db = $this->registry->get('db');
+		$table = DB_PREFIX . 'order';
+		$code = $db->escape($code);
+		$title = $db->escape($transaction->getPaymentConnectorConfiguration()->getPaymentMethodConfiguration()->getName());
+		$order_id = $db->escape($order_info['order_id']);
+		$query = "UPDATE `$table` SET `payment_code`='$code', `payment_method`='$title' WHERE `order_id`='$order_id';";
+		$this->log("Changing payment method on order: [" . $query . "], was [" . $order_info['payment_code'] . "]", self::LOG_DEBUG);
+		$db->query($query);
+	}
+
 	/**
 	 *
 	 * @return Url
@@ -580,10 +597,10 @@ class PostFinanceCheckoutHelper {
 	public function rewrite($url){
 		return str_replace(array(
 			HTTP_SERVER,
-			HTTPS_SERVER 
+			HTTPS_SERVER
 		), array(
 			HTTP_CATALOG,
-			HTTPS_CATALOG 
+			HTTPS_CATALOG
 		), $url);
 	}
 
@@ -614,30 +631,31 @@ class PostFinanceCheckoutHelper {
 		$limit = $this->registry->get('config')->get('config_limit_admin');
 		return $page * $limit;
 	}
-	
+
 	/**
-	 * Disable inc vat setting in xfeepro. Necessary to ensure taxes are calculated and transmitted correctly.
+	 * Disable inc vat setting in xfeepro.
+	 * Necessary to ensure taxes are calculated and transmitted correctly.
 	 */
-	public function xfeeproDisableIncVat() {
+	public function xfeeproDisableIncVat(){
 		$config = $this->registry->get('config');
 		$xfeepro = $config->get('xfeepro');
-		if($xfeepro) {
+		if ($xfeepro) {
 			$xfeepro = unserialize(base64_decode($xfeepro));
 			$this->xfeepro = $xfeepro;
-			if(isset($xfeepro['inc_vat'])) {
-				foreach($xfeepro['inc_vat'] as $i => $value) {
+			if (isset($xfeepro['inc_vat'])) {
+				foreach ($xfeepro['inc_vat'] as $i => $value) {
 					$xfeepro['inc_vat'][$i] = 0;
-				}	
+				}
 			}
 			$config->set('xfeepro', base64_encode(serialize($xfeepro)));
 		}
 	}
-	
+
 	/**
 	 * Restore xfeepro settings.
 	 */
-	public function xfeeProRestoreIncVat() {
-		if($this->xfeepro) {
+	public function xfeeProRestoreIncVat(){
+		if ($this->xfeepro) {
 			$this->registry->get('config')->set('xfeepro', base64_encode(serialize($this->xfeepro)));
 		}
 	}
@@ -648,8 +666,8 @@ class PostFinanceCheckoutHelper {
 		}
 		return self::$instance;
 	}
-	
-	public static function extractPaymentMethodId($code) {
+
+	public static function extractPaymentMethodId($code){
 		return substr($code, strlen('postfinancecheckout_'));
 	}
 
@@ -669,7 +687,7 @@ class PostFinanceCheckoutHelper {
 		$completable_states = array(
 			\PostFinanceCheckout\Sdk\Model\TransactionState::AUTHORIZED,
 			\PostFinanceCheckout\Sdk\Model\TransactionState::CONFIRMED,
-			\PostFinanceCheckout\Sdk\Model\TransactionState::PROCESSING 
+			\PostFinanceCheckout\Sdk\Model\TransactionState::PROCESSING
 		);
 		return in_array($state, $completable_states);
 	}

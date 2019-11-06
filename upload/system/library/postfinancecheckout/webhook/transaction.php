@@ -28,10 +28,9 @@ class Transaction extends AbstractOrderRelated {
 	}
 
 	protected function processOrderRelatedInner(array $order_info, $transaction){
-		$oid = $order_info['order_id'];
-		$tid = $transaction->getId();
 		/* @var \PostFinanceCheckout\Sdk\Model\Transaction $transaction */
 		$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_info['order_id']);
+		\PostFinanceCheckoutHelper::instance($this->registry)->ensurePaymentCode($order_info, $transaction);
 		if ($transaction->getState() != $transaction_info->getState()) {
 			switch ($transaction->getState()) {
 				case \PostFinanceCheckout\Sdk\Model\TransactionState::CONFIRMED:
@@ -71,13 +70,11 @@ class Transaction extends AbstractOrderRelated {
 	}
 
 	protected function processing(\PostFinanceCheckout\Sdk\Model\Transaction $transaction, array $order_info){
-		// TODO none..
 		\PostFinanceCheckoutHelper::instance($this->registry)->addOrderHistory($order_info['order_id'], 'postfinancecheckout_processing_status_id',
 				\PostFinanceCheckoutHelper::instance($this->registry)->getTranslation('message_webhook_processing'));
 	}
 
 	protected function confirm(\PostFinanceCheckout\Sdk\Model\Transaction $transaction, array $order_info){
-		// TODO none..
 		\PostFinanceCheckoutHelper::instance($this->registry)->addOrderHistory($order_info['order_id'], 'postfinancecheckout_processing_status_id',
 				\PostFinanceCheckoutHelper::instance($this->registry)->getTranslation('message_webhook_confirm'));
 	}
@@ -98,7 +95,6 @@ class Transaction extends AbstractOrderRelated {
 	}
 
 	protected function failed(\PostFinanceCheckout\Sdk\Model\Transaction $transaction, array $order_info){
-		// TODO none
 		\PostFinanceCheckoutHelper::instance($this->registry)->addOrderHistory($order_info['order_id'], 'postfinancecheckout_failed_status_id',
 				\PostFinanceCheckoutHelper::instance($this->registry)->getTranslation('message_webhook_failed'));
 	}
