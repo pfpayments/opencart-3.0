@@ -381,8 +381,12 @@ class LineItem extends AbstractService {
 		$product['tax_class_id'] = $this->getTaxClassByProductId($product['product_id']);
 
 		if ($this->coupon && (!$this->coupon['product'] || in_array($product['product_id'], $this->coupon['product']))) {
+			$count = 1;
+			if(!empty($this->coupon['product'])) {
+				$count = count($this->coupon['product']);
+			}
 			if ($this->coupon['type'] == 'F') {
-				$discount = $this->coupon['discount'] * ($product['total'] / $this->sub_total);
+				$discount = $this->coupon['discount'] / $count;
 			}
 			elseif ($this->coupon['type'] == 'P') {
 				$discount = $product['total'] / 100 * $this->coupon['discount'];
