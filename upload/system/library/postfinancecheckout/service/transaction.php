@@ -4,7 +4,8 @@ namespace PostFinanceCheckout\Service;
 
 use PostFinanceCheckout\Sdk\Service\ChargeAttemptService;
 use PostFinanceCheckout\Sdk\Service\TransactionService;
-use PostFinanceCheckout\Sdk\Model\TransactionPending;
+use PostFinanceCheckout\Sdk\Service\TransactionIframeService;
+use PostFinanceCheckout\Sdk\Service\TransactionPaymentPageService;
 
 /**
  * This service provides functions to deal with PostFinanceCheckout transactions.
@@ -40,12 +41,12 @@ class Transaction extends AbstractService {
 			\PostFinanceCheckout\Sdk\Model\TransactionState::PENDING 
 		));
 		$this->persist($transaction, array());
-		return $this->getTransactionService()->buildJavaScriptUrl($transaction->getLinkedSpaceId(), $transaction->getId());
+		return $this->getIframeService()->javascriptUrl($transaction->getLinkedSpaceId(), $transaction->getId());
 	}
 
 	public function getPaymentPageUrl(\PostFinanceCheckout\Sdk\Model\Transaction $transaction, $paymentCode){
 		$paymentMethodId = \PostFinanceCheckoutHelper::extractPaymentMethodId($paymentCode);
-		return $this->getTransactionService()->buildPaymentPageUrl($transaction->getLinkedSpaceId(), $transaction->getId()) .
+		return $this->getPaymentPageService()->paymentPageUrl($transaction->getLinkedSpaceId(), $transaction->getId()) .
 				 '&paymentMethodConfigurationId=' . $paymentMethodId;
 	}
 	
@@ -259,6 +260,20 @@ class Transaction extends AbstractService {
 	 * @var \PostFinanceCheckout\Sdk\Service\ChargeAttemptService
 	 */
 	private $charge_attempt_service;
+	
+	/**
+	 * The iframe API service, to retrieve JS url
+	 *
+	 * @var \PostFinanceCheckout\Sdk\Service\TransactionIframeService
+	 */
+	private $transaction_iframe_service;
+	
+	/**
+	 * The payment page API service, tro retrieve pp URL
+	 * 
+	 * @var \PostFinanceCheckout\Sdk\Service\TransactionPaymentPageService
+	 */
+	private $transaction_payment_page_service;
 
 	/**
 	 * Returns the transaction API service.
@@ -283,7 +298,31 @@ class Transaction extends AbstractService {
 		}
 		return $this->charge_attempt_service;
 	}
-
+	
+	/**
+	 * Returns the transaction API service.
+	 *
+	 * @return \PostFinanceCheckout\Sdk\Service\TransactionIframeService
+	 */
+	private function getIframeService(){
+		if ($this->transaction_iframe_service === null) {
+			$this->transaction_iframe_service = new TransactionIframeService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		}
+		return $this->transaction_iframe_service;
+	}
+	
+	/**
+	 * Returns the transaction API service.
+	 *
+	 * @return \PostFinanceCheckout\Sdk\Service\TransactionPaymentPageService
+	 */
+	private function getPaymentPageService(){
+		if ($this->transaction_payment_page_service === null) {
+			$this->transaction_payment_page_service = new TransactionPaymentPageService(\PostFinanceCheckoutHelper::instance($this->registry)->getApiClient());
+		}
+		return $this->transaction_payment_page_service;
+	}
+	
 	/**
 	 * Updates the line items to be in line with the current order.
 	 *

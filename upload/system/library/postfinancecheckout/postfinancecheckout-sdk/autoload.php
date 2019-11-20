@@ -1,9 +1,9 @@
 <?php
 /**
- * PostFinance Checkout SDK
+ *  SDK
  *
- * This library allows to interact with the PostFinance Checkout payment service.
- * PostFinance Checkout SDK: 1.0.0
+ * This library allows to interact with the  payment service.
+ *  SDK: 2.0.4
  * 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,8 @@
 /**
  * Autoload function.
  *
+ * @author   customweb GmbH
+ 
  * After registering this autoload function with SPL, the following line
  * would cause the function to attempt to load the \PostFinanceCheckout\Sdk\Baz\Qux class
  * from /path/to/project/lib/Baz/Qux.php:

@@ -1,9 +1,9 @@
 <?php
 /**
- * PostFinance Checkout SDK
+ *  SDK
  *
- * This library allows to interact with the PostFinance Checkout payment service.
- * PostFinance Checkout SDK: 1.0.0
+ * This library allows to interact with the  payment service.
+ *  SDK: 2.0.4
  * 
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ final class HttpClientFactory {
 	 *
 	 * @var IHttpClient[]
 	 */
-	private $clients = array();
+	private $clients = [];
 
 	/**
 	 * Returns the singleton instance of the factory. If no instance exists, it is created.
@@ -83,20 +83,18 @@ final class HttpClientFactory {
 	 * @return IHttpClient
 	 */
 	private function getClientInternal($type = null) {
-		if ($type != null) {
-			if (isset($this->clients[$type])) {
-				return $this->clients[$type];
-			} else {
-				throw new \Exception("No http client with type '$type' found.");
-			}
-		} else {
-			foreach ($this->clients as $client) {
-				if ($client->isSupported()) {
-					return $client;
-				}
-			}
-			throw new \Exception('No supported http client found.');
-		}
+        $type = empty($type) ? getenv('PFC_HTTP_CLIENT') : $type;
+        if(empty($type)){
+            foreach ($this->clients as $client) {
+                if ($client->isSupported()) {
+                    return $client;
+                }
+            }
+            throw new \Exception('No supported http client found.');
+        } elseif (isset($this->clients[$type]) && $this->clients[$type]->isSupported()) {
+            return $this->clients[$type];
+        }
+        throw new \Exception("No http client with type '$type' found.");
 	}
 
 }
