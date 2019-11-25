@@ -157,4 +157,32 @@ class Cron extends AbstractEntity {
 			return false;
 		}
 	}
+	
+	/**
+	 * Removes all cron jobs older than 1 day which are completed (success / error)
+	 * @param \Registry $registry
+	 * @return boolean
+	 */
+	public static function cleanUpCronDB(\Registry $registry)
+	{
+		try {
+			$db = $registry->get('db');
+			\PostFinanceCheckoutHelper::instance($registry)->dbTransactionStart();
+			$success = self::STATE_SUCCESS;
+			$error = self::STATE_ERROR;
+			$table = DB_PREFIX . self::getTableName();
+			$cutoff = new \DateTime();
+			$cutoff->add(new \DateInterval('P1D'));
+			$cutoff = $cutoff->format('Y-m-d H:i:s');
+			$query = "DELETE FROM $table WHERE `state`='$error' OR `state`='$success' AND `date_completed`<'$cutoff';";
+			
+			self::query($query, $db);
+			\PostFinanceCheckoutHelper::instance($registry)->dbTransactionCommit();
+			return true;
+		}
+		catch (\Exception $e) {
+			\PostFinanceCheckoutHelper::instance($registry)->dbTransactionRollback();
+			return false;
+		}
+	}
 }

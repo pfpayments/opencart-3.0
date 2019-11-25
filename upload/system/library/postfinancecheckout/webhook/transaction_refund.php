@@ -72,7 +72,7 @@ class TransactionRefund extends AbstractOrderRelated {
 			
 			\PostFinanceCheckoutHelper::instance($this->registry)->addOrderHistory($order_info['order_id'], $status,
 					sprintf(\PostFinanceCheckoutHelper::instance($this->registry)->getTranslation('message_refund_successful'), $refund->getId(),
-							$refund->getAmount()));
+							$refund->getAmount()), true);
 			
 			if ($refund_job->getRestock()) {
 				$this->restock($refund);

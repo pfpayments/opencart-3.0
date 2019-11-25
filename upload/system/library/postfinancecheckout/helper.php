@@ -526,9 +526,10 @@ class PostFinanceCheckoutHelper {
 	 * which should be applied.
 	 * @param string $message
 	 * @param boolean $notify
+	 * @param boolean $force If the history should be added even if status is still the same.
 	 * @throws Exception
 	 */
-	public function addOrderHistory($order_id, $status, $message = '', $notify = false){
+	public function addOrderHistory($order_id, $status, $message = '', $notify = false, $force = false){
 		$this->log(__METHOD__ . " (ID: $order_id, Status: $status, Message: $message, Notify: $notify");
 		if ($this->isAdmin()) {
 			$this->log('Called addOrderHistory from admin context - unsupported.', self::LOG_ERROR);
@@ -538,7 +539,13 @@ class PostFinanceCheckoutHelper {
 			$status = $this->registry->get('config')->get($status);
 		}
 		$this->registry->get('load')->model('checkout/order');
-		$this->registry->get('model_checkout_order')->addOrderHistory($order_id, $status, $message, $notify);
+		$model = $this->registry->get('model_checkout_order');
+		$order = $model->getOrder($order_id);
+		if($order['status'] !== $status || $force) {
+			$model->addOrderHistory($order_id, $status, $message, $notify);
+		} else {
+			$this->log("Skipped adding order history, same status & !force.");
+		}
 	}
 
 	public function ensurePaymentCode(array $order_info, \PostFinanceCheckout\Sdk\Model\Transaction $transaction){

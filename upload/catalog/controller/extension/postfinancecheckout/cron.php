@@ -14,6 +14,8 @@ class ControllerExtensionPostFinanceCheckoutCron extends Controller {
 			die();
 		}
 		
+		\PostFinanceCheckout\Entity\Cron::cleanUpCronDB($this->registry);
+		
 		try {
 			\PostFinanceCheckoutHelper::instance($this->registry)->dbTransactionStart();
 			$result = \PostFinanceCheckout\Entity\Cron::setProcessing($this->registry, $security_token);
