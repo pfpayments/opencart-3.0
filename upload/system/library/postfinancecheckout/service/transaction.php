@@ -181,6 +181,7 @@ class Transaction extends AbstractService {
 		}
 		
 		$create_transaction->setAutoConfirmationEnabled(false);
+		$create_transaction->setChargeRetryEnabled(false);
 		$this->assembleTransaction($create_transaction, $order_info);
 		$transaction = $this->getTransactionService()->create($this->registry->get('config')->get('postfinancecheckout_space_id'),
 				$create_transaction);
