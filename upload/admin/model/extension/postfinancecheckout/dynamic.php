@@ -112,7 +112,7 @@ class ModelExtensionPostFinanceCheckoutDynamic extends AbstractModel {
 				continue;
 			}
 			$restLang = \PostFinanceCheckout\Provider\Language::instance($this->registry)->findForStore($language['code'], $language['locale']);
-			if ($restLang === false) {
+			if (empty($restLang)) {
 				\PostFinanceCheckoutHelper::instance($this->registry)->log("Could not find language for code $code.");
 				continue;
 			}

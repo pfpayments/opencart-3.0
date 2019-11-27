@@ -13,7 +13,12 @@ class ModelExtensionPostFinanceCheckoutMigration extends Model {
 			'name' => 'order_id_nullable',
 			'version' => '1.0.1',
 			'function' => 'oc_postfinancecheckout_update_1_0_1_order_id_nullable'
-		)
+		),
+		'1.0.2' => array(
+			'name' => 'clear_cache',
+			'version' => '1.0.2',
+			'function' => 'oc_postfinancecheckout_update_1_0_2_clear_cache'
+		),
 	);
 
 	public function migrate(){
@@ -246,5 +251,14 @@ class ModelExtensionPostFinanceCheckoutMigration extends Model {
 	private function oc_postfinancecheckout_update_1_0_1_order_id_nullable(){
 		$this->db->query(
 				"ALTER TABLE `" . DB_PREFIX . "postfinancecheckout_transaction_info` MODIFY COLUMN `order_id` int(11) unsigned NULL;");
+	}
+	
+	private function oc_postfinancecheckout_update_1_0_2_clear_cache() {
+		\PostFinanceCheckout\Provider\Language::instance($this->registry)->clearCache();
+		\PostFinanceCheckout\Provider\Currency::instance($this->registry)->clearCache();
+		\PostFinanceCheckout\Provider\LabelDescriptionGroup::instance($this->registry)->clearCache();
+		\PostFinanceCheckout\Provider\LabelDescriptor::instance($this->registry)->clearCache();
+		\PostFinanceCheckout\Provider\PaymentConnector::instance($this->registry)->clearCache();
+		\PostFinanceCheckout\Provider\PaymentMethod::instance($this->registry)->clearCache();
 	}
 }
