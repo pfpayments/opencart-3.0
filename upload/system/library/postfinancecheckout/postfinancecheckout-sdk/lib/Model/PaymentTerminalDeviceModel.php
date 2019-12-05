@@ -51,7 +51,7 @@ class PaymentTerminalDeviceModel implements ModelInterface, ArrayAccess
     protected static $swaggerTypes = [
         'description' => '\PostFinanceCheckout\Sdk\Model\DatabaseTranslatedString',
         'id' => 'int',
-        'image' => 'string[]',
+        'image' => 'string',
         'image_type' => 'string',
         'manufacturer' => '\PostFinanceCheckout\Sdk\Model\PaymentTerminalDeviceManufacturer',
         'model_id' => 'string',
@@ -330,7 +330,7 @@ class PaymentTerminalDeviceModel implements ModelInterface, ArrayAccess
     /**
      * Gets image
      *
-     * @return string[]
+     * @return string
      */
     public function getImage()
     {
@@ -340,12 +340,14 @@ class PaymentTerminalDeviceModel implements ModelInterface, ArrayAccess
     /**
      * Sets image
      *
-     * @param string[] $image 
+     * @param string $image image
      *
      * @return $this
      */
     public function setImage($image)
     {
+
+
         $this->container['image'] = $image;
 
         return $this;

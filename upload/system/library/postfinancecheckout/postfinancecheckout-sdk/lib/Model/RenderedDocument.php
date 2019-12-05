@@ -49,7 +49,7 @@ class RenderedDocument implements ModelInterface, ArrayAccess
       * @var string[]
       */
     protected static $swaggerTypes = [
-        'data' => 'string[]',
+        'data' => 'string',
         'document_template_type' => 'int',
         'mime_type' => 'string',
         'title' => 'string'
@@ -224,7 +224,7 @@ class RenderedDocument implements ModelInterface, ArrayAccess
     /**
      * Gets data
      *
-     * @return string[]
+     * @return string
      */
     public function getData()
     {
@@ -234,12 +234,14 @@ class RenderedDocument implements ModelInterface, ArrayAccess
     /**
      * Sets data
      *
-     * @param string[] $data 
+     * @param string $data data
      *
      * @return $this
      */
     public function setData($data)
     {
+
+
         $this->container['data'] = $data;
 
         return $this;
