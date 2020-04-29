@@ -16,12 +16,12 @@
 										<div class="layout-navigation">
 					<ul class="nav">
 	<li>
-		<a href="https://www.postfinance-checkout.ch/user/signup">
+		<a href="https://checkout.postfinance.ch/user/signup">
 			Sign Up
 		</a>
 	</li>
 	<li>
-		<a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.37/">
+		<a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.38/">
 			Source
 		</a>
 	</li>
@@ -48,7 +48,7 @@
 					<div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.37/">Download</a> the extension.</p>
+<p><a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.38/">Download</a> the extension.</p>
 </li>
 <li>
 <p>Extract the files and upload the content of the <code>Upload</code> directory into the root directory of your store using FTP/SSH.</p>
@@ -70,7 +70,7 @@
 					<div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Navigate to Extensions &#8594; Payment &#8594; PostFinance Checkout in your OpenCart backend and enter the PostFinance Checkout Space ID, User ID and Authentification Key that you can create in the <a href="https://www.postfinance-checkout.ch/space/select?target=/space/assistant" target="_blank">setup assistant</a>. Alternatively, you can manually create an <a href="https://www.postfinance-checkout.ch/en-us/doc/permission-concept#_create_application_users" target="_blank">application user</a>.</p>
+<p>Navigate to Extensions &#8594; Payment &#8594; PostFinance Checkout in your OpenCart backend and enter the PostFinance Checkout Space ID, User ID and Authentification Key that you can create in the <a href="https://checkout.postfinance.ch/space/select?target=/space/assistant" target="_blank">setup assistant</a>. Alternatively, you can manually create an <a href="https://checkout.postfinance.ch/en-us/doc/permission-concept#_create_application_users" target="_blank">application user</a>.</p>
 <div class="imageblock">
 <div class="content">
 <img src="resource/settings.png" alt="settings"/>
@@ -81,7 +81,7 @@
 </div>
 </li>
 <li>
-<p>Optionally configure which OpenCart status should be set depending on the PostFinance Checkout state. For more information check out the <a href="https://www.postfinance-checkout.ch/doc/payment/processor-concept">Processor Concept</a>.</p>
+<p>Optionally configure which OpenCart status should be set depending on the PostFinance Checkout state. For more information check out the <a href="https://checkout.postfinance.ch/doc/payment/processor-concept">Processor Concept</a>.</p>
 </li>
 <li>
 <p>Optionally disable downloading invoice and packing slip. These settings allow customers to download the documents from their order overview in the OpenCart frontend.</p>
@@ -116,7 +116,7 @@
 <div class="title">Note</div>
 </td>
 <td class="content">
-Additional payment methods are directly added in PostFinance Checkout. This can be done in the <a href="https://www.postfinance-checkout.ch/space/select?target=/space/assistant/payment" target="_blank">setup assistant</a>. Changes are synchronized automatically.
+Additional payment methods are directly added in PostFinance Checkout. This can be done in the <a href="https://checkout.postfinance.ch/space/select?target=/space/assistant/payment" target="_blank">setup assistant</a>. Changes are synchronized automatically.
 </td>
 </tr>
 </table>
@@ -127,7 +127,7 @@ Additional payment methods are directly added in PostFinance Checkout. This can 
 	</div>
 	<div class="section-body">
 					<div class="paragraph">
-<p>If you want to change the payment method description, title, logo, etc you need to do this in the <a href="https://www.postfinance-checkout.ch/space/select?target=/payment/method-configuration/list" target="_blank">payment method configuration</a>. Changes will be synchronized automatically.</p>
+<p>If you want to change the payment method description, title, logo, etc you need to do this in the <a href="https://checkout.postfinance.ch/space/select?target=/payment/method-configuration/list" target="_blank">payment method configuration</a>. Changes will be synchronized automatically.</p>
 </div>					</div>
 </div>			</div>
 </div>	<div class="chapter" id="_state_graph">
@@ -139,7 +139,7 @@ Additional payment methods are directly added in PostFinance Checkout. This can 
 					<div class="paragraph">
 <p>The Payment Process of PostFinance Checkout is <strong>completely standardized for every payment method</strong> you can process. This gives you the ability to simply add
 a payment method or processor without changes inside of your OpenCart configuration. An overview about the states and the payment processes of PostFinance Checkout
-can be found in the <a href="https://www.postfinance-checkout.ch/en-us/doc/payment/transaction-process" target="_blank">Payment Documentation</a>.</p>
+can be found in the <a href="https://checkout.postfinance.ch/en-us/doc/payment/transaction-process" target="_blank">Payment Documentation</a>.</p>
 </div><div class="paragraph">
 <p>In the following section we provide you an overview about how the PostFinance Checkout states are mapped into the OpenCart State graph for orders.</p>
 </div>							<div class="section" id="_state_mapping_of_opencart_orders">
@@ -207,7 +207,7 @@ OpenCart.</p>
 	</div>
 	<div class="section-body">
 					<div class="paragraph">
-<p>You have the possibility for your transactions to have the payment only authorized after the order is placed. Inside the <a href="https://www.postfinance-checkout.ch/space/select?target=/payment/connector-configuration/list" target="_blank">connector configuration</a> you have the option, if the payment method supports it, to define whether the payment should be completed immediately or deferred.</p>
+<p>You have the possibility for your transactions to have the payment only authorized after the order is placed. Inside the <a href="https://checkout.postfinance.ch/space/select?target=/payment/connector-configuration/list" target="_blank">connector configuration</a> you have the option, if the payment method supports it, to define whether the payment should be completed immediately or deferred.</p>
 </div><div class="paragraph">
 <p>In order to capture a transaction, navigate to Administer Orders &#8594; PostFinance Checkout Transactions, open the transaction and click on the <code>Complete</code> button.</p>
 </div><div class="admonitionblock note">
@@ -330,7 +330,7 @@ When there is a manual task we will also display it in the OpenCart Backend.</p>
 </li>
 </ul>
 </div><div class="paragraph">
-<p>You can find more information about manual tasks in our <a href="https://www.postfinance-checkout.ch/en-us/doc/manual-tasks" target="_blank">Manual Task Documentation</a>.</p>
+<p>You can find more information about manual tasks in our <a href="https://checkout.postfinance.ch/en-us/doc/manual-tasks" target="_blank">Manual Task Documentation</a>.</p>
 </div>					</div>
 </div>					<div class="section" id="_limitations_of_the_synchronization_between_whitelabelname_and_opencart">
 	<div class="section-title">
@@ -350,7 +350,7 @@ You should therefore always perform captures, voids and refunds inside the OpenC
 	<div class="section-body">
 					<div class="paragraph">
 <p>In case the payment method supports tokenization you can store the payment details of your customer for future purchases.
-In order to use this feature make sure that the <strong>One-Click-Payment Mode</strong> in your <a href="https://www.postfinance-checkout.ch/space/select?target=/payment/method-configuration/list">payment method configuration</a> is set to <code>allow</code> or <code>force</code> storage.</p>
+In order to use this feature make sure that the <strong>One-Click-Payment Mode</strong> in your <a href="https://checkout.postfinance.ch/space/select?target=/payment/method-configuration/list">payment method configuration</a> is set to <code>allow</code> or <code>force</code> storage.</p>
 </div><div class="admonitionblock note">
 <table>
 <tr>

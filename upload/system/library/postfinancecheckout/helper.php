@@ -701,7 +701,7 @@ class PostFinanceCheckoutHelper {
 	}
 
 	public static function getBaseUrl(){
-		return rtrim("https://www.postfinance-checkout.ch/", '/');
+		return rtrim("https://checkout.postfinance.ch/", '/');
 	}
 
 	public static function isEditableState($state){
