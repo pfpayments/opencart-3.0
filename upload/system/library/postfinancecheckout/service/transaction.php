@@ -22,7 +22,11 @@ class Transaction extends AbstractService {
 		if (!$sessionId || !array_key_exists($sessionId, self::$possible_payment_method_cache)) {
 			$transaction = $this->update($order_info, false);
 			try {
-				$payment_methods = $this->getTransactionService()->fetchPossiblePaymentMethods($transaction->getLinkedSpaceId(), $transaction->getId());
+				$payment_methods = $this->getTransactionService()->fetchPaymentMethods(
+					$transaction->getLinkedSpaceId(),
+					$transaction->getId(),
+					'iframe'
+				);
 				foreach ($payment_methods as $payment_method) {
 					MethodConfiguration::instance($this->registry)->updateData($payment_method);
 				}

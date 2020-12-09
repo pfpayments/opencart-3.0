@@ -61,6 +61,11 @@ $_['entry_refund_status'] 							= "Refund status";
 $_['description_refund_status'] 					= "Status the order enters when the transaction has been fully refunded.";
 $_['description_none_status']						= "Standard OpenCart behaviour specificies that an order confirmation email is sent when an order is moved from the 'None' state into any other state. For this reason you may want to treat 'Processing' and 'Failed' as 'None' so no emails are sent.";
 
+// Version
+$_['title_version']									= 'Plugin Version';
+$_['entry_version']									= 'Version Number';
+$_['entry_date']									= 'Release Date';
+
 // Modifications
 $_['title_modifications']							= "Modifications";
 $_['entry_core']									= "Core";

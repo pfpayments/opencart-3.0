@@ -9,7 +9,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 	
 	// Holds multistore configs
 	protected $data = array();
-
+	
 	/**
 	 * This method is executed by OpenCart when the Payment module is installed from the admin.
 	 * It will create the
@@ -21,7 +21,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		$this->load->model("extension/postfinancecheckout/setup");
 		$this->model_extension_postfinancecheckout_setup->install();
 	}
-
+	
 	/**
 	 *
 	 * @param bool $purge Set to false to skip purgin database.
@@ -31,7 +31,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		$this->load->model("extension/postfinancecheckout/setup");
 		$this->model_extension_postfinancecheckout_setup->uninstall($purge);
 	}
-
+	
 	/**
 	 * Render the payment method's settings page.
 	 */
@@ -56,7 +56,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		
 		$this->response->setOutput($this->loadView("extension/payment/postfinancecheckout", array_merge($storeConfigs, $pageVariables)));
 	}
-
+	
 	/**
 	 * Synchronizes webhooks and payment methods for the given space id.
 	 *
@@ -71,7 +71,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 			$this->error['warning'] = $e->getMessage();
 		}
 	}
-
+	
 	private function validateGlobalSettings(array $global){
 		if (!isset($global['postfinancecheckout_application_key']) || empty($global['postfinancecheckout_application_key'])) {
 			throw new Exception($this->language->get('error_application_key_unset'));
@@ -85,7 +85,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 			throw new Exception($this->language->get('error_user_id_unset'));
 		}
 	}
-
+	
 	private function validateStoreSettings(array $store){
 		if (isset($store['postfinancecheckout_space_id']) && !empty($store['postfinancecheckout_space_id'])) {
 			if (!ctype_digit($store['postfinancecheckout_space_id'])) {
@@ -101,13 +101,16 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 			}
 		}
 	}
-
+	
 	private function persistStoreSettings(array $global, array $store){
 		$newSettings = array_merge($global, $store);
 		
 		// preserve migration state
-		$newSettings['postfinancecheckout_migration_version'] = $this->config->get('postfinancecheckout_migration_version');
-		$newSettings['postfinancecheckout_migration_name'] = $this->config->get('postfinancecheckout_migration_name');
+		if($this->config->has('postfinancecheckout_migration_version')) {
+			$newSettings['postfinancecheckout_migration_version'] = $this->config->get('postfinancecheckout_migration_version');
+			$newSettings['postfinancecheckout_migration_name'] = $this->config->get('postfinancecheckout_migration_name');
+		}
+		
 		// preserve manual tasks
 		$newSettings[\PostFinanceCheckout\Service\ManualTask::CONFIG_KEY] = PostFinanceCheckoutVersionHelper::getPersistableSetting(
 				$this->model_setting_setting->getSetting(\PostFinanceCheckout\Service\ManualTask::CONFIG_KEY, $store['id']), 0);
@@ -133,7 +136,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		
 		return true;
 	}
-
+	
 	/**
 	 * Processes post data to settings.
 	 *
@@ -179,11 +182,11 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 			$this->response->redirect(
 					$this->createUrl("marketplace/extension",
 							array(
-								\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN] 
+								\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN]
 							)));
 		}
 	}
-
+	
 	/**
 	 * Returns all variables used in the settigns page template.
 	 *
@@ -198,17 +201,17 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		// Form action url
 		$data['action'] = $this->createUrl("extension/payment/postfinancecheckout",
 				array(
-					\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN] 
+					\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN]
 				));
 		$data['cancel'] = $this->createUrl("marketplace/extension",
 				array(
-					\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN] 
+					\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN]
 				));
 		
 		return array_merge($this->getSettingsPageTranslatedVariables(), $data, $this->getAlertTemplateVariables(), $this->getSettingsPageBreadcrumbs(),
 				$this->getSettingPageStoreVariables($shops), $this->getAdminSurroundingTemplates());
 	}
-
+	
 	private function getSettingsPageTranslatedVariables(){
 		$data = array();
 		// Set data for template
@@ -270,6 +273,10 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		$data['entry_migration_name'] = $this->language->get('entry_migration_name');
 		$data['entry_migration_version'] = $this->language->get('entry_migration_version');
 		
+		$data['title_version'] = $this->language->get('title_version');
+		$data['entry_version'] = $this->language->get('entry_version');
+		$data['entry_date'] = $this->language->get('entry_date');
+		
 		$data['text_edit'] = $this->language->get("text_edit");
 		$data['text_information'] = $this->language->get('text_information');
 		
@@ -284,14 +291,14 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		
 		return $data;
 	}
-
+	
 	private function getLogLevels(){
 		return array(
 			\PostFinanceCheckoutHelper::LOG_ERROR => $this->language->get('log_level_error'),
-			\PostFinanceCheckoutHelper::LOG_DEBUG => $this->language->get('log_level_debug') 
+			\PostFinanceCheckoutHelper::LOG_DEBUG => $this->language->get('log_level_debug')
 		);
 	}
-
+	
 	private function getOrderStatusTemplateVariables(){
 		$data = array();
 		$statuses = array(
@@ -302,20 +309,20 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 			'failed_status',
 			'voided_status',
 			'decline_status',
-			'refund_status' 
+			'refund_status'
 		);
 		
 		foreach ($statuses as $status) {
 			$data[] = array(
 				'entry' => $this->language->get('entry_' . $status),
 				'description' => $this->language->get('description_' . $status),
-				'key' => 'postfinancecheckout_' . $status . '_id' 
+				'key' => 'postfinancecheckout_' . $status . '_id'
 			);
 		}
 		
 		return $data;
 	}
-
+	
 	private function getAlertTemplateVariables(){
 		$data = array();
 		if (isset($this->session->data['success'])) {
@@ -335,38 +342,38 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		
 		return $data;
 	}
-
+	
 	private function getSettingsPageBreadcrumbs(){
 		return array(
 			'breadcrumbs' => array(
 				array(
 					"href" => $this->createUrl("common/home",
 							array(
-								\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN] 
+								\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN]
 							)),
 					"text" => $this->language->get("text_home"),
-					"separator" => false 
+					"separator" => false
 				),
 				array(
 					"href" => $this->createUrl("marketplace/extension",
 							array(
-								\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN] 
+								\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN]
 							)),
 					"text" => $this->language->get("text_payment"),
-					"separator" => ' :: ' 
+					"separator" => ' :: '
 				),
 				array(
 					"href" => $this->createUrl("extension/payment/postfinancecheckout",
 							array(
-								\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN] 
+								\PostFinanceCheckoutVersionHelper::TOKEN => $this->session->data[\PostFinanceCheckoutVersionHelper::TOKEN]
 							)),
 					"text" => $this->language->get("heading_title"),
-					"separator" => " :: " 
-				) 
-			) 
+					"separator" => " :: "
+				)
+			)
 		);
 	}
-
+	
 	private function getSettingPageStoreVariables($shops){
 		$this->load->model('setting/setting');
 		$data = array();
@@ -410,7 +417,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		
 		return $data;
 	}
-
+	
 	/**
 	 * Returns all settings, and their respective default values.
 	 * Global settings are returned in 'global', multistore settings returned in 'multistore'
@@ -441,22 +448,22 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 			
 			"postfinancecheckout_download_packaging" => 1,
 			"postfinancecheckout_download_invoice" => 1,
-			\PostFinanceCheckout\Service\ManualTask::CONFIG_KEY => 0 
+			\PostFinanceCheckout\Service\ManualTask::CONFIG_KEY => 0
 		);
 		
 		$globalSettings = array(
 			"postfinancecheckout_application_key" => null,
 			"postfinancecheckout_user_id" => null,
 			"postfinancecheckout_migration_name" => 'uninitialized',
-			"postfinancecheckout_migration_version" => "0.0.0" 
+			"postfinancecheckout_migration_version" => "0.0.0"
 		);
 		
 		return array(
 			'multistore' => $multiStoreSettings,
-			'global' => $globalSettings 
+			'global' => $globalSettings
 		);
 	}
-
+	
 	/**
 	 * Check the post and check if the user has permission to edit the module settings
 	 *
@@ -470,7 +477,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		
 		return (count($this->error) == 0);
 	}
-
+	
 	/**
 	 * Retrieve additional store id's from store table.
 	 * Will not include default store. Only the additional stores. So we inject the default store here.
@@ -483,14 +490,14 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		$default = array(
 			array(
 				'id' => 0,
-				'name' => $this->config->get('config_name') 
-			) 
+				'name' => $this->config->get('config_name')
+			)
 		);
 		$allStores = array_merge($default, $rows);
 		
 		return $allStores;
 	}
-
+	
 	protected function retrieveMultiStoreConfigs($shops){
 		$data = array();
 		foreach ($shops as $store) {
@@ -504,7 +511,7 @@ class ControllerExtensionPaymentPostFinanceCheckout extends AbstractController {
 		}
 		return $data;
 	}
-
+	
 	protected function getRequiredPermission(){
 		return 'extension/payment/postfinancecheckout';
 	}
