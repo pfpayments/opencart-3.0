@@ -1,0 +1,16 @@
+Didn't find any other way to contact you and when I call La Poste there is no people that can help.
+
+/upload/system/library/postfinancecheckout/modificationPostFinanceCheckoutCore.ocmod.xml creates issues in opencart v3.0 
+
+It's the only modification that breaks the entire site. Any idea why ?
+
+I can see line 9 in that file is completely wrong. No opencart has a setting folder in the admin/controller folder.. And it isn't in the file provided for download.
+
+```
+// this path doesn't exist. Even if I amend it, the modification breaks the whole site when I hit refresh.
+<file path="admin/controller/setting/extension/payment.php">
+```
+
+Is there any official support for this plugin or someone people can contact in order to get relevant feedbacks ?
+
+Thanks
