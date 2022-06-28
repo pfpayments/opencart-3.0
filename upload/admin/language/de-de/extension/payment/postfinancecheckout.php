@@ -7,7 +7,7 @@
 // @formatter:off
 $_['heading_title']									= 'PostFinance Checkout';
 $_['heading_postfinancecheckout']					= 'PostFinance Checkout';
-$_['text_postfinancecheckout']					= '<a target="_BLANK" href="https://www.postfinance.ch/checkout"><img src="view/image/extension/payment/postfinancecheckout.png" alt="PostFinance Checkout Webseite" title="PostFinance Checkout Webseite" style="border: 1px solid #EEEEEE;" /></a>';
+$_['text_postfinancecheckout']					= '<a target="_BLANK" href="https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html"><img src="view/image/extension/payment/postfinancecheckout.png" alt="PostFinance Checkout Webseite" title="PostFinance Checkout Webseite" style="border: 1px solid #EEEEEE;" /></a>';
 // PostFinanceCheckout Configurations (user id, application key, spaces)
 $_['title_global_settings']							= "Globale Anmeldeinformationen";
 $_['title_store_settings']							= "Einstellungen speichern";
