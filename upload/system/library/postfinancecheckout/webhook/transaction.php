@@ -29,9 +29,21 @@ class Transaction extends AbstractOrderRelated {
 
 	protected function processOrderRelatedInner(array $order_info, $transaction){
 		/* @var \PostFinanceCheckout\Sdk\Model\Transaction $transaction */
-		$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_info['order_id']);
+		$transactionInfo = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_info['order_id']);
+
+		$finalStates = [
+			\PostFinanceCheckout\Sdk\Model\TransactionState::FAILED,
+			\PostFinanceCheckout\Sdk\Model\TransactionState::VOIDED,
+			\PostFinanceCheckout\Sdk\Model\TransactionState::DECLINE,
+			\PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL
+		];
+
 		\PostFinanceCheckoutHelper::instance($this->registry)->ensurePaymentCode($order_info, $transaction);
-		if ($transaction->getState() != $transaction_info->getState()) {
+
+		$transactionInfoState = strtoupper($transactionInfo->getState());
+		if (!in_array($transactionInfoState, $finalStates)) {
+			\PostFinanceCheckout\Service\Transaction::instance($this->registry)->updateTransactionInfo($transaction, $order_info['order_id']);
+
 			switch ($transaction->getState()) {
 				case \PostFinanceCheckout\Sdk\Model\TransactionState::CONFIRMED:
 					$this->processing($transaction, $order_info);
@@ -49,7 +61,8 @@ class Transaction extends AbstractOrderRelated {
 					$this->failed($transaction, $order_info);
 					break;
 				case \PostFinanceCheckout\Sdk\Model\TransactionState::FULFILL:
-					if ($transaction_info->getState() != 'AUTHORIZED' && $transaction_info->getState() != 'COMPLETED') {
+
+					if (!in_array($transactionInfoState, ['AUTHORIZED', 'COMPLETED'])) {
 						$this->authorize($transaction, $order_info);
 					}
 					$this->fulfill($transaction, $order_info);
@@ -65,8 +78,6 @@ class Transaction extends AbstractOrderRelated {
 					break;
 			}
 		}
-		
-		\PostFinanceCheckout\Service\Transaction::instance($this->registry)->updateTransactionInfo($transaction, $order_info['order_id']);
 	}
 
 	protected function processing(\PostFinanceCheckout\Sdk\Model\Transaction $transaction, array $order_info){
