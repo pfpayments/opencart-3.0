@@ -488,25 +488,25 @@ class Transaction extends AbstractService {
 		$address = new \PostFinanceCheckout\Sdk\Model\AddressCreate();
 		
 		if (isset($source[$prefix . 'city'])) {
-			$address->setCity($this->getFixedSource($source, $prefix . 'city', 100));
+			$address->setCity($this->getFixedSource($source, $prefix . 'city', 100, false));
 		}
 		if (isset($source[$prefix . 'iso_code_2'])) {
 			$address->setCountry($source[$prefix . 'iso_code_2']);
 		}
 		if (isset($source[$prefix . 'lastname'])) {
-			$address->setFamilyName($this->getFixedSource($source, $prefix . 'lastname', 100));
+			$address->setFamilyName($this->getFixedSource($source, $prefix . 'lastname', 100, false));
 		}
 		if (isset($source[$prefix . 'firstname'])) {
-			$address->setGivenName($this->getFixedSource($source, $prefix . 'firstname', 100));
+			$address->setGivenName($this->getFixedSource($source, $prefix . 'firstname', 100, false));
 		}
 		if (isset($source[$prefix . 'company'])) {
-			$address->setOrganizationName($this->getFixedSource($source, $prefix . 'company', 100));
+			$address->setOrganizationName($this->getFixedSource($source, $prefix . 'company', 100, false));
 		}
 		if (isset($source[$prefix . 'postcode'])) {
 			$address->setPostCode($this->getFixedSource($source, $prefix . 'postcode', 40));
 		}
 		if (isset($source[$prefix . 'address_1'])) {
-			$address->setStreet($this->fixLength(trim($source[$prefix . 'address_1'] . "\n" . $source[$prefix . 'address_2']), 300));
+			$address->setStreet($this->fixLength(trim($source[$prefix . 'address_1'] . "\n" . $source[$prefix . 'address_2']), 300, false));
 		}
 		
 		// state is 2-part
