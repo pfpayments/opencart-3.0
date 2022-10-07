@@ -11,14 +11,14 @@
 
 == Installation
 
-1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.50/[Download] the extension.
+1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.51/[Download] the extension.
 2. Extract the files and upload the content of the `Upload` directory into the root directory of your store using FTP/SSH.
 3. Login to the backend of your OpenCart store.
 4. Navigate to Extensions -> Payment to install the plugin.
 
 == Configuration
 
-1. Navigate to Extensions -> Payment -> PostFinance Checkout in your OpenCart backend and enter the PostFinance Checkout Space ID, User ID and Authentification Key that you can create in the link:https://checkout.postfinance.ch/space/select?target=/space/assistant[setup assistant^]. Alternatively, you can manually create an link:https://checkout.postfinance.ch/en-us/doc/permission-concept#_create_application_users[application user^].
+1. Navigate to Extensions -> Payment -> PostFinance Checkout in your OpenCart backend and enter the PostFinance Checkout Space ID, User ID and Authentification Key that you can create an link:https://checkout.postfinance.ch/en-us/doc/permission-concept#_create_application_users[application user^].
 +
 image::settings.png[]
 +
@@ -38,8 +38,6 @@ The main configuration is now finished. You should see the payment methods in yo
 Payment method configuration is done in PostFinance Checkout. The PostFinance Checkout payment method configurations are synchronized automatically into the OpenCart store. 
 
 The payment methods will not appear in the payment overview of your OpenCart backend.
-
-NOTE: Additional payment methods are directly added in PostFinance Checkout. This can be done in the link:https://checkout.postfinance.ch/space/select?target=/space/assistant/payment[setup assistant^]. Changes are synchronized automatically.
 
 === Customization
 
