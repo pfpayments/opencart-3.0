@@ -11,7 +11,7 @@
 
 == Installation
 
-1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.51/[Download] the extension.
+1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.52/[Download] the extension.
 2. Extract the files and upload the content of the `Upload` directory into the root directory of your store using FTP/SSH.
 3. Login to the backend of your OpenCart store.
 4. Navigate to Extensions -> Payment to install the plugin.

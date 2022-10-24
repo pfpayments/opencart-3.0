@@ -17,6 +17,13 @@ abstract class ModelExtensionPaymentPostFinanceCheckoutBase extends Model {
 			return array();
 		}
 		
+		// for journal3 one step checkout the user data is empty by default
+		// i assume this is some oversight by the folks at journal3
+		$data = $this->registry->get('session')->data;
+		if(isset($data['j3_checkout_id']) && !isset($this->session->data['user_id'])) {
+			$this->session->data['user_id'] = $data['j3_checkout_id'];
+		}
+
 		// check if transaction can be saved to the session.
 		if (\PostFinanceCheckoutHelper::instance($this->registry)->getCustomerSessionIdentifier() === null) {
 			return array();
