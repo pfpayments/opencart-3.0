@@ -30,7 +30,7 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 		$security_token = \PostFinanceCheckout\Entity\Cron::getCurrentSecurityTokenForPendingCron($this->registry);
 		if ($security_token) {
 			$cronUrl = $this->createUrl('extension/postfinancecheckout/cron', array(
-				'security_token' => $security_token 
+				'security_token' => $security_token
 			));
 			$this->document->addScript($cronUrl . '" async="async');
 		}
@@ -51,10 +51,10 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 		
 		$script = str_replace(array(
 			'[spaceId]',
-			'[UniqueSessionIdentifier]' 
+			'[UniqueSessionIdentifier]'
 		), array(
 			$this->config->get('postfinancecheckout_space_id'),
-			$this->request->cookie['postfinancecheckout_device_id'] 
+			$this->request->cookie['postfinancecheckout_device_id']
 		), $script);
 		
 		// async hack
@@ -77,10 +77,15 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 	 * Prevent line item changes to authorized postfinancecheckout transactions.
 	 *
 	 * @param string $route
+	 * 	 Not used in this scope but required by the caller.
 	 * @param array $parameters
-	 * @param object $output
+	 * 
+	 * @see \Action::execute(), system/engine/action.php
 	 */
-	public function canSaveOrder(){
+	public function canSaveOrder(string $route, array $parameters) {
+		if (!(count($parameters) && is_numeric($parameters[0]))) {
+			return;
+		}
 		$order_id = $parameters[0];
 		
 		$transaction_info = \PostFinanceCheckout\Entity\TransactionInfo::loadByOrderId($this->registry, $order_id);
@@ -114,7 +119,7 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 			$this->language->load('extension/payment/postfinancecheckout');
 			$this->response->addHeader('Content-Type: application/json');
 			$this->response->setOutput(json_encode([
-				'error' => $this->language->get('error_order_edit') 
+				'error' => $this->language->get('error_order_edit')
 			]));
 			$this->response->output();
 			die();
@@ -148,21 +153,21 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 		foreach ($new_order['products'] as $product) {
 			$line_items[] = [
 				'id' => $product['product_id'],
-				'total' => $product['total'] 
+				'total' => $product['total']
 			];
 		}
 		
 		foreach ($new_order['vouchers'] as $voucher) {
 			$line_items[] = [
 				'id' => $voucher['voucher_id'],
-				'total' => $voucher['price'] 
+				'total' => $voucher['price']
 			];
 		}
 		
 		foreach ($new_order['totals'] as $total) {
 			$line_items[] = [
 				'id' => $total['code'],
-				'total' => $total['value'] 
+				'total' => $total['value']
 			];
 		}
 		
@@ -182,21 +187,21 @@ class ControllerExtensionPostFinanceCheckoutEvent extends PostFinanceCheckout\Co
 		foreach ($model->getOrderProducts($order_id) as $product) {
 			$line_items[] = [
 				'id' => $product['product_id'],
-				'total' => $product['total'] 
+				'total' => $product['total']
 			];
 		}
 		
 		foreach ($model->getOrderVouchers($order_id) as $voucher) {
 			$line_items[] = [
 				'id' => $voucher['voucher_id'],
-				'total' => $voucher['price'] 
+				'total' => $voucher['price']
 			];
 		}
 		
 		foreach ($model->getOrderTotals($order_id) as $total) {
 			$line_items[] = [
 				'id' => $total['code'],
-				'total' => $total['value'] 
+				'total' => $total['value']
 			];
 		}
 		
