@@ -22,7 +22,7 @@
 		</a>
 	</li>
 	<li>
-		<a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.55/">
+		<a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.56/">
 			Source
 		</a>
 	</li>
@@ -49,7 +49,7 @@
 					<div class="olist arabic">
 <ol class="arabic">
 <li>
-<p><a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.55/">Download</a> the extension.</p>
+<p><a href="https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.56/">Download</a> the extension.</p>
 </li>
 <li>
 <p>Extract the files and upload the content of the <code>Upload</code> directory into the root directory of your store using FTP/SSH.</p>
@@ -379,10 +379,28 @@ Tokenization is not available for guest checkouts.
 </li>
 </ul>
 </div>					</div>
+</div>	<div class="chapter" id="_mail_sending_behaviours">
+	<div class="chapter-title">
+		<h1>
+			<span class="title-number">8</span>Mail sending behaviours					</h1>
+	</div>
+	<div class="chapter-body">
+					<div class="paragraph">
+<p>Opencart sends the order confirmation mail once the order has been created, but before the authorization took place.
+This leads to customers receiving confirmation before the payment was taken.</p>
+</div><div class="paragraph">
+<p>To prevent order confirmations before authorization, set “processing status” in plugin configuration to “none” or “keine” (language dependent):
+image::opencart_order_state_mapping.png[]</p>
+</div><div class="paragraph">
+<p>Then the order status will only be set once it is authorized, e.g. once the payment info is entered.</p>
+</div><div class="paragraph">
+<p>To fully prevent opencart emails for orders, activate opencart modification “prevent confirmation mails”,
+in this case the portal can be configured to send order confirmations.</p>
+</div>					</div>
 </div>	<div class="chapter" id="_error_logging">
 	<div class="chapter-title">
 		<h1>
-			<span class="title-number">8</span>Error logging					</h1>
+			<span class="title-number">9</span>Error logging					</h1>
 	</div>
 	<div class="chapter-body">
 					<div class="paragraph">
@@ -401,13 +419,13 @@ You have the option to change the debug level which increases what information i
 </div>	<div class="chapter" id="_faq">
 	<div class="chapter-title">
 		<h1>
-			<span class="title-number">9</span>FAQ					</h1>
+			<span class="title-number">10</span>FAQ					</h1>
 	</div>
 	<div class="chapter-body">
 							<div class="section" id="_how_can_i_make_the_payment_methods_appear_in_the_checkout">
 	<div class="section-title">
 		<h2>
-			<span class="title-number">9.1</span>How can I make the payment methods appear in the checkout?					</h2>
+			<span class="title-number">10.1</span>How can I make the payment methods appear in the checkout?					</h2>
 	</div>
 	<div class="section-body">
 					<div class="paragraph">
@@ -419,7 +437,7 @@ The payment methods are only displayed if the plugin&#8217;s total calculation m
 </div>					<div class="section" id="_why_do_the_order_totals_in_opencart_and_whitelabelname_not_match">
 	<div class="section-title">
 		<h2>
-			<span class="title-number">9.2</span>Why do the order totals in OpenCart and PostFinance Checkout not match?					</h2>
+			<span class="title-number">10.2</span>Why do the order totals in OpenCart and PostFinance Checkout not match?					</h2>
 	</div>
 	<div class="section-body">
 					<div class="paragraph">
@@ -429,7 +447,7 @@ The payment methods are only displayed if the plugin&#8217;s total calculation m
 </div>	<div class="chapter" id="_support">
 	<div class="chapter-title">
 		<h1>
-			<span class="title-number">10</span>Support					</h1>
+			<span class="title-number">11</span>Support					</h1>
 	</div>
 	<div class="chapter-body">
 					<div class="paragraph">
@@ -529,30 +547,35 @@ The payment methods are only displayed if the plugin&#8217;s total calculation m
 		<span class="item-title">Third party support</span>
 			</a>
     </li>					<li class="nav-level-1">
-	<a href="#_error_logging">
+	<a href="#_mail_sending_behaviours">
 		<span class="item-number">8</span>
+		<span class="item-title">Mail sending behaviours</span>
+			</a>
+    </li>					<li class="nav-level-1">
+	<a href="#_error_logging">
+		<span class="item-number">9</span>
 		<span class="item-title">Error logging</span>
 			</a>
     </li>					<li class="nav-level-1">
 	<a href="#_faq">
-		<span class="item-number">9</span>
+		<span class="item-number">10</span>
 		<span class="item-title">FAQ</span>
 			</a>
         	<ul  class="nav">
     		    			<li class="nav-level-2">
 	<a href="#_how_can_i_make_the_payment_methods_appear_in_the_checkout">
-		<span class="item-number">9.1</span>
+		<span class="item-number">10.1</span>
 		<span class="item-title">How can I make the payment methods appear in the checkout?</span>
 			</a>
     </li>    		    			<li class="nav-level-2">
 	<a href="#_why_do_the_order_totals_in_opencart_and_whitelabelname_not_match">
-		<span class="item-number">9.2</span>
+		<span class="item-number">10.2</span>
 		<span class="item-title">Why do the order totals in OpenCart and PostFinance Checkout not match?</span>
 			</a>
     </li>    		    	</ul>
     </li>					<li class="nav-level-1">
 	<a href="#_support">
-		<span class="item-number">10</span>
+		<span class="item-number">11</span>
 		<span class="item-title">Support</span>
 			</a>
     </li>			</ul>

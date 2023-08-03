@@ -11,7 +11,7 @@
 
 == Installation
 
-1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.55/[Download] the extension.
+1. link:https://github.com/pfpayments/opencart-3.0/releases/tag/1.0.56/[Download] the extension.
 2. Extract the files and upload the content of the `Upload` directory into the root directory of your store using FTP/SSH.
 3. Login to the backend of your OpenCart store.
 4. Navigate to Extensions -> Payment to install the plugin.
@@ -152,6 +152,18 @@ These third party extensions are supported by the PostFinance Checkout OpenCart 
 * https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=15580[AJAX Quick Checkout FREE]
 - We offer an additional modification for compatibility, which is not active by default.
 
+== Mail sending behaviours
+
+Opencart sends the order confirmation mail once the order has been created, but before the authorization took place. 
+This leads to customers receiving confirmation before the payment was taken.
+
+To prevent order confirmations before authorization, set “processing status” in plugin configuration to “none” or “keine” (language dependent):
+image::opencart_order_state_mapping.png[]
+
+Then the order status will only be set once it is authorized, e.g. once the payment info is entered.
+
+To fully prevent opencart emails for orders, activate opencart modification “prevent confirmation mails”, 
+in this case the portal can be configured to send order confirmations.
 
 == Error logging
 
