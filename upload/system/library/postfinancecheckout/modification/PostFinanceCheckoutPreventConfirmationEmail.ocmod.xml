@@ -3,7 +3,7 @@
 	<code>PostFinanceCheckoutPreventConfirmationEmail</code>
 	<name>postfinancecheckout email: prevent confirmation email.</name>
 	<version>1.0.1</version>
-	<author>Customweb GmbH</author>
+	<author>wallee AG</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="catalog/model/checkout/order.php">
 		<operation>

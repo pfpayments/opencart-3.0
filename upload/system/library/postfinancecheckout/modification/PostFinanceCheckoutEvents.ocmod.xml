@@ -4,7 +4,7 @@
 	<name>postfinancecheckout events: handle events unavailable in Opencart 2.0.x and 2.1.x.
 	</name>
 	<version>1.1.0</version>
-	<author>Customweb GmbH</author>
+	<author>wallee AG</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="catalog/controller/common/header.php">
 		<operation>

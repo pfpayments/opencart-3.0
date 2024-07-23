@@ -4,7 +4,7 @@
 	<name>postfinancecheckout transaction view: List transactions in the opencart backend.
 	</name>
 	<version>1.0.0</version>
-	<author>Customweb GmbH</author>
+	<author>wallee AG</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="admin/controller/common/column_left.php">
 		<operation>

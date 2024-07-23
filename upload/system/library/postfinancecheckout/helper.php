@@ -1,4 +1,13 @@
 <?php
+/**
+ * PostFinanceCheckout OpenCart
+ *
+ * This OpenCart module enables to process payments with PostFinanceCheckout (https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html).
+ *
+ * @package Whitelabelshortcut\PostFinanceCheckout
+ * @author wallee AG (https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html)
+ * @license http://www.apache.org/licenses/LICENSE-2.0  Apache Software License (ASL 2.0)
+ */
 require_once (DIR_SYSTEM . 'library/postfinancecheckout/autoload.php');
 require_once DIR_SYSTEM . '/library/postfinancecheckout/version_helper.php';
 

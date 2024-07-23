@@ -4,7 +4,7 @@
 	<name>postfinancecheckout administration: complete, refund and void from the OpenCart backend.
 	</name>
 	<version>1.1.0</version>
-	<author>Customweb GmbH</author>
+	<author>wallee AG</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="admin/controller/sale/order.php">
 		<operation>

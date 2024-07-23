@@ -1,4 +1,13 @@
 <?php
+/**
+ * PostFinanceCheckout OpenCart
+ *
+ * This OpenCart module enables to process payments with PostFinanceCheckout (https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html).
+ *
+ * @package Whitelabelshortcut\PostFinanceCheckout
+ * @author wallee AG (https://postfinance.ch/en/business/products/e-commerce/postfinance-checkout-all-in-one.html)
+ * @license http://www.apache.org/licenses/LICENSE-2.0  Apache Software License (ASL 2.0)
+ */
 
 namespace PostFinanceCheckout\Service;
 
@@ -486,6 +495,11 @@ class Transaction extends AbstractService {
 
 	private function assembleAddress($source, $prefix = ''){
 		$address = new \PostFinanceCheckout\Sdk\Model\AddressCreate();
+		$customer = \PostFinanceCheckoutHelper::instance($this->registry)->getCustomer();
+
+		if (isset($customer['email'])) {
+			$address->setEmailAddress($this->getFixedSource($customer, 'email', 150));
+		}
 		
 		if (isset($source[$prefix . 'city'])) {
 			$address->setCity($this->getFixedSource($source, $prefix . 'city', 100, false));

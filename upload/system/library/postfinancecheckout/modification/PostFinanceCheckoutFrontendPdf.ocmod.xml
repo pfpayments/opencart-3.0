@@ -4,7 +4,7 @@
 	<name>postfinancecheckout customer pdf: Allow customers to download invoices and packing slips.
 	</name>
 	<version>1.1.0</version>
-	<author>Customweb GmbH</author>
+	<author>wallee AG</author>
 	<link>http://github.com/postfinancecheckout-payment/opencart</link>
 	<file path="catalog/controller/account/order.php">
 		<operation>
