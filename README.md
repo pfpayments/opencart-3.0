@@ -8,8 +8,12 @@ This repository contains the OpenCart  PostFinance Checkout payment module that 
 
 ## Requirements
 
-* [Opencart](https://www.opencart.com/) 3.0
+* [Opencart](https://www.opencart.com/) 3.0.x (supported up to version 3.0.4)
 * [PHP](http://php.net/) 5.6 or later
+
+> **Note:**
+> Support for OpenCart **3.0.5 and later versions** is not available in this module.  
+Please contact **wallee** to discuss available options for newer OpenCart versions.
 
 ## Documentation
 
